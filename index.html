@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#294e42"><meta name="description" content="Un lugar para descubrir, organizar y cuidar los libros de tu biblioteca.">
+  <title>Asistente Bibliotecario</title><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <a href="#inicio" class="brand"><span class="brand-icon">▤</span><span>Asistente<br><strong>Bibliotecario</strong></span></a>
+    <span class="nav-label">TU ESPACIO DE LECTURA</span>
+    <nav aria-label="Principal"><a href="#inicio" data-nav="inicio">⌂ <span>Inicio</span></a><a href="#biblioteca" data-nav="biblioteca">▥ <span>Mi biblioteca</span></a><button data-action="add">＋ <span>Agregar libro</span></button></nav>
+    <div class="sidebar-note"><span class="leaf">❧</span><strong>Una biblioteca, muchas historias.</strong><p>Todo empieza con el primer libro.</p></div>
+    <div class="local-label"><i></i> Biblioteca local <small>Guardada en este navegador</small></div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar"><div><span class="mini-logo">▤</span><strong>Mi biblioteca de prueba</strong><span class="badge">PROTOTIPO</span></div><button class="avatar" data-action="help" aria-label="Información de tu biblioteca">?</button></header>
+    <main id="main"></main>
+    <footer>Hecho para acercarte a tus libros. <span>Asistente Bibliotecario · Primera edición</span></footer>
+  </div>
+  <nav class="mobile-nav" aria-label="Navegación móvil"><a href="#inicio" data-nav="inicio">⌂<span>Inicio</span></a><a href="#biblioteca" data-nav="biblioteca">▥<span>Biblioteca</span></a><button data-action="add">＋<span>Agregar</span></button></nav>
+  <dialog id="editor" aria-labelledby="editor-title"><form id="book-form"><div class="dialog-heading"><div><span class="eyebrow">HAGAMOS LUGAR A UNA HISTORIA</span><h2 id="editor-title">Agregar un libro</h2></div><button type="button" class="close" data-close="editor" aria-label="Cerrar">×</button></div>
+    <p class="muted">Cargá los datos que tengas. Podés completarlos después.</p><input type="hidden" name="id">
+    <label>Título <span aria-hidden="true">*</span><input name="title" required maxlength="180" placeholder="¿Cómo se llama el libro?"></label>
+    <label>Autor o autora<input name="author" maxlength="160" placeholder="Por ejemplo, María Elena Walsh"></label>
+    <div class="form-grid"><label>ISBN<input name="isbn" maxlength="24" placeholder="978…" inputmode="numeric"><small>Opcional. Lo encontrás en la contratapa.</small></label><label>Categoría<select name="category"><option>Cuentos</option><option>Novela</option><option>Poesía</option><option>Informativo</option><option>Otros</option></select></label><label>Editorial<input name="publisher" maxlength="120" placeholder="Editorial"></label><label>Ejemplares<input name="copies" type="number" min="1" max="9999" step="1" value="1" required></label></div>
+    <label>Ubicación<input name="location" maxlength="120" placeholder="Por ejemplo, Estante A · Infantil"></label>
+    <label>Cuentos o capítulos<textarea name="contents" rows="3" maxlength="10000" placeholder="Un título por línea"></textarea><small>También vas a poder encontrarlos con el buscador.</small></label>
+    <label>Notas<textarea name="notes" rows="2" maxlength="5000" placeholder="Estado del libro, edición o algo para recordar"></textarea></label>
+    <p class="inline-note">Próximamente: escanear ISBN, sumar fotos y sugerencias con IA.</p><p id="form-error" class="error" role="alert"></p><div class="dialog-actions"><button type="button" class="button secondary" data-close="editor">Cancelar</button><button class="button primary" type="submit">Guardar libro</button></div>
+  </form></dialog>
+  <dialog id="detail" aria-labelledby="detail-title"></dialog>
+  <dialog id="help" aria-labelledby="help-title"><div class="dialog-heading"><h2 id="help-title">Tu biblioteca, en este dispositivo</h2><button class="close" data-close="help" aria-label="Cerrar">×</button></div><p>Los libros se guardan en este navegador. No se sincronizan con otros celulares o computadoras.</p><p>Exportá un respaldo con frecuencia: borrar los datos del navegador puede borrar tu catálogo. Podés importar ese archivo en otro dispositivo.</p><p>Esta primera versión permite cargar, editar, buscar y organizar libros. El escaneo, las fotografías, la IA y el funcionamiento sin conexión se incorporarán en futuras versiones.</p></dialog>
+  <input id="import-file" type="file" accept="application/json,.json" hidden><div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./src/app.js"></script>
+</body></html>
