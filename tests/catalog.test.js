@@ -15,7 +15,7 @@ test('validates ISBN checksum and copy counts',()=>{
 test('backups validate all entries and preserve IDs',()=>{
   const book=validateBook(raw); const backup={app:'asistente-bibliotecario',version:1,books:[book]};
   assert.equal(parseBackup(JSON.stringify(backup))[0].id,book.id);
-  assert.throws(()=>parseBackup(JSON.stringify({...backup,version:2})));
+  assert.throws(()=>parseBackup(JSON.stringify({...backup,version:99})));
   assert.throws(()=>parseBackup(JSON.stringify({...backup,books:[book,book]})));
   assert.throws(()=>parseBackup(JSON.stringify({...backup,books:[book,{title:''}]})));
 });

@@ -1,11 +1,15 @@
+import { lookupISBN, safeCover } from './metadata.js';
+import { scanISBN } from './scanner.js';
+import { canonicalISBN } from './isbn.js';
 import { categories, searchBooks, validateBook, parseBackup } from './catalog.js';
 import { openDatabase, getBooks, saveBook, deleteBook, mergeBooks } from './storage.js';
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+let draft = null, lookupController, scanController, lookupVersion=0;
 let books = [], query = '', category = '', ready = false, toastTimer;
 const isLibrary = () => location.hash === '#biblioteca';
 function notify(message) { $('#toast').textContent = message; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').textContent = '', 5000); }
-function cover(book) { const color = [...book.title].reduce((n,c)=>n+c.charCodeAt(0),0)%4; return `<div class="cover" data-color="${color}"><small>${escape(book.category)}</small><strong>${escape(book.title)}</strong><span>❧</span></div>`; }
+function cover(book) { if(safeCover(book.cover)) return `<div class="cover real-cover"><img src="${escape(safeCover(book.cover))}" alt="Portada de ${escape(book.title)}" loading="lazy" referrerpolicy="no-referrer"><span class="cover-fallback" hidden>Portada no disponible</span></div>`; const color = [...book.title].reduce((n,c)=>n+c.charCodeAt(0),0)%4; return `<div class="cover" data-color="${color}"><small>${escape(book.category)}</small><strong>${escape(book.title)}</strong><span>❧</span></div>`; }
 function cards(list) { return `<div class="book-grid">${list.map(book => `<button class="book-card" data-book="${escape(book.id)}" aria-label="Ver ${escape(book.title)}">${cover(book)}<h3>${escape(book.title)}</h3><p>${escape(book.author || 'Autor por completar')}</p><div class="book-meta"><span>${escape(book.category)}</span><span>${book.copies} ej.</span></div></button>`).join('')}</div>`; }
 function empty(filtered = false) { return `<div class="empty"><div class="empty-symbol">▤</div><h3>${filtered ? 'No encontramos ese libro' : 'Tu primera historia empieza acá'}</h3><p>${filtered ? 'Probá con otro título, autor, ISBN o cuento, o cambiá la categoría.' : 'Agregá un libro de tu casa y empezá a darle forma a tu biblioteca.'}</p><button class="button secondary" data-action="${filtered ? 'clear' : 'add'}">${filtered ? 'Limpiar búsqueda' : '＋ Agregar mi primer libro'}</button></div>`; }
 function render() {
@@ -16,16 +20,17 @@ function render() {
   if (isLibrary()) renderResults();
 }
 function renderResults() { const list = searchBooks(books, query, category).sort((a,b)=>a.title.localeCompare(b.title,'es')); $('#results').innerHTML = `<p class="catalog-summary" role="status">${list.length} ${list.length === 1 ? 'libro' : 'libros'}${query || category ? ' encontrados' : ' en tu catálogo'}</p>${list.length ? cards(list) : empty(Boolean(query || category))}`; }
-function edit(book) {
+function edit(book, suggested = false) {
   if (!ready) return notify('No se pudo abrir el almacenamiento del navegador.');
+  draft = suggested ? book : null;
   const form = $('#book-form'); form.reset(); $('#form-error').textContent = '';
   form.elements.id.value = '';
   if (book) for (const [key,value] of Object.entries(book)) if (form.elements.namedItem(key)) form.elements.namedItem(key).value = Array.isArray(value) ? value.join('\n') : value ?? '';
-  $('#editor-title').textContent = book ? 'Editar libro' : 'Agregar un libro'; $('#editor').showModal(); form.elements.title.focus();
+  $('#editor-title').textContent = suggested ? '2 · Tus ejemplares' : book ? 'Editar libro' : 'Carga manual'; $('#bibliographic-fields').open=!suggested; $('#editor-provenance').hidden=!book?.sources?.length; $('#editor-provenance').textContent='Datos consultados: '+(book?.sources||[]).join(' · ')+'. Podés revisar y corregir la ficha.'; $('#editor').showModal(); (suggested ? form.elements.copies : form.elements.title).focus();
 }
 function showDetail(id) {
   const b = books.find(book=>book.id === id); if(!b) return;
-  $('#detail').innerHTML = `<div class="dialog-heading"><div><span class="eyebrow">FICHA DEL LIBRO</span><h2 id="detail-title">${escape(b.title)}</h2></div><button class="close" data-close="detail" aria-label="Cerrar">×</button></div><p class="muted">${escape(b.author || 'Autor por completar')}</p><div class="detail-cover">${cover(b)}</div><dl class="detail-data">${[['Categoría',b.category],['Ejemplares',b.copies],['ISBN',b.isbn || 'Sin ISBN'],['Editorial',b.publisher || 'Sin completar'],['Ubicación',b.location || 'Sin asignar']].map(([k,v])=>`<div><dt>${k}</dt><dd>${escape(v)}</dd></div>`).join('')}</dl>${b.contents.length ? `<h3>Cuentos y capítulos</h3><ul class="detail-text">${b.contents.map(c=>`<li>${escape(c)}</li>`).join('')}</ul>` : ''}${b.notes ? `<h3>Notas</h3><p class="detail-text">${escape(b.notes)}</p>` : ''}<div class="dialog-actions"><button class="danger" data-delete="${escape(b.id)}">Eliminar libro</button><button class="button primary" data-edit="${escape(b.id)}">Editar ficha</button></div>`; $('#detail').showModal();
+  $('#detail').innerHTML = `<div class="dialog-heading"><div><span class="eyebrow">FICHA DEL LIBRO</span><h2 id="detail-title">${escape(b.title)}</h2></div><button class="close" data-close="detail" aria-label="Cerrar">×</button></div><p class="muted">${escape(b.author || 'Autor por completar')}</p><div class="detail-cover">${cover(b)}</div><dl class="detail-data">${[['Categoría',b.category],['Ejemplares',b.copies],['ISBN',b.isbn || 'Sin ISBN'],['Editorial',b.publisher || 'Sin completar'],['Ubicación',b.location || 'Sin asignar'],['Estado',b.condition || 'Bueno'],['Año',b.year || 'Sin completar'],['Páginas',b.pages || 'Sin completar'],['Idioma',b.language || 'Sin completar'],['Temas',(b.subjects||[]).join(' · ') || 'Sin completar'],['Fuentes',(b.sources||[]).join(' · ') || 'Carga manual']].map(([k,v])=>`<div><dt>${k}</dt><dd>${escape(v)}</dd></div>`).join('')}</dl>${b.contents.length ? `<h3>Cuentos y capítulos</h3><ul class="detail-text">${b.contents.map(c=>`<li>${escape(c)}</li>`).join('')}</ul>` : ''}${b.notes ? `<h3>Notas</h3><p class="detail-text">${escape(b.notes)}</p>` : ''}<div class="dialog-actions"><button class="danger" data-delete="${escape(b.id)}">Eliminar libro</button><button class="button primary" data-edit="${escape(b.id)}">Editar ficha</button></div>`; $('#detail').showModal();
 }
 document.addEventListener('click', async event => {
   const target = event.target.closest('button'); if (!target) return;
@@ -34,11 +39,11 @@ document.addEventListener('click', async event => {
   if (target.dataset.edit) { $('#detail').close(); edit(books.find(b=>b.id===target.dataset.edit)); }
   if (target.dataset.delete && confirm('¿Eliminar este libro y sus ejemplares del catálogo?')) { try { await deleteBook(target.dataset.delete); books = await getBooks(); $('#detail').close(); render(); notify('Libro eliminado.'); } catch { notify('No se pudo eliminar el libro. Intentá de nuevo.'); } }
   switch (target.dataset.action) {
-    case 'add': edit(); break;
+    case 'add': openLookup(); break;
     case 'help': $('#help').showModal(); break;
     case 'clear': query=''; category=''; render(); $('#search').focus(); break;
     case 'export': {
-      const blob = new Blob([JSON.stringify({ app:'asistente-bibliotecario', version:1, exportedAt:new Date().toISOString(), books },null,2)],{type:'application/json'});
+      const blob = new Blob([JSON.stringify({ app:'asistente-bibliotecario', version:2, exportedAt:new Date().toISOString(), books },null,2)],{type:'application/json'});
       const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=`biblioteca-${new Date().toISOString().slice(0,10)}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); notify('Respaldo exportado. Guardalo en un lugar seguro.'); break;
     }
     case 'import': $('#import-file').click(); break;
@@ -48,7 +53,7 @@ document.addEventListener('input', event => { if(event.target.id==='search'){que
 document.addEventListener('change', event => { if(event.target.id==='category'){category=event.target.value;renderResults();} });
 $('#book-form').addEventListener('submit', async event => {
   event.preventDefault(); const form = event.target; const button = form.querySelector('[type=submit]'); button.disabled=true;
-  try { const raw = Object.fromEntries(new FormData(form)); const previous = books.find(b=>b.id===raw.id); const book=validateBook({...previous,...raw}); await saveBook(book); books=await getBooks(); $('#editor').close(); render(); notify(previous ? 'Ficha actualizada.' : 'Libro agregado a tu biblioteca.'); }
+  try { const raw = Object.fromEntries(new FormData(form)); const previous = books.find(b=>b.id===raw.id); const book=validateBook({...previous,...draft,...raw}); const duplicate = book.isbn && books.find(b=>b.id!==book.id && canonicalISBN(b.isbn)===canonicalISBN(book.isbn)); if(duplicate)throw new Error('Este ISBN ya está en tu catálogo: '+duplicate.title+'. Editá esa ficha para sumar ejemplares.'); await saveBook(book); books=await getBooks(); $('#editor').close(); render(); notify(previous ? 'Ficha actualizada.' : 'Libro agregado a tu biblioteca.'); }
   catch(error) { $('#form-error').textContent=error.name === 'QuotaExceededError' ? 'No queda espacio en este navegador. Exportá un respaldo.' : error.message || 'No se pudo guardar el libro.'; }
   finally { button.disabled=false; }
 });
@@ -61,5 +66,41 @@ $('#import-file').addEventListener('change', async event => {
 });
 window.addEventListener('hashchange',render);
 $('#main').innerHTML='<p class="muted" role="status">Abriendo tu biblioteca…</p>';
-try { await openDatabase(); books=await getBooks(); ready=true;render(); }
+try { await openDatabase(); const existing=await getBooks(); books=existing.map(b=>b.schemaVersion===2?b:validateBook(b)); if(existing.some(b=>b.schemaVersion!==2))await mergeBooks(books); ready=true;render(); }
 catch { $('#main').innerHTML='<h1>No pudimos abrir la biblioteca</h1><p>El navegador no permite guardar datos en este momento. Revisá sus permisos de almacenamiento y volvé a cargar la página.</p>'; }
+// Cover failures do not hide the title or the rest of the card.
+document.addEventListener('error',event=>{if(event.target.matches?.('.real-cover img')){event.target.hidden=true;event.target.nextElementSibling.hidden=false;}},true);
+function stopScan() {scanController?.abort();scanController=null;$('#camera-panel').hidden=true;$('#scan-start').disabled=false;}
+function cancelLookup() {lookupVersion++;lookupController?.abort();lookupController=null;stopScan();}
+function openLookup() {
+  if(!ready)return notify('No se pudo abrir el almacenamiento del navegador.');
+  cancelLookup();$('#isbn-form').reset();$('#lookup-status').textContent='';$('#lookup-result').replaceChildren();$('#isbn-search').disabled=false;$('#lookup').showModal();$('#isbn-query').focus();
+}
+$('#lookup').addEventListener('close',cancelLookup);
+$('#lookup').addEventListener('cancel',cancelLookup);
+$('#manual-entry').addEventListener('click',()=>{const isbn=$('#isbn-query').value;cancelLookup();$('#lookup').close();edit();if(canonicalISBN(isbn))$('#book-form').elements.isbn.value=isbn;});
+$('#isbn-query').addEventListener('input',()=>{cancelLookup();$('#lookup-result').replaceChildren();$('#lookup-status').textContent='';$('#isbn-search').disabled=false;});
+$('#isbn-form').addEventListener('submit',async event=>{
+  event.preventDefault();cancelLookup();const version=lookupVersion;lookupController=new AbortController();
+  $('#lookup-result').replaceChildren();$('#lookup-status').textContent='Buscando en Google Books y Open Library…';$('#isbn-search').disabled=true;
+  try {
+    const {book,results}=await lookupISBN($('#isbn-query').value,{signal:lookupController.signal});
+    if(version!==lookupVersion||!$('#lookup').open)return;
+    $('#lookup-status').textContent=results.map(r=>r.source+': '+({found:'encontrado ✓',empty:'sin coincidencia',error:'no disponible; podés reintentar'}[r.status])).join(' · ');
+    if(!book){$('#lookup-result').innerHTML='<p>No pudimos completar este ISBN. Revisá el número, reintentá o usá la carga manual.</p>';return;}
+    const duplicate=books.find(b=>canonicalISBN(b.isbn)===canonicalISBN(book.isbn));
+    const labels={title:'Título',subtitle:'Subtítulo',authors:'Autores',publisher:'Editorial',year:'Año',pages:'Páginas',language:'Idioma',subjects:'Temas',cover:'Portada',contents:'Contenidos'};
+    $('#lookup-result').innerHTML=`<div class="lookup-preview">${cover({...book,category:'ISBN'})}<div><h3>${escape(book.title)}</h3><p>${escape(book.subtitle||'')}</p><p>${escape(book.author||'Autor sin información')}</p></div></div><dl class="detail-data">${['publisher','year','pages','language','subjects'].map(k=>`<div><dt>${labels[k]}</dt><dd>${escape(Array.isArray(book[k])?book[k].join(' · '):book[k]||'Sin información')}</dd></div>`).join('')}</dl><details><summary>Ver origen de los datos</summary><ul>${Object.entries(book.fieldSources).map(([k,v])=>`<li>${labels[k]}: ${escape(v)}</li>`).join('')}</ul></details>${book.conflicts.length?`<div class="inline-note">Las fuentes tienen diferencias. Revisá la edición antes de confirmar.<ul>${book.conflicts.map(c=>`<li>${labels[c.field]} en ${escape(c.source)}: ${escape(Array.isArray(c.value)?c.value.join('; '):c.value)}</li>`).join('')}</ul></div>`:''}<p>${duplicate?'Ya tenés este ISBN. Podés editar su ficha para sumar ejemplares.':'Revisá que sea la edición que tenés. Los datos faltantes se pueden completar después.'}</p><button id="confirm-isbn" class="button primary">${duplicate?'Editar libro existente':'Confirmar libro'}</button>`;
+    $('#confirm-isbn').addEventListener('click',()=>{$('#lookup').close();edit(duplicate||{copies:1,category:'Otros',...book},!duplicate);});
+  } catch(error) {if(version===lookupVersion&&error.name!=='AbortError')$('#lookup-status').textContent=error.message;}
+  finally {if(version===lookupVersion)$('#isbn-search').disabled=false;}
+});
+$('#scan-start').addEventListener('click',async()=>{
+  stopScan();scanController=new AbortController();const controller=scanController;$('#scan-start').disabled=true;$('#camera-panel').hidden=false;$('#lookup-status').textContent='Habilitá la cámara para leer el ISBN. No guardamos ni enviamos imágenes.';
+  try {await scanISBN($('#scanner-video'),{signal:controller.signal,onISBN:isbn=>{stopScan();$('#isbn-query').value=isbn;$('#isbn-form').requestSubmit();},onError:()=>{stopScan();$('#lookup-status').textContent='No pudimos leer la cámara. Probá otra vez o escribí el ISBN.';}});}
+  catch(error){if(controller.signal.aborted)return;stopScan();$('#lookup-status').textContent=error.name==='NotAllowedError'?'No se habilitó la cámara. Podés escribir el ISBN.':error.message;}
+});
+$('#scan-stop').addEventListener('click',stopScan);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopScan();});
+window.addEventListener('pagehide',cancelLookup);
+$('#book-form').addEventListener('invalid',()=>{$('#bibliographic-fields').open=true;},true);

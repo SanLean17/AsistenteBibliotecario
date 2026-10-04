@@ -1,27 +1,46 @@
+import { cleanISBN, validISBN } from './isbn.js';
+import { safeCover } from './metadata.js';
 export const categories = ['Cuentos', 'Novela', 'Poesía', 'Informativo', 'Otros'];
 export const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const searchable = value => normalize(value)
+  .replace(/\b(segunda|2da|2a|ii|2) guerra mundial\b|\bguerra mundial (segunda|2da|2a|ii|2)\b/g,' segunda guerra mundial ')
+  .replace(/\b(primera|1ra|1a|i|1) guerra mundial\b|\bguerra mundial (primera|1ra|1a|i|1)\b/g,' primera guerra mundial ')
+  .replace(/\bmurcielagos\b/g,'murcielago').replace(/[^a-z0-9]+/g,' ');
 export function searchBooks(books, query, category = '') {
-  const words = normalize(query).trim().split(/\s+/);
-  return books.filter(book => (!category || book.category === category) && words.every(word => normalize([book.title, book.author, book.isbn, book.publisher, book.location, ...book.contents].join(' ')).includes(word)));
+  const ignored = new Set(['de','del','la','el','los','las','un','una','que','con','sobre','tengan','tenga','libro','libros']);
+  const words = searchable(query).trim().split(/\s+/).filter(w=>!ignored.has(w));
+  return books.filter(book => (!category || book.category === category) &&
+    (cleanISBN(query) && cleanISBN(book.isbn).includes(cleanISBN(query)) || words.every(word => searchable([book.title,book.subtitle,book.author,book.isbn,book.publisher,book.location,book.category,...(book.subjects||[]),...(book.contents||[])].join(' ')).includes(word))));
 }
 export function validateBook(raw) {
-  const text = (key, max) => String(raw[key] ?? '').trim().slice(0, max);
-  const title = text('title', 180);
-  if (!title) throw new Error('Escribí un título para el libro.');
-  const copies = Number(raw.copies);
-  if (!Number.isInteger(copies) || copies < 1 || copies > 9999) throw new Error('La cantidad de ejemplares debe ser un entero entre 1 y 9999.');
-  const isbn = text('isbn', 24).replace(/[\s-]/g, '').toUpperCase();
-  if (isbn) {
-    const valid13 = /^\d{13}$/.test(isbn) && [...isbn].reduce((n, c, i) => n + Number(c) * (i % 2 ? 3 : 1), 0) % 10 === 0;
-    const valid10 = /^\d{9}[\dX]$/.test(isbn) && [...isbn].reduce((n, c, i) => n + (c === 'X' ? 10 : Number(c)) * (10 - i), 0) % 11 === 0;
-    if (!valid13 && !valid10) throw new Error('Revisá el ISBN: debe ser un código válido de 10 o 13 caracteres. También podés dejarlo vacío.');
-  }
-  return { id: typeof raw.id === 'string' && raw.id ? raw.id : crypto.randomUUID(), title, author: text('author', 160), isbn, category: categories.includes(raw.category) ? raw.category : 'Otros', publisher: text('publisher', 120), copies, location: text('location', 120), contents: (Array.isArray(raw.contents) ? raw.contents.join('\n') : String(raw.contents ?? '')).slice(0, 10000).split('\n').map(x => x.trim()).filter(Boolean), notes: text('notes', 5000), createdAt: typeof raw.createdAt === 'string' ? raw.createdAt : new Date().toISOString(), updatedAt: new Date().toISOString(), cover: null };
+  const text = (key,max) => String(raw[key] ?? '').trim().slice(0,max);
+  const list = (value,max=100) => (Array.isArray(value)?value:String(value??'').split(/\n|;/)).slice(0,max).map(v=>String(v).trim().slice(0,500)).filter(Boolean);
+  const title=text('title',180);
+  if(!title)throw new Error('Escribí un título para el libro.');
+  const copies=Number(raw.copies);
+  if(!Number.isInteger(copies)||copies<1||copies>9999)throw new Error('La cantidad de ejemplares debe ser un entero entre 1 y 9999.');
+  const isbn=cleanISBN(raw.isbn);
+  if(isbn&&!validISBN(isbn))throw new Error('Revisá el ISBN: debe ser un código válido de 10 o 13 caracteres. También podés dejarlo vacío.');
+  const year=text('year',4), pages=raw.pages===''||raw.pages==null?null:Number(raw.pages);
+  if(year&&!/^\d{4}$/.test(year))throw new Error('El año debe tener cuatro cifras.');
+  if(pages!==null&&(!Number.isInteger(pages)||pages<1||pages>100000))throw new Error('Revisá la cantidad de páginas.');
+  const id=typeof raw.id==='string'&&raw.id?raw.id:crypto.randomUUID();
+  const author=text('author',1000) || list(raw.authors).join('; ');
+  const condition=['Bueno','Regular','Deteriorado','Nuevo'].includes(raw.condition)?raw.condition:'Bueno';
+  const location=text('location',120);
+  const sources=list(raw.sources).filter(s=>['Google Books','Open Library'].includes(s));
+  const fieldSources=Object.fromEntries(Object.entries(raw.fieldSources||{}).filter(([k,v])=>['title','subtitle','authors','publisher','year','pages','language','subjects','cover','contents'].includes(k)&&typeof v==='string'&&v.split(' + ').every(s=>sources.includes(s))));
+  return {id,title,subtitle:text('subtitle',300),author,authors:list(author),isbn,category:categories.includes(raw.category)?raw.category:'Otros',publisher:text('publisher',120),year,pages,language:text('language',30),subjects:list(raw.subjects),copies,location,condition,contents:list(raw.contents,500),notes:text('notes',5000),createdAt:typeof raw.createdAt==='string'?raw.createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),cover:safeCover(raw.cover),sources,fieldSources,
+    schemaVersion:2,workId:typeof raw.workId==='string'?raw.workId:crypto.randomUUID(),editionId:typeof raw.editionId==='string'?raw.editionId:id,
+    exemplars:Array.from({length:copies},(_,i)=>({id:typeof raw.exemplars?.[i]?.id==='string'?raw.exemplars[i].id:crypto.randomUUID(),location,condition})),
+    // Future photo/OCR jobs store images separately. Nothing is uploaded or inferred now.
+    enrichment:{version:1,status:'not-requested',attachments:[],suggestions:[]}
+  };
 }
 export function parseBackup(text) {
-  const data = JSON.parse(text);
-  if (data.app !== 'asistente-bibliotecario' || data.version !== 1 || !Array.isArray(data.books) || data.books.length > 10000) throw new Error('El archivo no es un respaldo compatible de Asistente Bibliotecario.');
-  const books = data.books.map(validateBook);
-  if (new Set(books.map(b => b.id)).size !== books.length) throw new Error('El respaldo contiene identificadores repetidos.');
+  const data=JSON.parse(text);
+  if(data.app!=='asistente-bibliotecario'||![1,2].includes(data.version)||!Array.isArray(data.books)||data.books.length>10000)throw new Error('El archivo no es un respaldo compatible de Asistente Bibliotecario.');
+  const books=data.books.map(validateBook);
+  if(new Set(books.map(b=>b.id)).size!==books.length)throw new Error('El respaldo contiene identificadores repetidos.');
   return books;
 }
