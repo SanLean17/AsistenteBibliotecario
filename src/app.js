@@ -1,3 +1,4 @@
+import { mobileNavigation } from './navigation.js?v=20261005-5';
 import { localizeBook } from './subjects.js?v=20261005-3';
 import { preparePhoto, validPhotoURL } from './photos.js?v=20261005-3';
 import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261005-3';
@@ -49,13 +50,7 @@ function cards(list){
 function empty(filtered=false){
   return `<div class="empty"><div class="empty-symbol">▥</div><h3>${filtered?'No se encontraron resultados':'Tu catálogo todavía no tiene registros.'}</h3><p>${filtered?'Probá con otro título, autor, ISBN, tema o contenido.':'Sumá el primer libro de la biblioteca. Escaneá su ISBN o completá una ficha: cada historia cuenta.'}</p><a class="button primary" href="${filtered?'#biblioteca':'#agregar'}">${filtered?'Volver al catálogo':'Incorporar material'}</a></div>`;
 }
-const menuToggle=$('#app-menu-toggle'),workspaceMenu=$('#workspace-menu');
-function closeWorkspaceMenu(restoreFocus=false){const wasOpen=menuToggle.getAttribute('aria-expanded')==='true';menuToggle.setAttribute('aria-expanded','false');workspaceMenu.classList.remove('is-open');if(wasOpen&&restoreFocus)menuToggle.focus();}
-menuToggle.addEventListener('click',()=>{const open=menuToggle.getAttribute('aria-expanded')!=='true';menuToggle.setAttribute('aria-expanded',String(open));workspaceMenu.classList.toggle('is-open',open);if(open)workspaceMenu.querySelector('[aria-current=page],nav a').focus();});
-workspaceMenu.addEventListener('click',event=>{if(event.target.closest('a,button'))closeWorkspaceMenu(true);});
-document.addEventListener('keydown',event=>{if(event.key==='Escape')closeWorkspaceMenu(true);});
-document.addEventListener('click',event=>{if(!workspaceMenu.contains(event.target)&&!menuToggle.contains(event.target))closeWorkspaceMenu();});
-matchMedia('(max-width:760px)').addEventListener('change',()=>closeWorkspaceMenu());
+const closeWorkspaceMenu=mobileNavigation({toggle:$('#app-menu-toggle'),panel:$('#workspace-menu'),breakpoint:760,background:[$('main'),$('footer')],header:$('.topbar')});
 
 function updateNav(){
   document.querySelectorAll('[data-nav]').forEach(el=>{const active=el.dataset.nav===routeBase()||(el.dataset.nav==='biblioteca'&&['ficha','editar'].includes(routeBase()));el.classList.toggle('active',active);if(active)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
@@ -78,9 +73,10 @@ function render(){
 function renderHome(){
  const recent=[...books].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,4);
  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">BIBLIOTECA / PANEL</span><h1>¿Qué necesitás encontrar hoy?</h1><p class="muted">Buscá en los títulos, temas y contenidos de tu colección.</p></div><a href="#agregar" class="button primary">＋ Incorporar material</a></div>
- <form id="home-search" class="home-search"><label for="home-query">Buscar en el catálogo</label><div class="isbn-row"><input id="home-query" type="search" placeholder="Ej.: cuento con murciélagos" required><button class="button primary">Buscar</button></div></form>
+ <form id="home-search" class="home-search"><label for="home-query">¿Qué libro o cuento buscás?</label><div class="isbn-row"><input id="home-query" type="search" placeholder="Ej.: cuento con murciélagos" required><button class="button primary">Buscar</button></div></form>
  <div class="query-examples"><span>Probá con</span>${['cuento de monstruos','murciélagos','Segunda Guerra Mundial'].map(q=>`<button data-query="${escape(q)}">${escape(q)} ↗</button>`).join('')}</div>
  <p class="search-note">La búsqueda usa la información registrada. El grado o la edad solo se pueden encontrar si figuran en la ficha; todavía no se infieren con IA.</p>
+ <section class="teacher-discovery" aria-labelledby="teacher-title"><div class="section-heading"><div><span class="eyebrow">LECTURAS QUE SE COMPARTEN</span><h2 id="teacher-title">De docente a docente</h2><p>Cuando tu escuela tenga su espacio registrado, acá vas a descubrir lecturas a partir de las reservas y experiencias de su comunidad.</p></div><span class="future-pill">Próximamente · Espacio escolar</span></div><div class="teacher-grid"><article class="teacher-card"><span class="teacher-icon" aria-hidden="true">↗</span><h3>Más reservados</h3><p>Los libros y cuentos más elegidos por docentes de tu escuela. Se mostrarán cuando haya reservas registradas.</p></article><article class="teacher-card"><span class="teacher-icon" aria-hidden="true">✧</span><h3>Cuentos destacados</h3><p>Lecturas recomendadas por la biblioteca y docentes, con el motivo de la elección y la experiencia en el aula.</p></article><article class="teacher-card"><span class="teacher-icon" aria-hidden="true">◎</span><h3>Ideas para tu grado</h3><p>Qué lectura sirvió para qué grado, tema o proyecto, según experiencias compartidas por docentes.</p></article></div></section>
  <section class="stats" aria-label="Resumen de biblioteca"><a class="stat" href="#biblioteca"><strong>${books.length}</strong><small>Registros bibliográficos ↗</small></a><a class="stat" href="#ejemplares"><strong>${books.reduce((n,b)=>n+b.copies,0)}</strong><small>Ejemplares físicos ↗</small></a><div class="stat"><strong>${books.reduce((n,b)=>n+(b.contents?.length||0),0)}</strong><small>Contenidos indexados</small></div></section>
  <section><div class="section-heading"><div><span class="eyebrow">ÚLTIMAS INCORPORACIONES</span><h2>En tu biblioteca</h2></div><a class="button secondary" href="#biblioteca">Ver catálogo</a></div>${recent.length?cards(recent):empty()}</section>`;
 }

@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#EBF3FF">
   <meta name="description" content="Gestión y consulta inteligente para bibliotecas escolares e institucionales.">
   <title>Catálogo · Asistente Bibliotecario</title>
-  <link rel="icon" href="./icon.svg?v=20261005-4" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=20261005-4">
-  <link rel="stylesheet" href="./design.css?v=20261005-4">
+  <link rel="icon" href="./icon.svg?v=20261005-5" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css?v=20261005-5">
+  <link rel="stylesheet" href="./design.css?v=20261005-5">
 </head>
 <body class="app-page">
   <aside class="sidebar" id="workspace-menu">
@@ -31,7 +31,7 @@
       <a href="#inicio" class="wordmark topbar-brand" aria-label="Asistente Bibliotecario, inicio"><span class="mark" aria-hidden="true">ab<span>↗</span></span><span>Asistente<br>Bibliotecario</span></a>
       <div class="top-actions">
         <button class="icon-button" data-action="theme" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
-        <button class="icon-button" data-action="help" aria-label="Información del sistema">?</button><button id="app-menu-toggle" class="button secondary" aria-controls="workspace-menu" aria-expanded="false">Menú <span aria-hidden="true">☰</span></button>
+        <button class="icon-button" data-action="help" aria-label="Información del sistema">?</button><button id="app-menu-toggle" class="button secondary menu-toggle" aria-controls="workspace-menu" aria-expanded="false"><span class="sr-only">Menú</span><span class="menu-lines" aria-hidden="true"></span></button>
       </div>
     </header>
     <main id="main"></main>
@@ -58,6 +58,6 @@
   <input id="import-file" type="file" accept="application/json,.json" hidden>
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <script type="module" src="./src/app.js?v=20261005-4"></script>
+  <script type="module" src="./src/app.js?v=20261005-5"></script>
 </body>
 </html>

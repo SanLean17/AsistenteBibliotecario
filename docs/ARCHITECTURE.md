@@ -49,3 +49,13 @@ La búsqueda actual no promete comprensión semántica: ignora palabras funciona
 ## Límites de esta etapa
 
 Sin Supabase, login real, contratación ni infraestructura paga. No hay servidor en GitHub Pages. No se afirma que reservas, disponibilidad de préstamos, OCR o IA estén activos. El respaldo JSON sigue siendo la vía de traslado entre navegadores. La estructura permite agregar un repositorio remoto sin acoplarlo a la presentación, pero su autorización y sincronización deben implementarse antes de ofrecer múltiples instituciones.
+
+## Descubrimiento docente en la escuela registrada
+
+La portada prioriza un buscador de libros y cuentos por palabras o frases. Debajo se reserva un espacio de descubrimiento, hoy explícitamente marcado como futuro, con tres módulos:
+
+- **Más reservados por docentes**: ranking de ediciones de la propia escuela a partir de reservas reales, con período visible; excluir canceladas y pruebas y evitar contar varias veces la misma solicitud. Sin historial suficiente, mostrar un estado vacío; nunca reemplazarlo por cifras inventadas.
+- **Cuentos destacados**: selección de bibliotecarios y recomendaciones docentes aprobadas, vinculadas a una edición o a un cuento de su índice. Mostrar motivo y procedencia.
+- **Ideas por grado y proyecto**: experiencias aportadas por docentes con grado, área/tema, trabajo realizado y comentario. Son experiencias documentadas, no una inferencia automática de adecuación pedagógica.
+
+Antes de activarlos hacen falta cuentas institucionales, autorización por escuela, circulación/reservas persistentes y moderación de recomendaciones. La agregación debe quedar dentro de la institución; no publicar nombres de docentes ni su historial individual en el ranking. El prototipo local no crea reservas ni simula actividad. La interfaz y el roadmap ya muestran esta dirección.

@@ -1,4 +1,4 @@
-@import url('./theme.css?v=20261005-4');
+@import url('./theme.css?v=20261005-5');
 /* Functional workspace: the same editorial system, with compact working layouts. */
 body{font-size:15px}h1,h2,h3{font-family:var(--sans);font-weight:500}h1{font-size:36px;letter-spacing:-1.3px;line-height:1.18}h2{font-size:23px;letter-spacing:-.6px}h3{font-size:17px}.muted{font-size:14px}.eyebrow,.step,.hero-kicker,.form-section-heading span,.result-ok{font-size:10px;letter-spacing:1.3px;color:var(--muted)}
 .sidebar{width:232px;background:var(--bg);border-right:1px solid var(--line);padding:32px 20px}.brand{font:500 14px/1.3 var(--sans);gap:12px}.brand strong{font-weight:600}.brand-icon,.mini-logo{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:0;font:italic 23px var(--display);letter-spacing:-2px}.brand-icon{width:43px;height:45px}.mini-logo{width:34px;height:34px;font-size:19px}.nav-label{font-size:9px;letter-spacing:1.2px;margin:46px 10px 18px}.sidebar nav{gap:4px}.sidebar nav a{font-size:13px;font-weight:500;border-radius:2px;padding:12px 11px;gap:12px}.sidebar nav a:hover,.sidebar nav a.active{background:var(--surface-2);color:var(--text)}.sidebar nav a.active{box-shadow:inset 2px 0 var(--blue)}.nav-icon{font-size:19px}.public-return{margin-top:auto;border-top:1px solid var(--line);padding-top:24px;font-size:12px;color:var(--muted)}.public-return:hover{color:var(--primary)}.local-label{font-size:10px;line-height:1.4;padding-top:22px}.local-label small{margin-left:0}.workspace{margin-left:232px}.topbar{height:76px;padding:0 36px;background:var(--bg);border-bottom:1px solid var(--line);backdrop-filter:none}.institution strong{font-size:13px;font-weight:600}.institution small{font-size:10px}.badge{border-radius:0;font-size:8px;border-color:var(--line)}.icon-button{display:inline-grid;place-items:center;border:1px solid var(--line);background:transparent;border-radius:50%;width:36px;height:36px;font-size:17px;font-weight:400}.top-actions{gap:9px}
@@ -13,12 +13,12 @@ input,select,textarea{background:var(--surface);border:1px solid var(--line);bor
 .copy-summary{font-size:12px;color:var(--muted);margin:20px 0 12px}.copy-editor>summary{border:1px solid var(--line);padding:12px;font-size:12px}.copy-editor[open]>summary{margin-bottom:18px}.copy-editor #copy-form{border:0;margin:0;padding:0}
 
 /* The same workspace navigation and identity at every screen size. */
-.sidebar{background:linear-gradient(165deg,var(--surface),var(--wash-blue) 75%,var(--wash-pink))}
+.sidebar{background:linear-gradient(165deg,var(--surface),var(--wash-blue) 75%,var(--wash-blue))}
 .topbar{background:linear-gradient(110deg,var(--surface),var(--surface-2),var(--wash-cyan))}
 .home-search,.panel,.form-section,.book-card,.empty,.record-main,.result-card{background:var(--card-gradient)}
 .method-card,.provenance,.stat{background:var(--accent-gradient)}
-.stat:nth-child(2){background:linear-gradient(135deg,var(--surface),var(--wash-cyan))}.stat:nth-child(3){background:linear-gradient(135deg,var(--surface),var(--wash-pink))}
-.cover:not(.real-cover){background:linear-gradient(145deg,#d5f5ff,#9bc5fa)}.cover[data-color='1']:not(.real-cover){background:linear-gradient(140deg,#75d8fc,#3981f7)}.cover[data-color='2']:not(.real-cover){background:linear-gradient(145deg,#fae3f2,#bdcffa)}.cover[data-color='3']:not(.real-cover){background:linear-gradient(145deg,#0a112f,#24428a)}
+.stat:nth-child(2){background:linear-gradient(135deg,var(--surface),var(--wash-cyan))}.stat:nth-child(3){background:linear-gradient(135deg,var(--surface),var(--wash-blue))}
+.cover:not(.real-cover){background:linear-gradient(145deg,#d5f5ff,#9bc5fa)}.cover[data-color='1']:not(.real-cover){background:linear-gradient(140deg,#75d8fc,#3981f7)}.cover[data-color='2']:not(.real-cover){background:linear-gradient(145deg,#ffffff,#a8ddf4)}.cover[data-color='3']:not(.real-cover){background:linear-gradient(145deg,#0a112f,#24428a)}
 #app-menu-toggle{display:none}.topbar-brand{flex-shrink:0}
 @media(max-width:760px){
  .topbar{height:76px;z-index:12;padding:0 18px;gap:10px}.top-actions{gap:8px}.top-actions [data-action=help]{display:none}
@@ -29,3 +29,21 @@ input,select,textarea{background:var(--surface);border:1px solid var(--line);bor
 @media(max-width:360px){.topbar{padding:0 14px;gap:8px}.top-actions{gap:6px}#app-menu-toggle{padding:8px}.topbar .wordmark{gap:8px;font-size:12px}.topbar .mark{font-size:32px}.sidebar{padding-inline:14px}}
 
 .mobile-help{display:none}@media(max-width:760px){.mobile-help{display:inline-flex;margin-top:12px}}
+
+/* Gentle curves and restrained national colors across working screens. */
+.sidebar,.topbar{background:var(--surface)}
+.home-search,.panel,.form-section,.book-card,.empty,.record-main,.result-card,.method-card,.danger-zone,dialog{border-radius:var(--radius)}
+.button,.save-area,input,select,textarea,.provenance,.photo-empty,.copy-editor>summary{border-radius:12px}
+.stats{border-radius:16px;overflow:hidden}.cover,.cover-zoom,.photo-thumbnail{border-radius:10px}.danger-zone{overflow:hidden}
+.home-search{padding:38px;border-top:3px solid #75bce2}.home-search label{font:400 30px/1.2 var(--display)}.home-search input{height:72px;font-size:20px!important}.home-search .button{padding-inline:30px}
+.teacher-discovery{margin:38px 0}.teacher-discovery .section-heading{align-items:start}.teacher-discovery .section-heading p{max-width:660px;color:var(--muted);font-size:13px}
+.teacher-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.teacher-card{padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--card-gradient)}.teacher-card:nth-child(2){background:var(--accent-gradient)}.teacher-card h3{font:400 25px/1.2 var(--display);margin:20px 0 14px}.teacher-card p{font-size:13px;color:var(--muted);margin-bottom:0}.future-pill{display:inline-block;padding:5px 10px;border:1px solid var(--line);border-radius:30px;font-size:10px;color:var(--muted)}.teacher-icon{font-size:24px;color:var(--primary);display:block}.teacher-discovery .future-pill{white-space:nowrap}
+@media(max-width:1050px){.teacher-grid{grid-template-columns:1fr}.teacher-card{padding:24px}.teacher-card h3{margin:12px 0}}
+@media(max-width:760px){
+ .topbar{height:82px;padding:0 22px;background:var(--surface)}.top-actions{gap:12px}#app-menu-toggle{display:inline-flex;width:46px;height:46px;min-height:46px}
+ .sidebar{inset:82px 0 0;max-height:none;height:calc(100dvh - 82px);padding:20px 24px max(30px,env(safe-area-inset-bottom));background:var(--accent-gradient);box-shadow:none;overscroll-behavior:contain}
+ .sidebar.is-open{animation:menu-reveal .2s ease-out}.sidebar .nav-label{display:none}.sidebar nav{display:flex;flex-direction:column;gap:4px}.sidebar nav a{padding:12px 0;border:0;background:none!important;border-radius:0;font:400 clamp(25px,7vw,34px)/1.1 var(--sans);letter-spacing:-1px;min-height:54px}.sidebar nav a.active{box-shadow:none;color:var(--primary)}.sidebar .nav-icon{display:none}
+ .sidebar .mobile-help{margin-top:26px;align-self:start}.sidebar .public-return{margin-top:auto;padding:25px 0 0}.sidebar .local-label{padding:18px 0 0}
+ .home-search{padding:25px 20px}.home-search label{font-size:26px}.home-search input{height:60px;font-size:16px!important}.home-search .isbn-row{flex-direction:column}.home-search .button{width:100%}
+ .teacher-discovery{margin:30px 0}.teacher-discovery .section-heading{display:block}.teacher-discovery .section-heading .future-pill{margin-top:12px}.teacher-grid{gap:12px}
+}
