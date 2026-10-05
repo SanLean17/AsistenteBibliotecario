@@ -1,48 +1,76 @@
 <!doctype html>
 <html lang="es-AR">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#294e42"><meta name="description" content="Un lugar para descubrir, organizar y cuidar los libros de tu biblioteca.">
-  <title>Asistente Bibliotecario</title><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./styles.css?v=20261004-2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="Gestión y consulta inteligente para bibliotecas escolares e institucionales.">
+  <title>Asistente Bibliotecario</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css?v=20261005-1">
 </head>
 <body>
   <aside class="sidebar">
-    <a href="#inicio" class="brand"><span class="brand-icon">▤</span><span>Asistente<br><strong>Bibliotecario</strong></span></a>
-    <span class="nav-label">TU ESPACIO DE LECTURA</span>
-    <nav aria-label="Principal"><a href="#inicio" data-nav="inicio">⌂ <span>Inicio</span></a><a href="#biblioteca" data-nav="biblioteca">▥ <span>Mi biblioteca</span></a><button data-action="add">＋ <span>Agregar libro</span></button></nav>
-    <div class="sidebar-note"><span class="leaf">❧</span><strong>Una biblioteca, muchas historias.</strong><p>Todo empieza con el primer libro.</p></div>
-    <div class="local-label"><i></i> Biblioteca local <small>Guardada en este navegador</small></div>
+    <a href="#inicio" class="brand" aria-label="Asistente Bibliotecario, inicio">
+      <span class="brand-icon">AB</span>
+      <span>Asistente<br><strong>Bibliotecario</strong></span>
+    </a>
+    <span class="nav-label">GESTIÓN INSTITUCIONAL</span>
+    <nav aria-label="Principal">
+      <a href="#inicio" data-nav="inicio"><span class="nav-icon">⌂</span><span>Panel institucional</span></a>
+      <a href="#biblioteca" data-nav="biblioteca"><span class="nav-icon">▥</span><span>Catálogo</span></a>
+      <a href="#agregar" data-nav="agregar"><span class="nav-icon">＋</span><span>Incorporar material</span></a>
+    </nav>
+    <div class="sidebar-note">
+      <strong>Biblioteca escolar digital</strong>
+      <p>Catalogación, consulta y seguimiento de ejemplares desde una interfaz simple.</p>
+    </div>
+    <div class="local-label"><i></i> Prototipo local <small>Los datos se guardan en este dispositivo.</small></div>
   </aside>
+
   <div class="workspace">
-    <header class="topbar"><div><span class="mini-logo">▤</span><strong>Mi biblioteca de prueba</strong><span class="badge">PROTOTIPO</span></div><button class="avatar" data-action="help" aria-label="Información de tu biblioteca">?</button></header>
+    <header class="topbar">
+      <div>
+        <span class="mini-logo">AB</span>
+        <div class="institution">
+          <strong>Institución de prueba</strong>
+          <small>Biblioteca escolar</small>
+        </div>
+        <span class="badge">PROTOTIPO</span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-button" data-action="theme" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
+        <button class="icon-button" data-action="help" aria-label="Información del sistema">?</button>
+      </div>
+    </header>
     <main id="main"></main>
-    <footer>Hecho para acercarte a tus libros. <span>Asistente Bibliotecario · Primera edición</span></footer>
+    <footer><span>Asistente Bibliotecario · Prototipo institucional</span><span>Catálogo local · Sin sincronización en la nube</span></footer>
   </div>
-  <nav class="mobile-nav" aria-label="Navegación móvil"><a href="#inicio" data-nav="inicio">⌂<span>Inicio</span></a><a href="#biblioteca" data-nav="biblioteca">▥<span>Biblioteca</span></a><button data-action="add">＋<span>Agregar</span></button></nav>
-  <dialog id="editor" aria-labelledby="editor-title"><form id="book-form"><div class="dialog-heading"><div><span class="eyebrow">HAGAMOS LUGAR A UNA HISTORIA</span><h2 id="editor-title">Agregar un libro</h2></div><button type="button" class="close" data-close="editor" aria-label="Cerrar">×</button></div>
-    <p class="muted">Revisá la ficha y completá los datos de tu biblioteca.</p><div id="editor-provenance" class="inline-note" hidden></div><input type="hidden" name="id">
-    <details id="bibliographic-fields" open><summary>Revisar o corregir datos del libro</summary><label>Título <span aria-hidden="true">*</span><input name="title" required maxlength="180" placeholder="¿Cómo se llama el libro?"></label>
-    <label>Autores (separados por punto y coma)<input name="author" maxlength="1000" placeholder="Por ejemplo, María Elena Walsh"></label>
-    <div class="form-grid"><label>ISBN<input name="isbn" maxlength="24" placeholder="978…" inputmode="numeric"><small>Opcional. Lo encontrás en la contratapa.</small></label><label>Categoría<select name="category"><option>Cuentos</option><option>Novela</option><option>Poesía</option><option>Informativo</option><option>Otros</option></select></label><label>Editorial<input name="publisher" maxlength="120" placeholder="Editorial"></label></div><div class="form-grid"><label>Año<input name="year" inputmode="numeric" maxlength="4"></label><label>Páginas<input name="pages" type="number" min="1" max="100000"></label></div><label>Subtítulo<input name="subtitle" maxlength="300"></label><label>Idioma<input name="language" maxlength="30"></label><label>Temas (uno por línea)<textarea name="subjects" rows="2"></textarea></label></details><h3 class="physical-heading">Tus ejemplares físicos</h3><div class="form-grid"><label>Ejemplares<input name="copies" type="number" min="1" max="9999" step="1" value="1" required></label><label>Estado<select name="condition"><option>Bueno</option><option>Nuevo</option><option>Regular</option><option>Deteriorado</option></select></label></div>
-    <label>Ubicación<input name="location" maxlength="120" placeholder="Por ejemplo, Estante A · Infantil"></label>
-    <details id="optional-contents"><summary>Cuentos, capítulos y notas (opcional)</summary><p class="muted">No hace falta transcribir el índice para guardar el libro. Si la fuente trae contenidos, los completamos. Más adelante podrás fotografiar el índice para extraerlos con IA.</p><label>Cuentos o capítulos<textarea name="contents" rows="3" maxlength="10000" placeholder="Un título por línea"></textarea><small>También vas a poder encontrarlos con el buscador.</small></label>
-    <label>Notas<textarea name="notes" rows="2" maxlength="5000" placeholder="Estado del libro, edición o algo para recordar"></textarea></label>
-    </details><p id="form-error" class="error" role="alert"></p><div class="dialog-actions"><button type="button" class="button secondary" data-close="editor">Cancelar</button><button class="button primary" type="submit">Guardar libro</button></div>
-  </form></dialog>
-  <dialog id="lookup" aria-labelledby="lookup-title">
-    <div class="dialog-heading"><div><span class="eyebrow">1 · ENCONTRÁ EL LIBRO</span><h2 id="lookup-title">Agregar un libro</h2></div><button class="close" data-close="lookup" aria-label="Cerrar">×</button></div>
-    <p>Escaneá el código de barras de la contratapa o escribí el ISBN. Completamos la ficha por vos.</p>
-    <button id="scan-start" class="button primary scan-button">▥ Escanear con cámara</button>
-    <div id="camera-panel" hidden><video id="scanner-video" muted playsinline autoplay></video><p>Apuntá al código de barras ISBN con buena luz.</p><button id="scan-stop" class="button secondary">Cerrar cámara</button></div>
-    <form id="isbn-form"><label for="isbn-query">ISBN de 10 o 13 caracteres</label><div class="isbn-row"><input id="isbn-query" maxlength="24" placeholder="9505470630" autocomplete="off" autocapitalize="characters" required><button id="isbn-search" class="button primary" type="submit">Buscar ISBN</button></div><small>Escribí solo el ISBN. Aceptamos guiones y espacios: los quitamos automáticamente.</small><details><summary>¿Cuál de los ISBN uso?</summary><p>Preferí el de la contratapa junto al código de barras. Si no está, buscá en la página legal el que corresponde a esta edición y formato impreso; puede haber otros de la colección, de otro tomo o del ebook. El ISBN-10 y su equivalente ISBN-13 identifican la misma edición.</p></details></form>
-    <p class="muted">Consultamos Google Books y Open Library. Solo enviamos el ISBN.</p>
-    <p id="lookup-status" role="status" aria-live="polite"></p><div id="lookup-result"></div>
-    <div class="lookup-footer"><button id="manual-entry" class="button secondary">Cargar manualmente</button><small>¿Sin ISBN? Podés cargarlo ahora. Las fotos de tapa e índice con IA estarán disponibles más adelante.</small></div>
+
+  <nav class="mobile-nav" aria-label="Navegación móvil">
+    <a href="#inicio" data-nav="inicio">⌂<span>Panel</span></a>
+    <a href="#biblioteca" data-nav="biblioteca">▥<span>Catálogo</span></a>
+    <a href="#agregar" data-nav="agregar">＋<span>Incorporar</span></a>
+  </nav>
+
+  <dialog id="image-viewer" aria-labelledby="image-title">
+    <div class="dialog-heading"><h2 id="image-title"></h2><button class="close" data-close="image-viewer" aria-label="Cerrar imagen">×</button></div>
+    <img id="large-image" alt=""><p id="image-status" role="status"></p>
   </dialog>
-  <dialog id="image-viewer" aria-labelledby="image-title"><div class="dialog-heading"><h2 id="image-title"></h2><button class="close" data-close="image-viewer" aria-label="Cerrar imagen">×</button></div><img id="large-image" alt=""><p id="image-status" role="status"></p></dialog>
-  <input id="physical-photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden><input id="physical-camera" type="file" accept="image/*" capture="environment" hidden>
-  <dialog id="detail" aria-labelledby="detail-title"></dialog>
-  <dialog id="help" aria-labelledby="help-title"><div class="dialog-heading"><h2 id="help-title">Tu biblioteca, en este dispositivo</h2><button class="close" data-close="help" aria-label="Cerrar">×</button></div><p>Los libros se guardan en este navegador. No se sincronizan con otros celulares o computadoras.</p><p>Exportá un respaldo con frecuencia: borrar los datos del navegador puede borrar tu catálogo. Podés importar ese archivo en otro dispositivo.</p><p>Esta primera versión permite cargar, editar, buscar y organizar libros. El alta por ISBN consulta Google Books y Open Library. La cámara requiere un navegador compatible. Podés guardar una foto de cada ejemplar físico en este navegador e incluirla en los respaldos. La extracción del índice con IA y el funcionamiento sin conexión completo se incorporarán más adelante.</p></dialog>
-  <input id="import-file" type="file" accept="application/json,.json" hidden><div id="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="./src/app.js?v=20261004-2"></script>
-</body></html>
+
+  <dialog id="help" aria-labelledby="help-title">
+    <div class="dialog-heading"><h2 id="help-title">Acerca de este prototipo</h2><button class="close" data-close="help" aria-label="Cerrar">×</button></div>
+    <p>Asistente Bibliotecario está pensado para instituciones educativas que necesitan registrar, localizar y consultar su patrimonio bibliográfico de forma simple.</p>
+    <p>La incorporación por ISBN consulta fuentes bibliográficas públicas. La información institucional y las fotos de ejemplares permanecen en este navegador durante esta etapa de prueba.</p>
+    <p>Exportá un respaldo con frecuencia. La futura versión institucional incorporará usuarios, préstamos, circulación, estadísticas, sincronización y herramientas de asistencia con IA.</p>
+  </dialog>
+
+  <input id="physical-photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden>
+  <input id="physical-camera" type="file" accept="image/*" capture="environment" hidden>
+  <input id="barcode-photo" type="file" accept="image/*" capture="environment" hidden>
+  <input id="import-file" type="file" accept="application/json,.json" hidden>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="./src/app.js?v=20261005-1"></script>
+</body>
+</html>
