@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#EBF3FF">
   <meta name="description" content="Gestión y consulta inteligente para bibliotecas escolares e institucionales.">
   <title>Asistente Bibliotecario</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=20261005-1">
+  <link rel="stylesheet" href="./styles.css?v=20261005-2">
+  <link rel="stylesheet" href="./design.css?v=20261005-2">
 </head>
 <body>
   <aside class="sidebar">
@@ -15,14 +16,14 @@
       <span class="brand-icon">AB</span>
       <span>Asistente<br><strong>Bibliotecario</strong></span>
     </a>
-    <span class="nav-label">GESTIÓN INSTITUCIONAL</span>
+    <span class="nav-label">TU BIBLIOTECA, EN MOVIMIENTO</span>
     <nav aria-label="Principal">
-      <a href="#inicio" data-nav="inicio"><span class="nav-icon">⌂</span><span>Panel institucional</span></a>
+      <a href="#inicio" data-nav="inicio"><span class="nav-icon">⌂</span><span>Inicio</span></a>
       <a href="#biblioteca" data-nav="biblioteca"><span class="nav-icon">▥</span><span>Catálogo</span></a>
       <a href="#agregar" data-nav="agregar"><span class="nav-icon">＋</span><span>Incorporar material</span></a>
-    </nav>
-    <div class="sidebar-note">
-      <strong>Biblioteca escolar digital</strong>
+    <a href="#configuracion" data-nav="configuracion"><span class="nav-icon">⚙︎</span><span>Configuración</span></a></nav>
+    <div class="sidebar-note"><span class="note-star" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50 3v94M3 50h94M17 17l66 66M17 83l66-66" fill="none" stroke="currentColor" stroke-width="5"/></svg></span>
+      <strong>Pequeños libros.<br>Grandes mundos.</strong>
       <p>Catalogación, consulta y seguimiento de ejemplares desde una interfaz simple.</p>
     </div>
     <div class="local-label"><i></i> Prototipo local <small>Los datos se guardan en este dispositivo.</small></div>
@@ -33,22 +34,22 @@
       <div>
         <span class="mini-logo">AB</span>
         <div class="institution">
-          <strong>Institución de prueba</strong>
+          <strong>Tu biblioteca</strong>
           <small>Biblioteca escolar</small>
         </div>
         <span class="badge">PROTOTIPO</span>
       </div>
       <div class="top-actions">
         <button class="icon-button" data-action="theme" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
-        <button class="icon-button" data-action="help" aria-label="Información del sistema">?</button>
+        <a href="#configuracion" class="icon-button settings-link" aria-label="Configuración" title="Configuración">⚙︎</a><button class="icon-button" data-action="help" aria-label="Información del sistema">?</button>
       </div>
     </header>
     <main id="main"></main>
-    <footer><span>Asistente Bibliotecario · Prototipo institucional</span><span>Catálogo local · Sin sincronización en la nube</span></footer>
+    <footer><span>Asistente Bibliotecario · Historias que conectan</span><span>Catálogo local · Sin sincronización en la nube</span></footer>
   </div>
 
   <nav class="mobile-nav" aria-label="Navegación móvil">
-    <a href="#inicio" data-nav="inicio">⌂<span>Panel</span></a>
+    <a href="#inicio" data-nav="inicio">⌂<span>Inicio</span></a>
     <a href="#biblioteca" data-nav="biblioteca">▥<span>Catálogo</span></a>
     <a href="#agregar" data-nav="agregar">＋<span>Incorporar</span></a>
   </nav>
@@ -58,6 +59,7 @@
     <img id="large-image" alt=""><p id="image-status" role="status"></p>
   </dialog>
 
+  <dialog id="confirm-action" aria-labelledby="confirm-title" aria-describedby="confirm-message"><form method="dialog"><span class="danger-label">ZONA DE PELIGRO</span><h2 id="confirm-title"></h2><p id="confirm-message"></p><div class="button-row"><button id="confirm-cancel" class="button secondary" value="cancel" autofocus>Cancelar</button><button id="confirm-accept" class="button danger" value="confirm">Eliminar definitivamente</button></div></form></dialog>
   <dialog id="help" aria-labelledby="help-title">
     <div class="dialog-heading"><h2 id="help-title">Acerca de este prototipo</h2><button class="close" data-close="help" aria-label="Cerrar">×</button></div>
     <p>Asistente Bibliotecario está pensado para instituciones educativas que necesitan registrar, localizar y consultar su patrimonio bibliográfico de forma simple.</p>
@@ -71,6 +73,6 @@
   <input id="import-file" type="file" accept="application/json,.json" hidden>
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <script type="module" src="./src/app.js?v=20261005-1"></script>
+  <script type="module" src="./src/app.js?v=20261005-2"></script>
 </body>
 </html>

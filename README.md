@@ -44,9 +44,10 @@ La cámara requiere HTTPS y permiso del navegador. No se suben fotogramas: la le
 ## Experiencia institucional
 
 La navegación principal es:
-- **Panel institucional**
+- **Inicio**
 - **Catálogo**
 - **Incorporar material**
+- **Configuración y respaldos**
 
 Las altas y ediciones se realizan en pantallas completas, no en ventanas modales. El lenguaje está orientado a escuelas e instituciones y distingue registro bibliográfico, ejemplares físicos, ubicación, estado, temas, contenidos indexados y fuentes del registro.
 
@@ -54,7 +55,9 @@ La portada bibliográfica puede visualizarse ampliada. La foto del ejemplar fís
 
 ## Tema visual
 
-La interfaz combina azul y celeste y dispone de tema claro y oscuro. La preferencia queda guardada localmente.
+La identidad gráfica toma el lenguaje editorial de Positivus: bloques sólidos, bordes de tinta, sombras duras, ilustración con libros y acentos rosa y celeste. Usa la paleta `#ED5AB3`, `#1640D6`, `#51C6FB`, `#3981F7`, `#0A112F`, `#EBF3FF`. Dispone de tema claro y oscuro; la preferencia queda guardada localmente. Los campos tienen un mínimo de 16 px sin bloquear el zoom manual.
+
+Las acciones destructivas aparecen en una **Zona de peligro**, con descripción de la pérdida, botones rojos y confirmación cancelable. Esto incluye eliminar un registro, vaciar el catálogo local y confirmar la reducción de ejemplares con sus fotografías. Importar un respaldo avisa antes de reemplazar coincidencias.
 
 ## Funciones inspiradas en gestión bibliotecaria tradicional
 
@@ -88,6 +91,19 @@ No debe agregarse un `CNAME` propio a este repositorio porque el dominio princip
 node scripts/serve.mjs
 node --test tests/*.test.js
 ```
+
+Con Playwright disponible y el servidor local abierto:
+
+```sh
+node tests/browser.cjs
+node tests/isbn-browser.cjs
+node tests/photos-browser.cjs
+node tests/migration-browser.cjs
+```
+
+`PLAYWRIGHT_MODULE` permite indicar una instalación externa de Playwright. `BROWSER_CHANNEL=chrome` selecciona Chrome (por defecto Edge), `TEST_ENGINE=webkit` usa WebKit con perfil iPhone y `TEST_BASE_URL` permite probar una publicación. Cada prueba usa un contexto aislado sin acceder al catálogo del usuario. Las fuentes bibliográficas se simulan con respuestas deterministas y los códigos de barras se decodifican realmente con ZXing. Los resultados visuales se guardan en `qa/` (excluido de Git).
+
+La regresión del guardado está cubierta: el campo oculto `name="id"` oculta la propiedad `form.id`; se identifica el formulario con `matches('#book-form')`, se cancela el envío nativo y se espera la transacción IndexedDB. Se comprueban persistencia tras recarga, validaciones visibles, fallo de cuota y reintento sin perder la ficha.
 
 Archivos principales:
 - `src/isbn.js`: validación y equivalencias ISBN.

@@ -21,7 +21,7 @@ export function validateBook(raw) {
   const copies=Number(raw.copies);
   if(!Number.isInteger(copies)||copies<1||copies>9999)throw new Error('La cantidad de ejemplares debe ser un número entero entre 1 y 9999.');
   const isbn=cleanISBN(raw.isbn);
-  if(isbn&&!validISBN(isbn))throw new Error('Revisá el ISBN: debe ser un código válido de 10 o 13 caracteres. También podés dejarlo vacío.');
+  if(String(raw.isbn??'').trim()&&!validISBN(isbn))throw new Error('Revisá el ISBN: debe ser un código válido de 10 o 13 caracteres. También podés dejarlo vacío.');
   const year=text('year',4), pages=raw.pages===''||raw.pages==null?null:Number(raw.pages);
   if(year&&!/^\d{4}$/.test(year))throw new Error('El año debe tener cuatro cifras.');
   if(pages!==null&&(!Number.isInteger(pages)||pages<1||pages>100000))throw new Error('Revisá la cantidad de páginas.');

@@ -20,6 +20,7 @@ function putBook(tx,book) {
 export const getBooks=()=>transaction(['books'],'readonly',tx=>tx.objectStore('books').getAll());
 export const saveBook=book=>transaction(['books','photos'],'readwrite',tx=>putBook(tx,book));
 export const deleteBook=id=>transaction(['books','photos'],'readwrite',tx=>{tx.objectStore('books').delete(id);const req=tx.objectStore('photos').index('bookId').openCursor(IDBKeyRange.only(id));req.onsuccess=()=>{const c=req.result;if(c){c.delete();c.continue();}};});
+export const clearCatalog=()=>transaction(['books','photos'],'readwrite',tx=>{tx.objectStore('books').clear();tx.objectStore('photos').clear();});
 export const mergeBooks=(books,photos=[])=>transaction(['books','photos'],'readwrite',tx=>{for(const b of books)putBook(tx,b);for(const p of photos)tx.objectStore('photos').put(p);});
 export const getPhotos=bookId=>transaction(['photos'],'readonly',tx=>bookId?tx.objectStore('photos').index('bookId').getAll(bookId):tx.objectStore('photos').getAll());
 export const savePhoto=photo=>transaction(['books','photos'],'readwrite',tx=>{const req=tx.objectStore('books').get(photo.bookId);req.onsuccess=()=>{if(!req.result?.exemplars?.some(e=>e.id===photo.id)){tx.abort();return;}tx.objectStore('photos').put(photo);};});

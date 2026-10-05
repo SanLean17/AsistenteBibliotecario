@@ -1,27 +1,17 @@
-const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const assert=require('node:assert/strict');
-const ISBN='9780140328721';
+const {setup,fixture,lookup,save,assert}=require('./ui-helpers.cjs');
 (async()=>{
- const browser=await chromium.launch({headless:true,channel:'msedge'});const context=await browser.newContext({viewport:{width:390,height:844}});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
- let mode='ok',requests=0;
- await page.route('https://www.googleapis.com/books/v1/**',async route=>{requests++;if(mode==='slow')await new Promise(r=>setTimeout(r,500));if(mode==='error')return route.fulfill({status:429,body:'{}'});return route.fulfill({json:mode==='empty'?{}:{items:[{volumeInfo:{title:'Matilda',authors:['Roald Dahl','Quentin Blake'],industryIdentifiers:[{identifier:ISBN}],publisher:'Puffin',publishedDate:'1988',pageCount:240,language:'en',categories:['Cuentos','Escuela']}}]}});});
- await page.route('https://openlibrary.org/api/books?**',route=>route.fulfill({json:{}}));
- await page.goto('http://127.0.0.1:4173');await page.getByText('Tu primera historia empieza acá').waitFor();
- const add=async()=>{await page.locator('.mobile-nav [data-action=add]').click();};
- const lookup=async(value=ISBN)=>{await page.locator('#isbn-query').fill(value);await page.getByRole('button',{name:'Buscar ISBN',exact:true}).click();};
- await add();await lookup('123');await page.getByText('Revisá el ISBN:',{exact:false}).waitFor();assert.equal(requests,0);
- await lookup();await page.getByRole('button',{name:'Confirmar libro',exact:true}).waitFor();await page.screenshot({path:'qa/isbn-result-390.png',fullPage:true});
- await page.getByRole('button',{name:'Confirmar libro',exact:true}).click();assert.equal(await page.locator('[name=title]').inputValue(),'Matilda');assert.equal(await page.locator('[name=author]').inputValue(),'Roald Dahl; Quentin Blake');assert.equal(await page.locator('#bibliographic-fields').getAttribute('open'),null);
- await page.locator('[name=copies]').fill('3');await page.locator('[name=location]').fill('Estante infantil');await page.locator('[name=condition]').selectOption('Regular');await page.screenshot({path:'qa/physical-390.png',fullPage:true});await page.getByRole('button',{name:'Guardar libro',exact:true}).click();await page.locator('#editor').waitFor({state:'hidden'});
- await page.reload();await page.getByRole('button',{name:'Ver Matilda',exact:true}).click();await page.getByText('Estante infantil',{exact:true}).waitFor();await page.getByText('Datos de la edición y fuentes',{exact:true}).click();await page.getByText('Google Books',{exact:true}).waitFor();await page.locator('#detail [data-close]').click();
- await add();await lookup();await page.getByRole('button',{name:'Editar libro existente'}).click();assert.equal(await page.locator('[name=copies]').inputValue(),'3');await page.locator('#editor button.close').click();
- mode='empty';await add();await lookup();await page.getByText('No pudimos completar este ISBN.',{exact:false}).waitFor();await page.getByRole('button',{name:'Cargar manualmente'}).click();assert.equal(await page.locator('[name=isbn]').inputValue(),ISBN);await page.locator('#editor button.close').click();
- mode='error';await add();await lookup();await page.getByText('no disponible; podés reintentar',{exact:false}).waitFor();await page.locator('#lookup [data-close]').click();
- mode='slow';await add();await lookup();await page.getByRole('button',{name:'Cargar manualmente'}).click();await page.locator('[name=title]').fill('Ficha manual conservada');await page.waitForTimeout(700);assert.equal(await page.locator('[name=title]').inputValue(),'Ficha manual conservada');assert.equal(await page.locator('#lookup').isVisible(),false);await page.locator('#editor button.close').click();
- // Deterministic scanner lifecycle: simulate decoder/media APIs, not access the real camera.
- await page.addInitScript(()=>{window.__stopped=0;window.BarcodeDetector=class{static async getSupportedFormats(){return ['ean_13'];}async detect(){return [{rawValue:'9780140328721'}];}};navigator.mediaDevices.getUserMedia=async()=>({getTracks:()=>[{stop:()=>window.__stopped++}]});Object.defineProperty(HTMLMediaElement.prototype,'srcObject',{set(v){this._src=v;},get(){return this._src;},configurable:true});HTMLMediaElement.prototype.play=async()=>{};});
- await page.reload();await page.getByRole('button',{name:'Ver Matilda',exact:true}).waitFor();mode='ok';await add();await page.getByRole('button',{name:'Escanear con cámara'}).click();await page.getByRole('button',{name:'Editar libro existente'}).waitFor();assert.ok(await page.evaluate(()=>window.__stopped>0));await page.locator('#lookup [data-close]').click();
- for(const width of [320,390,740,1440]){await page.setViewportSize({width,height:900});await page.locator(width>760?'.sidebar [data-action=add]':'.mobile-nav [data-action=add]').click();await lookup();await page.getByRole('button',{name:'Editar libro existente'}).waitFor();assert.ok(await page.locator('#lookup').evaluate(el=>el.scrollWidth<=el.clientWidth),`dialog overflow ${width}`);await page.screenshot({path:`qa/isbn-${width}.png`,fullPage:true});await page.locator('#lookup [data-close]').click();}
- assert.deepEqual(errors,[]);await browser.close();console.log('PASS ISBN flow: autofill, physical data, persistence, duplicates, invalid input, unavailable APIs, manual fallback, stale response cancellation, camera cleanup and responsive dialogs.');
+ const {page,go,finish}=await setup();await fixture(page);await go('agregar');await lookup(page);await page.locator('#confirm-isbn').click();
+ assert.ok((await page.locator('[name=title]').inputValue()).includes('Hobbit'));assert.equal(await page.locator('[name=category]').inputValue(),'Novela');
+ // The hidden control named id must never bypass submit or navigate with query data.
+ await page.locator('[name=copies]').fill('1.5');await page.getByRole('button',{name:'Guardar en el catálogo'}).click();assert.ok(await page.locator('#form-error').textContent());await page.locator('[name=copies]').fill('2');
+ // Force an IndexedDB write failure: retain form and offer a retry.
+ await page.evaluate(()=>{window.originalTransaction=IDBDatabase.prototype.transaction;IDBDatabase.prototype.transaction=function(stores,mode,...args){if(mode==='readwrite')throw new DOMException('full','QuotaExceededError');return window.originalTransaction.call(this,stores,mode,...args);};});
+ await page.getByRole('button',{name:'Guardar en el catálogo'}).click();await page.getByText('No hay espacio disponible para guardar.',{exact:false}).waitFor();assert.ok((await page.locator('[name=title]').inputValue()).includes('Hobbit'));assert.equal(await page.locator('[type=submit]').isDisabled(),false);
+ await page.evaluate(()=>IDBDatabase.prototype.transaction=window.originalTransaction);await save(page);await page.reload();await page.locator('.record-page').waitFor();assert.ok((await page.locator('.record-info h1').textContent()).includes('Hobbit'));
+ await go('agregar');await lookup(page);assert.equal(await page.locator('#confirm-isbn').textContent(),'Abrir registro existente');await page.locator('#confirm-isbn').click();await page.locator('.record-page').waitFor();
+ await go('agregar');await page.locator('#isbn-query').fill('123');await page.locator('#isbn-search').click();await page.getByText('Revisá el ISBN:',{exact:false}).waitFor();
+ await page.route('https://openlibrary.org/api/books?**',r=>r.fulfill({status:503,json:{}}));await lookupWithoutResult();
+ async function lookupWithoutResult(){await page.locator('#isbn-query').fill('9505470630');await page.locator('#isbn-search').click();await page.getByText('No encontramos una ficha automática',{exact:false}).waitFor();}
+ await page.getByRole('button',{name:'Continuar con carga manual'}).click();assert.equal(await page.locator('[name=isbn]').inputValue(),'9505470630');
+ await finish();console.log('PASS: ISBN10 lookup, autofill, submit regression, numeric validation, IndexedDB failure/retry, persistence, duplicate handling and unavailable-source fallback.');
 })().catch(e=>{console.error(e);process.exit(1)});
-
