@@ -57,3 +57,11 @@ node tests/navigation-browser.cjs
 `PLAYWRIGHT_MODULE` puede señalar una instalación externa. `BROWSER_CHANNEL=chrome` selecciona Chrome (por defecto Edge); `TEST_ENGINE=webkit` usa WebKit/iPhone. `TEST_BASE_URL` permite probar la publicación. Los tests usan perfiles aislados y respuestas de proveedores controladas; ZXing sí decodifica códigos reales generados para las pruebas. `qa/` queda fuera de Git.
 
 La regresión de guardado tiene prueba de ISBN → ficha → datos físicos → guardar → recargar → persistencia. El formulario se identifica por `matches`, porque un control oculto `name="id"` oculta `form.id`. Los fallos de validación o almacenamiento se muestran sin recargar ni perder el formulario.
+
+### Pruebas de circulación local
+
+- `node tests/local-browser.cjs`: personas, permisos, préstamos/devoluciones, reservas, ubicaciones, QR, concurrencia, respaldo y responsive.
+- `node tests/migration-circulation.cjs`: migración de v3 preservando fotos, préstamos y usuarios.
+- `node tests/import-browser.cjs`: MARC UTF-8, 852/859, duplicados y auditoría.
+
+Elegí el **perfil local** desde el menú. El perfil inicial Responsable local permite dar de alta personas y conceder permisos. No hay autenticación real: todos los datos y perfiles pertenecen exclusivamente a este navegador. Exportá un respaldo completo antes de trasladar la biblioteca a otro equipo.

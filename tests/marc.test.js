@@ -20,12 +20,12 @@ function isoRecord(){
   field('859','  ',[['a','000121'],['h','B'],['l','LIJ'],['m','82-3'],['n','TOL']])
  ];
  let data='',directory='',start=0;
- for(const f of fs){directory+=f.tag+String(f.data.length).padStart(4,'0')+String(start).padStart(5,'0');data+=f.data;start+=f.data.length;}
+ for(const f of fs){directory+=f.tag+String(new TextEncoder().encode(f.data).length).padStart(4,'0')+String(start).padStart(5,'0');data+=f.data;start+=new TextEncoder().encode(f.data).length;}
  const base=24+directory.length+1;
  let leader='00000nam a2200000   4500';
  leader=leader.slice(0,12)+String(base).padStart(5,'0')+leader.slice(17);
  const record=leader+directory+'\x1e'+data+'\x1d';
- return String(record.length).padStart(5,'0')+record.slice(5);
+ return String(new TextEncoder().encode(record).length).padStart(5,'0')+record.slice(5);
 }
 
 test('parsea ISO 2709 MARC y conserva inventario Aguapey',()=>{

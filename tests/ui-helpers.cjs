@@ -11,7 +11,7 @@ async function setup(options={}){
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('https://fonts.googleapis.com/**',r=>r.abort());
  await page.route('https://covers.openlibrary.org/**',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300"><rect width="200" height="300" fill="#ED5AB3"/><text x="20" y="140">EL HOBBIT</text></svg>'}));
- const go=async hash=>{await page.goto(base+'app.html#'+hash);const target={inicio:'.home-search',biblioteca:'#search',agregar:'#isbn-form',ejemplares:'.holdings-list',configuracion:'[data-action="clear-catalog"]',ficha:'.record-page',editar:'#book-form'}[hash.split('/')[0]];await page.locator(target||'main h1').first().waitFor();};
+ const go=async hash=>{await page.goto(base+'app.html#'+hash);const target={inicio:'.home-search',biblioteca:'#search',agregar:'#isbn-form',ejemplares:'.holdings-list',configuracion:'[data-action="clear-catalog"]',ficha:'.record-page',editar:'#book-form'}[hash.split('/')[0]];const heading={usuarios:'Personas',permisos:'Permisos temporales',circulacion:'Circulación',reservas:'Reservas',organizacion:'Institución',actividad:'Auditoría',ejemplar:'Ejemplar físico',etiquetas:'Etiquetas'}[hash.split('/')[0]];if(heading)await page.getByRole('heading',{name:heading,exact:true}).waitFor();else await page.locator(target||'main h1').first().waitFor();};
  const finish=async()=>{assert.deepEqual(errors,[]);await browser.close();};
  return {browser,context,page,errors,go,finish};
 }
@@ -21,5 +21,5 @@ async function fixture(page){
 }
 async function lookup(page){await page.locator('#isbn-query').fill('950-547-063-0');await page.locator('#isbn-search').click();await page.locator('#confirm-isbn').waitFor();}
 async function save(page){await page.getByRole('button',{name:'Guardar en el catálogo',exact:true}).click();await page.locator('.record-page').waitFor();assert.equal(new URL(page.url()).search,'');}
-async function noOverflow(page,label){assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),label+' overflow');}
+async function noOverflow(page,label){await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));const fits=await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth);if(!fits){console.log(await page.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth,body:document.body.scrollWidth,viewport:visualViewport.width,nodes:[...document.querySelectorAll('body *')].map(e=>({tag:e.tagName,cls:e.className,r:e.getBoundingClientRect().right,w:e.scrollWidth,c:e.clientWidth})).filter(e=>e.r>innerWidth||e.w>e.c+5)})));await page.screenshot({path:'qa/webkit-overflow.png',fullPage:true});}assert.ok(fits,label+' overflow');}
 module.exports={setup,fixture,lookup,save,noOverflow,assert,fs,base};
