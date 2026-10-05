@@ -31,18 +31,20 @@ export function parseISO2709(input){
     if(next<0)break;
     const raw=bytes.slice(offset,next+1);offset=next+1;
     if(raw.length<25)continue;
-    const text=decodeBytes(raw);
-    const leader=text.slice(0,24);
+    // Leader and directory are ASCII; field offsets/lengths are BYTE positions.
+    const leader=new TextDecoder('ascii').decode(raw.slice(0,24));
     const recordLength=Number(leader.slice(0,5));
     const baseAddress=Number(leader.slice(12,17));
-    if(!Number.isInteger(baseAddress)||baseAddress<25||baseAddress>text.length)continue;
-    const directory=text.slice(24,baseAddress-1);
+    if(!Number.isInteger(baseAddress)||baseAddress<25||baseAddress>raw.length)continue;
+    const directory=new TextDecoder('ascii').decode(raw.slice(24,baseAddress-1));
     const fields=[];
     for(let i=0;i+11<directory.length;i+=12){
       const entry=directory.slice(i,i+12),tag=entry.slice(0,3),length=Number(entry.slice(3,7)),start=Number(entry.slice(7,12));
-      if(!/^\d{3}$/.test(tag)||!Number.isFinite(length)||!Number.isFinite(start))continue;
-      const fieldText=text.slice(baseAddress+start,baseAddress+start+Math.max(0,length-1));
-      fields.push(parseMarcField(tag,fieldText.replace(new RegExp(FT+'$'),'')));
+      if(!/^\d{3}$/.test(tag)||!Number.isFinite(length)||!Number.isFinite(start)||length<1)continue;
+      const begin=baseAddress+start,end=begin+length-1;
+      if(begin<baseAddress||end>raw.length)continue;
+      const fieldText=decodeBytes(raw.slice(begin,end));
+      fields.push(parseMarcField(tag,fieldText));
     }
     records.push({leader,recordLength:Number.isFinite(recordLength)?recordLength:raw.length,fields});
   }
