@@ -11,9 +11,9 @@ const {setup,save,noOverflow,assert,fs}=require('./ui-helpers.cjs');
  const download=page.waitForEvent('download');await page.getByRole('button',{name:'Exportar',exact:false}).click();await(await download).saveAs('qa/backup.json');assert.equal(JSON.parse(fs.readFileSync('qa/backup.json')).books[0].copies,3);
  for(const theme of ['light','dark']){
   await page.evaluate(t=>document.documentElement.dataset.theme=t,theme);
-  for(const width of [320,390,768,1440]){
+  for(const width of [320,360,390,430,768,1440]){
    await page.setViewportSize({width,height:900});
-   for(const route of ['inicio','biblioteca','agregar',detailHash,detailHash.replace('ficha/','editar/'),'configuracion']){
+   for(const route of ['inicio','biblioteca','agregar','ejemplares',detailHash,detailHash.replace('ficha/','editar/'),'configuracion']){
     await page.evaluate(h=>location.hash=h,route);await page.waitForTimeout(100);await noOverflow(page,`${theme} ${width} ${route}`);
     assert.ok(await page.locator('input:not([type=hidden]),select,textarea').evaluateAll(els=>els.filter(e=>e.getBoundingClientRect().width).every(e=>parseFloat(getComputedStyle(e).fontSize)>=16)));
     await page.screenshot({path:`qa/${theme}-${width}-${route.split('/')[0]}.png`,fullPage:true});
@@ -26,5 +26,5 @@ const {setup,save,noOverflow,assert,fs}=require('./ui-helpers.cjs');
  await go('configuracion');await page.getByRole('button',{name:'Vaciar catálogo',exact:true}).click();await page.locator('#confirm-cancel').click();await go('biblioteca');assert.equal(await page.locator('.book-card').count(),1);
  await go('configuracion');await page.getByRole('button',{name:'Vaciar catálogo',exact:true}).click();await page.locator('#confirm-accept').click();await page.waitForFunction(()=>document.querySelector('[data-action="clear-catalog"]').disabled);
  await go('agregar');await page.getByRole('button',{name:'Continuar con carga manual'}).click();await page.locator('[name=title]').fill('<img src=x onerror=alert(1)>');await save(page);assert.equal(await page.locator('.record-info h1').textContent(),'<img src=x onerror=alert(1)>');assert.equal(await page.locator('.record-info h1 img').count(),0);
- await finish();console.log('PASS: manual save, reload, edit, continuous search, backups, delete/cancel/clear, escaped text; 48 responsive route/theme checks.');
+ await finish();console.log('PASS: manual save, reload, edit, continuous search, backups, delete/cancel/clear, escaped text; 84 responsive route/theme checks.');
 })().catch(e=>{console.error(e);process.exit(1)});

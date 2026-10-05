@@ -1,12 +1,18 @@
-# Verification — 2026-10-05
+# Verification — editorial iteration, 2026-10-05
 
-- Unit tests: 12/12 pass (ISBN, catalog validation/search, metadata merging and cancellation, scanner lifecycle, photo archives).
-- Edge and Chrome with Android mobile profiles: manual and ISBN save, reload persistence, editing, continuous search, duplicate detection, numeric validation, failed IndexedDB write and retry, backups, cancel/delete/clear confirmations.
-- WebKit with iPhone profile: same catalog flows, migration and photo upload/view/restore. This is engine/device emulation, not a physical Safari/iPhone test.
-- Responsive matrix: 320, 390, 768 and 1440 px; light/dark; home, catalog, acquisition, record, editor, settings. 48 layout checks per full browser run, with screenshots. No horizontal page overflow; displayed inputs/selects/textareas are at least 16 px.
-- Actual ZXing decoding of a generated EAN-13: image files in Chromium and WebKit; generated video stream in Chromium. Windows WebKit does not expose media capture, so its live-camera test is explicitly skipped. Real-device camera permissions, focus and lighting remain hardware-dependent.
-- Cover and physical-copy photo remain separate; selecting the first copy after reload does not display another copy's photograph.
-- IndexedDB v1 migration preserves record, work, edition and physical-copy identifiers and user location data.
-- Original save failure reproduced before the fix: browser navigated to a URL containing the form values because `name="id"` shadowed `form.id`. After the fix, submission remains in the application, awaits IndexedDB completion and opens the saved record without query parameters.
+## Scope and results
 
-Bibliographic provider responses are deterministic fixtures during automated tests. No tests use the user's existing browser profile or live catalog. `qa/` is ignored by Git. No CNAME or domain settings are changed.
+- 17 unit tests pass: ISBN equivalence/checksums, metadata merging and provenance, provider failures/cancellation, search, backups, copy identity, MARC21 normalization, byte-accurate UTF-8 ISO2709 parsing, injectable BN adapter and repository contract.
+- Application matrix: 320, 360, 390, 430, 768 and 1440 px; light/dark; dashboard, catalog, acquisition, exemplar inventory, record, editor and settings. **84 route/theme/width checks** per browser run. No horizontal overflow; rendered inputs/selects/textareas have at least 16 px.
+- Public matrix: both themes at the same six widths. Landing does not open IndexedDB. Mobile menu, navigation, shared theme and legacy hash redirects pass.
+- Engines: Chromium (Chrome and Edge), WebKit with iPhone profile, and Firefox at mobile/tablet/desktop widths. These are emulations/desktop engines, not physical phones. Samsung Internet, Chrome on iOS and Firefox on Android have not been separately tested on hardware.
+- Full regression: ISBN → metadata → confirm → physical copies → save → record/catalog → reload → data persists. Numeric validation and simulated IndexedDB quota failure retain the form and allow retry.
+- Photos/copies: upload, view, enlargement, replace/cancel, delete/cancel, individual inventory/location edits, backup/restore and deleting the last copy while preserving the bibliographic record.
+- Camera: actual ZXing EAN decoding from generated images and video stream in Chromium; actual image decoding in WebKit. Native-detector lifecycle tests verify stopping tracks on close, route change and hidden document. Windows WebKit cannot capture video, so live camera is explicitly skipped there.
+- Existing IndexedDB v1 data migrates without losing book/work/edition/copy IDs or user location data. The DB name and version are unchanged by the public/app split.
+
+## Limits and reproducibility
+
+Provider responses in browser tests use deterministic fixtures. No tests touch the user's browser profile or real catalog. Screenshots and generated test data are under ignored `qa/`. Use the commands and environment options in README.
+
+BN: connection to the documented TCP port succeeded. The optional Node/YAZ adapter and MARC mapper are fixture-tested; real Z39.50 authentication/record retrieval and a hosted HTTPS gateway remain unverified/unpublished. BNM and ISBN Argentina are external verification sources pending documented official integration. No paid infrastructure, scraping, CNAME or domain changes.

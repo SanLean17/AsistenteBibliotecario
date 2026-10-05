@@ -9,12 +9,12 @@ const ol={['ISBN:'+isbn]:{title:'Matilda',authors:[{name:'Roald Dahl'}],publishe
 const fake=async url=>({ok:true,json:async()=>url.includes('googleapis')?google:ol});
 test('ISBN-10 and ISBN-13 edition equivalence; rejects non-book EANs',()=>{assert.equal(canonicalISBN('0-14-032872-6'),isbn);assert.equal(validISBN('4006381333931'),false);});
 test('merges matching editions, authors, fields, provenance and conflicts',async()=>{
- const {book,results}=await lookupISBN(isbn,{fetcher:fake});assert.equal(book.title,'Matilda');assert.equal(book.authors.length,2);assert.equal(book.pages,240);assert.equal(book.cover,'https://covers.openlibrary.org/b/id/123-L.jpg');assert.equal(book.fieldSources.cover,'Open Library');assert.deepEqual(book.subjects,['Cuentos','Escuela']);assert.ok(book.conflicts.some(c=>c.field==='pages'));assert.ok(results.every(r=>r.status==='found'));
+ const {book,results}=await lookupISBN(isbn,{fetcher:fake});assert.equal(book.title,'Matilda');assert.equal(book.authors.length,2);assert.equal(book.pages,232);assert.equal(book.fieldSources.pages,'Open Library');assert.equal(book.cover,'https://covers.openlibrary.org/b/id/123-L.jpg');assert.equal(book.fieldSources.cover,'Open Library');assert.deepEqual(book.subjects,['Cuentos','Escuela']);assert.ok(book.conflicts.some(c=>c.field==='pages'));assert.ok(results.every(r=>r.status==='found'));
  const stored=validateBook({...book,copies:2,condition:'Regular',location:'A'});const roundtrip=parseBackup(JSON.stringify({app:'asistente-bibliotecario',version:2,books:[stored]}))[0];assert.deepEqual(roundtrip.authors,stored.authors);assert.deepEqual(roundtrip.exemplars,stored.exemplars);assert.equal(roundtrip.cover,stored.cover);assert.equal(roundtrip.workId,stored.workId);assert.deepEqual(roundtrip.fieldSources,stored.fieldSources);
 });
 test('wrong edition is never silently accepted',()=>assert.equal(googleRecord(google,'9780306406157'),null));
 test('partial outage retains usable result; total outage and no results are distinct',async()=>{
- const partial=await lookupISBN(isbn,{fetcher:async url=>{if(url.includes('googleapis'))throw Error('offline');return fake(url);}});assert.equal(partial.book.title,'Matilda');assert.equal(partial.results[0].status,'error');
+ const partial=await lookupISBN(isbn,{fetcher:async url=>{if(url.includes('googleapis'))throw Error('offline');return fake(url);}});assert.equal(partial.book.title,'Matilda');assert.equal(partial.results.find(r=>r.source==='Google Books').status,'error');
  const missing=await lookupISBN(isbn,{fetcher:async()=>({ok:true,json:async()=>({})})});assert.equal(missing.book,null);assert.ok(missing.results.every(r=>r.status==='empty'));
  const failed=await lookupISBN(isbn,{fetcher:async()=>({ok:false,status:429})});assert.equal(failed.book,null);assert.ok(failed.results.every(r=>r.status==='error'));
 });
