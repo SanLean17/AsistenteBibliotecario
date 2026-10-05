@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#EBF3FF">
   <meta name="description" content="Gestión y consulta inteligente para bibliotecas escolares e institucionales.">
   <title>Catálogo · Asistente Bibliotecario</title>
-  <link rel="icon" href="./icon.svg?v=20261005-7" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=20261005-7">
-  <link rel="stylesheet" href="./design.css?v=20261005-7">
+  <link rel="icon" href="./icon.svg?v=20261005-9" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css?v=20261005-9">
+  <link rel="stylesheet" href="./design.css?v=20261005-9">
 </head>
 <body class="app-page">
   <aside class="sidebar" id="workspace-menu">
@@ -19,12 +19,12 @@
     <nav aria-label="Principal">
       <a href="#inicio" data-nav="inicio"><span class="nav-icon">⌂</span><span>Inicio</span></a>
       <a href="#biblioteca" data-nav="biblioteca"><span class="nav-icon">▥</span><span>Catálogo</span></a>
-      <a href="#agregar" data-nav="agregar"><span class="nav-icon">＋</span><span>Incorporar material</span></a>
+      <a href="#agregar" data-nav="agregar"><span class="nav-icon">＋</span><span>Agregar al catálogo</span></a>
     <a href="#ejemplares" data-nav="ejemplares"><span class="nav-icon">▤</span><span>Ejemplares</span></a>
       <a href="#circulacion" data-nav="circulacion"><span class="nav-icon">⇄</span><span>Préstamos y reservas</span></a>
       <a href="#interoperabilidad" data-nav="interoperabilidad"><span class="nav-icon">↔</span><span>Importar / exportar</span></a>
-      <a href="#configuracion" data-nav="configuracion"><span class="nav-icon">⚙︎</span><span>Configuración</span></a></nav>
-    <button class="button secondary mobile-help" data-action="help">Acerca de este prototipo</button>
+      <a href="#usuarios" data-nav="usuarios"><span>Personas y permisos</span></a><a href="#organizacion" data-nav="organizacion"><span>Institución</span></a><a href="#etiquetas" data-nav="etiquetas"><span>Etiquetas</span></a><a href="#actividad" data-nav="actividad"><span>Historial</span></a><a href="#configuracion" data-nav="configuracion"><span class="nav-icon">⚙︎</span><span>Configuración</span></a></nav>
+    <div class="local-profile"><label for="local-actor">Perfil local · sin contraseña</label><select id="local-actor" aria-label="Perfil local"></select></div><button class="button secondary mobile-help" data-action="help">Acerca de este prototipo</button>
     <a class="public-return" href="./">← Acerca del producto</a>
     <div class="local-label"><i></i> Prototipo local <small>Los datos se guardan en este dispositivo.</small></div>
   </aside>
@@ -62,6 +62,6 @@
   <input id="aguapey-file" type="file" accept=".iso,application/octet-stream" hidden>
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <script type="module" src="./src/app.js?v=20261005-8"></script>
+  <script type="module" src="./src/app.js?v=20261005-9"></script>
 </body>
 </html>

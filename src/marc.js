@@ -1,17 +1,9 @@
-import { LOCAL_SCOPE } from './domain.js?v=20261005-8';
+import { LOCAL_SCOPE } from './domain.js?v=20261005-9';
 
 const FT='\x1e', RT='\x1d', SD='\x1f';
 const trim=value=>String(value??'').replace(/[\s\/:;,]+$/g,'').trim();
 
-function decodeBytes(bytes){
-  const utf8=new TextDecoder('utf-8',{fatal:false}).decode(bytes);
-  const bad=(utf8.match(/�/g)||[]).length;
-  if(!bad)return utf8;
-  try{
-    const latin=new TextDecoder('windows-1252').decode(bytes);
-    return (latin.match(/�/g)||[]).length<bad?latin:utf8;
-  }catch{return utf8;}
-}
+function decodeBytes(bytes){try{return new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{throw new Error('Codificación MARC no compatible. Exportá en UTF-8; MARC-8 requiere conversión explícita.');}}
 export function parseMarcField(tag,text){
   if(Number(tag)<10)return {tag,value:trim(text)};
   const indicators=(text.slice(0,2)+'  ').slice(0,2);
@@ -24,31 +16,9 @@ export function parseMarcField(tag,text){
   return {tag,ind1:indicators[0],ind2:indicators[1],subfields};
 }
 export function parseISO2709(input){
-  const bytes=input instanceof Uint8Array?input:new Uint8Array(input);
-  const records=[];let offset=0;
-  while(offset<bytes.length){
-    const next=bytes.indexOf(0x1d,offset);
-    if(next<0)break;
-    const raw=bytes.slice(offset,next+1);offset=next+1;
-    if(raw.length<25)continue;
-    // Leader and directory are ASCII; field offsets/lengths are BYTE positions.
-    const leader=new TextDecoder('ascii').decode(raw.slice(0,24));
-    const recordLength=Number(leader.slice(0,5));
-    const baseAddress=Number(leader.slice(12,17));
-    if(!Number.isInteger(baseAddress)||baseAddress<25||baseAddress>raw.length)continue;
-    const directory=new TextDecoder('ascii').decode(raw.slice(24,baseAddress-1));
-    const fields=[];
-    for(let i=0;i+11<directory.length;i+=12){
-      const entry=directory.slice(i,i+12),tag=entry.slice(0,3),length=Number(entry.slice(3,7)),start=Number(entry.slice(7,12));
-      if(!/^\d{3}$/.test(tag)||!Number.isFinite(length)||!Number.isFinite(start)||length<1)continue;
-      const begin=baseAddress+start,end=begin+length-1;
-      if(begin<baseAddress||end>raw.length)continue;
-      const fieldText=decodeBytes(raw.slice(begin,end));
-      fields.push(parseMarcField(tag,fieldText));
-    }
-    records.push({leader,recordLength:Number.isFinite(recordLength)?recordLength:raw.length,fields});
-  }
-  return records;
+ const bytes=input instanceof Uint8Array?input:new Uint8Array(input),records=[];let offset=0;
+ while(offset<bytes.length){if(bytes.length-offset<25)throw new Error('Registro MARC truncado.');const leader=decodeBytes(bytes.slice(offset,offset+24)),length=Number(leader.slice(0,5)),base=Number(leader.slice(12,17));if(!Number.isInteger(length)||length<25||offset+length>bytes.length||!Number.isInteger(base)||base<25||base>=length||(base-25)%12||bytes[offset+base-1]!==30||bytes[offset+length-1]!==29)throw new Error('Directorio o longitud ISO 2709 inválidos.');const fields=[];for(let i=offset+24;i<offset+base-1;i+=12){const entry=decodeBytes(bytes.slice(i,i+12)),tag=entry.slice(0,3),size=Number(entry.slice(3,7)),start=Number(entry.slice(7,12)),begin=offset+base+start,end=begin+size-1;if(!/^\d{3}$/.test(tag)||!Number.isInteger(size)||size<1||!Number.isInteger(start)||start<0||end>=offset+length-1||bytes[end]!==30)throw new Error('Campo ISO 2709 inválido.');fields.push(parseMarcField(tag,decodeBytes(bytes.slice(begin,end))));}records.push({leader,recordLength:length,fields});offset+=length;
+ }return records;
 }
 const fields=(record,tag)=>record.fields.filter(f=>f.tag===tag);
 const sub=(field,code)=>field?.subfields?.filter(s=>s.code===code).map(s=>s.value).filter(Boolean)||[];
@@ -87,7 +57,7 @@ export function marcRecordToCatalog(record,{source='Aguapey · MARC ISO 2709'}={
     locality:firstSub(record,'852','z'),
     name:firstSub(record,'852','a')
   };
-  const holdings=fields(record,'859').map((f,index)=>{
+  let holdings=fields(record,'859').map((f,index)=>{
     const inventoryCode=sub(f,'a')[0]||'';
     const location=sub(f,'l')[0]||'';
     return {...LOCAL_SCOPE,
@@ -96,10 +66,11 @@ export function marcRecordToCatalog(record,{source='Aguapey · MARC ISO 2709'}={
       loanPolicy:sub(f,'d')[0]||'',provenance:[sub(f,'e')[0],sub(f,'f')[0]].filter(Boolean).join(' · '),
       localNotes:sub(f,'g')[0]||'',condition:normalizeCondition(sub(f,'h')[0]),
       location,classification:sub(f,'m')[0]||'',shelfmark:sub(f,'n')[0]||'',
-      status:'available',sourceIndex:index
+      status:/extraviado|perdido/i.test(sub(f,'h')[0]||'')?'lost':/baja/i.test(sub(f,'h')[0]||'')?'withdrawn':'available',sourceIndex:index
     };
   });
-  const copies=Math.max(1,holdings.length);
+  if(!holdings.length)holdings=fields(record,'852').filter(f=>sub(f,'p').length||sub(f,'c').length).map(f=>({...LOCAL_SCOPE,id:crypto.randomUUID(),inventoryCode:sub(f,'p')[0]||'',location:sub(f,'c')[0]||'',physicalLocation:{sector:sub(f,'b')[0]||'',shelving:sub(f,'c')[0]||'',shelf:''},classification:sub(f,'h')[0]||'',shelfmark:sub(f,'i')[0]||'',condition:'Bueno',status:'available'}));
+  const copies=holdings.length;
   const exemplars=holdings.length?holdings:Array.from({length:copies},()=>({...LOCAL_SCOPE,id:crypto.randomUUID(),inventoryCode:'',location:'',condition:'Bueno',status:'available'}));
   return {
     id:crypto.randomUUID(),workId:crypto.randomUUID(),editionId:crypto.randomUUID(),
@@ -109,7 +80,7 @@ export function marcRecordToCatalog(record,{source='Aguapey · MARC ISO 2709'}={
     edition:firstSub(record,'250','a'),classification,identifiers:{marc001:fields(record,'001')[0]?.value||''},
     copies,location:exemplars[0]?.location||'',condition:exemplars[0]?.condition||'Bueno',exemplars,
     sources:[source],fieldSources:{title:source,authors:source,publisher:source,subjects:source,contents:contents.length?source:''},
-    sourceRecords:[{source,format:'MARC21/ISO2709',leader:record.leader,institution}],
+    sourceRecords:[{source,format:'MARC21/ISO2709',leader:record.leader,institution,fields:record.fields}],
     importedFrom:{system:'Aguapey-compatible',format:'MARC21/ISO2709',institution},
     createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),schemaVersion:2,
     enrichment:{version:1,status:'not-requested',attachments:[],suggestions:[]}

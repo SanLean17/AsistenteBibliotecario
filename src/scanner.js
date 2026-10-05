@@ -1,7 +1,7 @@
-import { validISBN } from './isbn.js?v=20261005-3';
+import { validISBN } from './isbn.js?v=20261005-9';
 
 async function createZXingReader(){
-  await import('../vendor/zxing-browser-0.2.1.min.js');
+  await import('../vendor/zxing-browser-0.2.1.min.js?v=20261005-9');
   return new globalThis.ZXingBrowser.BrowserMultiFormatOneDReader();
 }
 export async function createISBNDetector() {
@@ -27,7 +27,7 @@ async function requestRearCamera(){
   }
 }
 // La cámara y la decodificación ocurren en el dispositivo; no se envían fotogramas.
-export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFactory=createISBNDetector}) {
+export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFactory=createISBNDetector,accept=validISBN}) {
   if (!globalThis.isSecureContext || !navigator.mediaDevices?.getUserMedia) throw new Error('La cámara necesita una conexión HTTPS y permiso del navegador.');
   if (signal.aborted) return;
   const stream = await requestRearCamera();
@@ -44,7 +44,7 @@ export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFac
     const read=async()=>{
       if(stopped||signal.aborted)return;
       try {
-        const found=(await detector.detect(video)).find(b=>validISBN(b.rawValue));
+        const found=(await detector.detect(video)).find(b=>accept(b.rawValue));
         if(stopped||signal.aborted)return;
         if(found){stop();onISBN(found.rawValue);return;}
         timer=setTimeout(read,180);

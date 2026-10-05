@@ -1,83 +1,31 @@
-// IndexedDB local para catálogo, fotos y circulación.
-let database;
-export function openDatabase() {
- return new Promise((resolve,reject)=>{
-  const request=indexedDB.open('asistente-bibliotecario',3);
-  request.onupgradeneeded=()=>{
-    const db=request.result;
-    if(!db.objectStoreNames.contains('books'))db.createObjectStore('books',{keyPath:'id'});
-    if(!db.objectStoreNames.contains('photos')){
-      const store=db.createObjectStore('photos',{keyPath:'id'});store.createIndex('bookId','bookId');
-    }
-    if(!db.objectStoreNames.contains('loans')){
-      const store=db.createObjectStore('loans',{keyPath:'id'});store.createIndex('bookId','bookId');store.createIndex('exemplarId','exemplarId');store.createIndex('status','status');
-    }
-    if(!db.objectStoreNames.contains('reservations')){
-      const store=db.createObjectStore('reservations',{keyPath:'id'});store.createIndex('bookId','bookId');store.createIndex('status','status');
-    }
-    if(!db.objectStoreNames.contains('patrons')){
-      const store=db.createObjectStore('patrons',{keyPath:'id'});store.createIndex('role','role');
-    }
-    if(!db.objectStoreNames.contains('activity')){
-      const store=db.createObjectStore('activity',{keyPath:'id'});store.createIndex('type','type');store.createIndex('createdAt','createdAt');
-    }
-  };
-  request.onsuccess=()=>{database=request.result;database.onversionchange=()=>database.close();resolve();};
-  request.onerror=()=>reject(request.error);
-  request.onblocked=()=>reject(new Error('Cerrá otras pestañas de la biblioteca e intentá otra vez.'));
- });
-}
-function transaction(stores,mode,action) {
- return new Promise((resolve,reject)=>{
-  const tx=database.transaction(stores,mode);
-  let result;
-  try{result=action(tx);}catch(error){tx.abort();reject(error);return;}
-  tx.oncomplete=()=>resolve(result?.result??result);
-  tx.onerror=()=>reject(tx.error);
-  tx.onabort=()=>reject(tx.error||new Error('No se pudo guardar.'));
- });
-}
-function putBook(tx,book) {
- tx.objectStore('books').put(book);
- const cursor=tx.objectStore('photos').index('bookId').openCursor(IDBKeyRange.only(book.id));
- const valid=new Set((book.exemplars||[]).map(e=>e.id));
- cursor.onsuccess=()=>{const c=cursor.result;if(c){if(!valid.has(c.value.id))c.delete();c.continue();}};
-}
-export const getBooks=()=>transaction(['books'],'readonly',tx=>tx.objectStore('books').getAll());
-export const saveBook=book=>transaction(['books','photos'],'readwrite',tx=>putBook(tx,book));
-export const deleteBook=id=>transaction(['books','photos','loans','reservations'],'readwrite',tx=>{
- tx.objectStore('books').delete(id);
- const photos=tx.objectStore('photos').index('bookId').openCursor(IDBKeyRange.only(id));photos.onsuccess=()=>{const c=photos.result;if(c){c.delete();c.continue();}};
- const loans=tx.objectStore('loans').index('bookId').openCursor(IDBKeyRange.only(id));loans.onsuccess=()=>{const c=loans.result;if(c){c.delete();c.continue();}};
- const reservations=tx.objectStore('reservations').index('bookId').openCursor(IDBKeyRange.only(id));reservations.onsuccess=()=>{const c=reservations.result;if(c){c.delete();c.continue();}};
-});
-export const clearCatalog=()=>transaction(['books','photos','loans','reservations','activity'],'readwrite',tx=>{
- tx.objectStore('books').clear();tx.objectStore('photos').clear();tx.objectStore('loans').clear();tx.objectStore('reservations').clear();tx.objectStore('activity').clear();
-});
-export const mergeBooks=(books,photos=[])=>transaction(['books','photos'],'readwrite',tx=>{for(const b of books)putBook(tx,b);for(const p of photos)tx.objectStore('photos').put(p);});
-export const getPhotos=bookId=>transaction(['photos'],'readonly',tx=>bookId?tx.objectStore('photos').index('bookId').getAll(bookId):tx.objectStore('photos').getAll());
-export const savePhoto=photo=>transaction(['books','photos'],'readwrite',tx=>{const req=tx.objectStore('books').get(photo.bookId);req.onsuccess=()=>{if(!req.result?.exemplars?.some(e=>e.id===photo.id)){tx.abort();return;}tx.objectStore('photos').put(photo);};});
-export const deletePhoto=id=>transaction(['photos'],'readwrite',tx=>tx.objectStore('photos').delete(id));
-export const deleteExemplar=(bookId,copyId)=>transaction(['books','photos','loans','reservations'],'readwrite',tx=>{
- const req=tx.objectStore('books').get(bookId);
- req.onsuccess=()=>{
-  const book=req.result;if(!book){tx.abort();return;}
-  const activeLoan=tx.objectStore('loans').index('exemplarId').getAll(copyId);
-  activeLoan.onsuccess=()=>{
-    if((activeLoan.result||[]).some(l=>['loaned','overdue'].includes(l.status))){tx.abort();return;}
-    book.exemplars=book.exemplars.filter(e=>e.id!==copyId);book.copies=book.exemplars.length;book.updatedAt=new Date().toISOString();
-    tx.objectStore('books').put(book);tx.objectStore('photos').delete(copyId);
-  };
- };
-});
-export const getLoans=()=>transaction(['loans'],'readonly',tx=>tx.objectStore('loans').getAll());
-export const saveLoan=loan=>transaction(['loans'],'readwrite',tx=>tx.objectStore('loans').put(loan));
-export const getReservations=()=>transaction(['reservations'],'readonly',tx=>tx.objectStore('reservations').getAll());
-export const saveReservation=reservation=>transaction(['reservations'],'readwrite',tx=>tx.objectStore('reservations').put(reservation));
-export const getPatrons=()=>transaction(['patrons'],'readonly',tx=>tx.objectStore('patrons').getAll());
-export const savePatron=patron=>transaction(['patrons'],'readwrite',tx=>tx.objectStore('patrons').put(patron));
-export const getActivity=()=>transaction(['activity'],'readonly',tx=>tx.objectStore('activity').getAll());
-export const appendActivity=entry=>transaction(['activity'],'readwrite',tx=>{
- const record={id:entry.id||crypto.randomUUID(),createdAt:entry.createdAt||new Date().toISOString(),...entry};
- return tx.objectStore('activity').put(record);
-});
+import {STORES,normalizeHoldings,config,command,audit,ensureRemovable,activeLoan,activeReservation,expireReservations} from '../local-domain.js?v=20261005-9';
+import {requirePermission} from '../permissions.js?v=20261005-9';
+let database,actorId='local-admin';try{actorId=sessionStorage.getItem('ab-actor')||actorId;}catch{}
+export const getActorId=()=>actorId;
+export function setActorId(id){actorId=id;try{sessionStorage.setItem('ab-actor',id);}catch{}}
+export function openDatabase(){return new Promise((resolve,reject)=>{const request=indexedDB.open('asistente-bibliotecario',4);request.onupgradeneeded=()=>{const db=request.result;for(const name of STORES)if(!db.objectStoreNames.contains(name)){const st=db.createObjectStore(name,{keyPath:'id'});if(name==='photos')st.createIndex('bookId','bookId');}};request.onerror=()=>reject(request.error);request.onblocked=()=>reject(new Error('Cerrá otras pestañas de la biblioteca y volvé a intentar.'));request.onsuccess=async()=>{database=request.result;database.onversionchange=()=>database.close();try{await mutate(s=>{if(!s.patrons.length||!s.settings.some(x=>x.id==='bootstrap')){if(!s.patrons.some(u=>u.id==='local-admin'))s.patrons.push({id:'local-admin',name:'Responsable local',role:'administrador',active:true,institutionId:'local-institution'});s.settings.push({id:'bootstrap',createdAt:new Date().toISOString()});}for(const u of s.patrons)u.active??=true;normalizeHoldings(s);expireReservations(s,actorId);});resolve();}catch(error){reject(error);}};});}
+// All related reads and writes share one readwrite transaction; concurrent tabs serialize.
+export function mutate(reducer){return new Promise((resolve,reject)=>{const tx=database.transaction(STORES,'readwrite'),s={};let pending=STORES.length,result,failure;tx.oncomplete=()=>resolve(result);tx.onabort=()=>reject(failure||tx.error||new Error('No se pudo guardar la operación.'));tx.onerror=()=>{};for(const name of STORES){const r=tx.objectStore(name).getAll();r.onsuccess=()=>{s[name]=r.result;if(--pending)return;try{result=reducer(s);normalizeHoldings(s);for(const name of STORES){const st=tx.objectStore(name);st.clear();for(const record of s[name])st.put(record);}}catch(error){failure=error;tx.abort();}};}});}
+export function readState(){return new Promise((resolve,reject)=>{const tx=database.transaction(STORES,'readonly'),s={};for(const name of STORES){const r=tx.objectStore(name).getAll();r.onsuccess=()=>s[name]=r.result;}tx.oncomplete=()=>resolve(s);tx.onabort=()=>reject(tx.error);tx.onerror=()=>reject(tx.error);});}
+export const execute=(type,data)=>mutate(s=>command(s,actorId,type,data));
+const read=async name=>(await readState())[name];
+export const getBooks=()=>read('books');export const getLoans=()=>read('loans');export const getReservations=()=>read('reservations');export const getPatrons=()=>read('patrons');export const getActivity=()=>read('activity');
+function putBook(s,book,importing=false){const old=s.books.find(b=>b.id===book.id);const shared=s.books.find(b=>b.id!==book.id&&b.workId===book.workId);const workFields=['title','subtitle','author','authors','subjects','contents','description'];if(shared&&(!old||old.workId!==book.workId))for(const key of workFields)book[key]=structuredClone(shared[key]);requirePermission(s,actorId,old?'catalog.edit':'catalog.create');const oldIds=new Set(old?.exemplars?.map(e=>e.id)||[]);const added=(book.exemplars||[]).filter(e=>!oldIds.has(e.id));const removed=(old?.exemplars||[]).filter(e=>!book.exemplars.some(n=>n.id===e.id));if(added.length)requirePermission(s,actorId,'holdings.create');if(removed.length)requirePermission(s,actorId,'holdings.edit');ensureRemovable(s,removed.map(e=>e.id));
+ for(const e of book.exemplars||[]){const previous=old?.exemplars?.find(p=>p.id===e.id);if(previous){if(['lost','withdrawn'].includes(e.status)&&e.status!==previous.status)ensureRemovable(s,[e.id]);e.internalCode=previous.internalCode;if(!importing&&['location','condition','status','inventoryCode','physicalLocation'].some(key=>JSON.stringify(e[key])!==JSON.stringify(previous[key])))requirePermission(s,actorId,'holdings.edit');}}if(old)s.books.splice(s.books.indexOf(old),1,book);else s.books.push(book);for(const sibling of s.books)if(sibling.id!==book.id&&sibling.workId===book.workId){for(const key of workFields)sibling[key]=structuredClone(book[key]);sibling.updatedAt=new Date().toISOString();}s.photos=s.photos.filter(p=>p.bookId!==book.id||book.exemplars.some(e=>e.id===p.id));audit(s,old?'material.updated':'material.created',actorId,{bookId:book.id,title:book.title});for(const e of added)audit(s,'holding.created',actorId,{bookId:book.id,exemplarId:e.id});for(const e of removed)audit(s,'holding.deleted',actorId,{bookId:book.id,exemplarId:e.id});}
+export const saveBook=book=>mutate(s=>putBook(s,structuredClone(book)));
+export const deleteBook=id=>mutate(s=>{requirePermission(s,actorId,'catalog.delete');const b=s.books.find(b=>b.id===id);if(!b)return;ensureRemovable(s,b.exemplars.map(e=>e.id));if(s.reservations.some(r=>r.bookId===id&&activeReservation(r)))throw new Error('Cancelá las reservas pendientes antes de eliminar el registro.');s.books=s.books.filter(b=>b.id!==id);s.photos=s.photos.filter(p=>p.bookId!==id);audit(s,'material.deleted',actorId,{bookId:id,title:b.title});for(const e of b.exemplars)audit(s,'holding.deleted',actorId,{bookId:id,exemplarId:e.id});});
+export const clearCatalog=()=>mutate(s=>{requirePermission(s,actorId,'catalog.delete');if(s.loans.some(activeLoan)||s.reservations.some(activeReservation))throw new Error('Cerrá préstamos y reservas pendientes antes de vaciar el catálogo.');s.books=[];s.photos=[];audit(s,'catalog.cleared',actorId);});
+export const mergeBooks=(books,photos=[],type='backup.imported')=>mutate(s=>{for(let book of structuredClone(books)){if(type==='aguapey.imported'){const old=s.books.find(b=>(book.identifiers?.marc001&&b.importedFrom&&b.identifiers?.marc001===book.identifiers.marc001)||(book.isbn&&b.isbn===book.isbn));if(old){const incoming=book.exemplars.filter(e=>!e.inventoryCode||!old.exemplars.some(x=>x.inventoryCode===e.inventoryCode));book={...old,exemplars:[...old.exemplars,...incoming]};}}putBook(s,book,true);}for(const photo of photos){s.photos=s.photos.filter(p=>p.id!==photo.id);s.photos.push(photo);}audit(s,type,actorId,{count:books.length});});
+export const getPhotos=async bookId=>(await read('photos')).filter(p=>!bookId||p.bookId===bookId);
+export const savePhoto=photo=>mutate(s=>{requirePermission(s,actorId,'holdings.edit');if(!s.books.some(b=>b.id===photo.bookId&&b.exemplars.some(e=>e.id===photo.id)))throw new Error('Ejemplar inexistente.');s.photos=s.photos.filter(p=>p.id!==photo.id);s.photos.push(photo);audit(s,'photo.saved',actorId,{exemplarId:photo.id});});
+export const deletePhoto=id=>mutate(s=>{requirePermission(s,actorId,'holdings.edit');s.photos=s.photos.filter(p=>p.id!==id);audit(s,'photo.deleted',actorId,{exemplarId:id});});
+export const deleteExemplar=(bookId,id)=>mutate(s=>{requirePermission(s,actorId,'holdings.edit');ensureRemovable(s,[id]);const b=s.books.find(b=>b.id===bookId);if(!b)throw new Error('Registro inexistente.');b.exemplars=b.exemplars.filter(e=>e.id!==id);s.photos=s.photos.filter(p=>p.id!==id);audit(s,'holding.deleted',actorId,{bookId,exemplarId:id});});
+// Legacy service entry points may not bypass the operation/permission rules.
+export const savePatron=data=>execute('user.save',data);
+export const saveLoan=()=>Promise.reject(new Error('Usá el flujo de préstamo o devolución.'));
+export const saveReservation=()=>Promise.reject(new Error('Usá el flujo de reservas.'));
+export const appendActivity=entry=>mutate(s=>{requirePermission(s,actorId,'reports.view');audit(s,entry.type,actorId,entry);});
+export const exportArchive=async()=>{const s=await readState();requirePermission(s,actorId,'reports.view');return {app:'asistente-bibliotecario',version:4,exportedAt:new Date().toISOString(),...s};};
+export function restoreArchive(archive){return mutate(s=>{requirePermission(s,actorId,'users.manage');requirePermission(s,actorId,'permissions.manage');requirePermission(s,actorId,'catalog.delete');if(s.loans.some(activeLoan)||s.reservations.some(activeReservation))throw new Error('Cerrá las operaciones pendientes antes de restaurar un respaldo completo.');const maxSequence=config(s).sequence;for(const name of STORES)s[name]=structuredClone(archive[name]);normalizeHoldings(s);config(s).sequence=Math.max(maxSequence||1,config(s).sequence);audit(s,'backup.restored',actorId);});}
+
+export async function expireDueReservations(){const state=await readState();if(state.reservations.some(r=>activeReservation(r)&&r.expiresAt&&Date.parse(r.expiresAt)<=Date.now()))await mutate(s=>expireReservations(s,'system'));}

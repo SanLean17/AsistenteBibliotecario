@@ -1,7 +1,7 @@
 // Dominio local preparado para migrar a multi-institución.
 export const LOCAL_SCOPE=Object.freeze({institutionId:'local-institution',libraryId:'local-library',collectionId:'local-collection'});
-export const USER_ROLES=Object.freeze(['administrador','bibliotecario','docente','alumno']);
-export const CIRCULATION_STATES=Object.freeze(['untracked','available','loaned','reserved','overdue','lost','withdrawn']);
+export const USER_ROLES=Object.freeze(['director','administrador','bibliotecario','docente','alumno']);
+export const CIRCULATION_STATES=Object.freeze(['untracked','available','loaned','reserved','overdue','lost','withdrawn','damaged']);
 export const RESERVATION_STATES=Object.freeze(['requested','approved','ready','collected','cancelled','expired']);
 export const LOCATION_FIELDS=Object.freeze(['sector','shelving','shelf']);
 
