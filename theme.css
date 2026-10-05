@@ -22,3 +22,5 @@ body{background:var(--canvas-gradient);min-height:100vh}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @keyframes menu-reveal{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.menu-lines,.menu-lines:after{transition:none}#site-nav.is-open,#workspace-menu.is-open{animation:none!important}}
+
+:root{--sun-wash:#fff0b8;--sun-ink:#795800}:root[data-theme=dark]{--sun-wash:#41371f;--sun-ink:#ffe39a}
