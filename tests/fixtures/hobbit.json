@@ -1,0 +1,414 @@
+{
+  "ISBN:9505470630": {
+    "title": "El Hobbit / The Hobbit",
+    "authors": [
+      {
+        "url": "http://openlibrary.org/authors/OL26320A/J.R.R._Tolkien",
+        "name": "J.R.R. Tolkien"
+      }
+    ],
+    "identifiers": {
+      "goodreads": [
+        "227221"
+      ],
+      "librarything": [
+        "3206242"
+      ],
+      "isbn_10": [
+        "9505470630"
+      ],
+      "isbn_13": [
+        "9789505470631"
+      ],
+      "openlibrary": [
+        "OL9137994M"
+      ]
+    },
+    "number_of_pages": 309,
+    "publishers": [
+      {
+        "name": "Minotauro"
+      }
+    ],
+    "publish_date": "January 30, 2005",
+    "subjects": [
+      {
+        "name": "Fantasy",
+        "url": "https://openlibrary.org/subjects/fantasy"
+      },
+      {
+        "name": "Arkenstone",
+        "url": "https://openlibrary.org/subjects/arkenstone"
+      },
+      {
+        "name": "Battle of Five Armies",
+        "url": "https://openlibrary.org/subjects/battle_of_five_armies"
+      },
+      {
+        "name": "invisibility",
+        "url": "https://openlibrary.org/subjects/invisibility"
+      },
+      {
+        "name": "thrushes",
+        "url": "https://openlibrary.org/subjects/thrushes"
+      },
+      {
+        "name": "eagles",
+        "url": "https://openlibrary.org/subjects/eagles"
+      },
+      {
+        "name": "hobbits",
+        "url": "https://openlibrary.org/subjects/hobbits"
+      },
+      {
+        "name": "wizards",
+        "url": "https://openlibrary.org/subjects/wizards"
+      },
+      {
+        "name": "dragons",
+        "url": "https://openlibrary.org/subjects/dragons"
+      },
+      {
+        "name": "dwarves",
+        "url": "https://openlibrary.org/subjects/dwarves"
+      },
+      {
+        "name": "elves",
+        "url": "https://openlibrary.org/subjects/elves"
+      },
+      {
+        "name": "men",
+        "url": "https://openlibrary.org/subjects/men"
+      },
+      {
+        "name": "trolls",
+        "url": "https://openlibrary.org/subjects/trolls"
+      },
+      {
+        "name": "goblins",
+        "url": "https://openlibrary.org/subjects/goblins"
+      },
+      {
+        "name": "giant spiders",
+        "url": "https://openlibrary.org/subjects/giant_spiders"
+      },
+      {
+        "name": "the one ring",
+        "url": "https://openlibrary.org/subjects/the_one_ring"
+      },
+      {
+        "name": "juvenile fantasy",
+        "url": "https://openlibrary.org/subjects/juvenile_fantasy"
+      },
+      {
+        "name": "YOUNG ADULT FICTION",
+        "url": "https://openlibrary.org/subjects/young_adult_fiction"
+      },
+      {
+        "name": "Fantasy fiction",
+        "url": "https://openlibrary.org/subjects/fantasy_fiction"
+      },
+      {
+        "name": "Juvenile fiction",
+        "url": "https://openlibrary.org/subjects/juvenile_fiction"
+      },
+      {
+        "name": "Fiction",
+        "url": "https://openlibrary.org/subjects/fiction"
+      },
+      {
+        "name": "Classics",
+        "url": "https://openlibrary.org/subjects/classics"
+      },
+      {
+        "name": "General",
+        "url": "https://openlibrary.org/subjects/general"
+      },
+      {
+        "name": "Media Tie-In",
+        "url": "https://openlibrary.org/subjects/media_tie-in"
+      },
+      {
+        "name": "children's books",
+        "url": "https://openlibrary.org/subjects/children's_books"
+      },
+      {
+        "name": "juvenile works",
+        "url": "https://openlibrary.org/subjects/juvenile_works"
+      },
+      {
+        "name": "Teen & Young Adult literature",
+        "url": "https://openlibrary.org/subjects/teen_&_young_adult_literature"
+      },
+      {
+        "name": "English Fantasy fiction",
+        "url": "https://openlibrary.org/subjects/english_fantasy_fiction"
+      },
+      {
+        "name": "Specimens",
+        "url": "https://openlibrary.org/subjects/specimens"
+      },
+      {
+        "name": "Juvenile Fantasy fiction",
+        "url": "https://openlibrary.org/subjects/juvenile_fantasy_fiction"
+      },
+      {
+        "name": "Toy and movable books",
+        "url": "https://openlibrary.org/subjects/toy_and_movable_books"
+      },
+      {
+        "name": "Magic in fiction",
+        "url": "https://openlibrary.org/subjects/magic_in_fiction"
+      },
+      {
+        "name": "Open Library Staff Picks",
+        "url": "https://openlibrary.org/subjects/open_library_staff_picks"
+      },
+      {
+        "name": "juvenile literature",
+        "url": "https://openlibrary.org/subjects/juvenile_literature"
+      },
+      {
+        "name": "Pictorial works",
+        "url": "https://openlibrary.org/subjects/pictorial_works"
+      },
+      {
+        "name": "Magic",
+        "url": "https://openlibrary.org/subjects/magic"
+      },
+      {
+        "name": "Quests (Expeditions)",
+        "url": "https://openlibrary.org/subjects/quests_(expeditions)"
+      },
+      {
+        "name": "Graphic novels",
+        "url": "https://openlibrary.org/subjects/graphic_novels"
+      },
+      {
+        "name": "Dragons in fiction",
+        "url": "https://openlibrary.org/subjects/dragons_in_fiction"
+      },
+      {
+        "name": "Children's stories",
+        "url": "https://openlibrary.org/subjects/children's_stories"
+      },
+      {
+        "name": "Ficción fantástica inglesa",
+        "url": "https://openlibrary.org/subjects/ficción_fantástica_inglesa"
+      },
+      {
+        "name": "Fantasy in fiction",
+        "url": "https://openlibrary.org/subjects/fantasy_in_fiction"
+      },
+      {
+        "name": "Translations into Russian",
+        "url": "https://openlibrary.org/subjects/translations_into_russian"
+      },
+      {
+        "name": "Ficción",
+        "url": "https://openlibrary.org/subjects/ficción"
+      },
+      {
+        "name": "Middle Earth (Imaginary place)",
+        "url": "https://openlibrary.org/subjects/middle_earth_(imaginary_place)"
+      },
+      {
+        "name": "Tierra Media (Lugar imaginario)",
+        "url": "https://openlibrary.org/subjects/tierra_media_(lugar_imaginario)"
+      },
+      {
+        "name": "Bilbo Baggins (Fictitious character)",
+        "url": "https://openlibrary.org/subjects/bilbo_baggins_(fictitious_character)"
+      },
+      {
+        "name": "Dwarfs",
+        "url": "https://openlibrary.org/subjects/dwarfs"
+      },
+      {
+        "name": "Comic books, strips",
+        "url": "https://openlibrary.org/subjects/comic_books,_strips"
+      },
+      {
+        "name": "Reading Level-Grade 11",
+        "url": "https://openlibrary.org/subjects/reading_level-grade_11"
+      },
+      {
+        "name": "Reading Level-Grade 12",
+        "url": "https://openlibrary.org/subjects/reading_level-grade_12"
+      },
+      {
+        "name": "British and irish fiction (fictional works by one author)",
+        "url": "https://openlibrary.org/subjects/british_and_irish_fiction_(fictional_works_by_one_author)"
+      },
+      {
+        "name": "Fiction, fantasy, general",
+        "url": "https://openlibrary.org/subjects/fiction,_fantasy,_general"
+      },
+      {
+        "name": "Middle earth (imaginary place), fiction",
+        "url": "https://openlibrary.org/subjects/middle_earth_(imaginary_place),_fiction"
+      },
+      {
+        "name": "Comics & graphic novels, fantasy",
+        "url": "https://openlibrary.org/subjects/comics_&_graphic_novels,_fantasy"
+      },
+      {
+        "name": "Science fiction, fantasy, horror",
+        "url": "https://openlibrary.org/subjects/science_fiction,_fantasy,_horror"
+      },
+      {
+        "name": "Child and youth fiction",
+        "url": "https://openlibrary.org/subjects/child_and_youth_fiction"
+      },
+      {
+        "name": "Gollum (Fictitious character)",
+        "url": "https://openlibrary.org/subjects/gollum_(fictitious_character)"
+      },
+      {
+        "name": "Hobbits (Fictitious characters)",
+        "url": "https://openlibrary.org/subjects/hobbits_(fictitious_characters)"
+      },
+      {
+        "name": "Baggins, bilbo (fictitious character), fiction",
+        "url": "https://openlibrary.org/subjects/baggins,_bilbo_(fictitious_character),_fiction"
+      },
+      {
+        "name": "Children's fiction",
+        "url": "https://openlibrary.org/subjects/children's_fiction"
+      },
+      {
+        "name": "Gandalf (fictitious character), fiction",
+        "url": "https://openlibrary.org/subjects/gandalf_(fictitious_character),_fiction"
+      },
+      {
+        "name": "Baggins, frodo (fictitious character), fiction",
+        "url": "https://openlibrary.org/subjects/baggins,_frodo_(fictitious_character),_fiction"
+      },
+      {
+        "name": "Characters",
+        "url": "https://openlibrary.org/subjects/characters"
+      },
+      {
+        "name": "Characters and characteristics",
+        "url": "https://openlibrary.org/subjects/characters_and_characteristics"
+      },
+      {
+        "name": "Hobbit, an unexpected journey (Motion picture)",
+        "url": "https://openlibrary.org/subjects/hobbit,_an_unexpected_journey_(motion_picture)"
+      },
+      {
+        "name": "Hobbit (Tolkien, J.R.R.)",
+        "url": "https://openlibrary.org/subjects/hobbit_(tolkien,_j.r.r.)"
+      },
+      {
+        "name": "YOUNG ADULT FICTION / Classics",
+        "url": "https://openlibrary.org/subjects/young_adult_fiction_/_classics"
+      },
+      {
+        "name": "YOUNG ADULT FICTION / Fantasy / General",
+        "url": "https://openlibrary.org/subjects/young_adult_fiction_/_fantasy_/_general"
+      },
+      {
+        "name": "YOUNG ADULT FICTION / Media Tie-In",
+        "url": "https://openlibrary.org/subjects/young_adult_fiction_/_media_tie-in"
+      },
+      {
+        "name": "Motion pictures",
+        "url": "https://openlibrary.org/subjects/motion_pictures"
+      },
+      {
+        "name": "Fiction, fantasy, epic",
+        "url": "https://openlibrary.org/subjects/fiction,_fantasy,_epic"
+      },
+      {
+        "name": "English literature",
+        "url": "https://openlibrary.org/subjects/english_literature"
+      },
+      {
+        "name": "Fiction, media tie-in",
+        "url": "https://openlibrary.org/subjects/fiction,_media_tie-in"
+      },
+      {
+        "name": "Courage",
+        "url": "https://openlibrary.org/subjects/courage"
+      },
+      {
+        "name": "Literatura angielska dla młodzieży",
+        "url": "https://openlibrary.org/subjects/literatura_angielska_dla_młodzieży"
+      },
+      {
+        "name": "Tłumaczenia polskie",
+        "url": "https://openlibrary.org/subjects/tłumaczenia_polskie"
+      },
+      {
+        "name": "Novela Inglesa",
+        "url": "https://openlibrary.org/subjects/novela_inglesa"
+      },
+      {
+        "name": "Spanish language materials",
+        "url": "https://openlibrary.org/subjects/spanish_language_materials"
+      },
+      {
+        "name": "Untranslated",
+        "url": "https://openlibrary.org/subjects/untranslated"
+      },
+      {
+        "name": "Terre du Milieu (Lieu imaginaire)",
+        "url": "https://openlibrary.org/subjects/terre_du_milieu_(lieu_imaginaire)"
+      },
+      {
+        "name": "Romans, nouvelles",
+        "url": "https://openlibrary.org/subjects/romans,_nouvelles"
+      },
+      {
+        "name": "Hobbits (Personnages fictifs)",
+        "url": "https://openlibrary.org/subjects/hobbits_(personnages_fictifs)"
+      },
+      {
+        "name": "Novela fantástica",
+        "url": "https://openlibrary.org/subjects/novela_fantástica"
+      },
+      {
+        "name": "Magiciens",
+        "url": "https://openlibrary.org/subjects/magiciens"
+      },
+      {
+        "name": "Schultheater",
+        "url": "https://openlibrary.org/subjects/schultheater"
+      },
+      {
+        "name": "Fiction, fairy tales, folk tales, legends & mythology",
+        "url": "https://openlibrary.org/subjects/fiction,_fairy_tales,_folk_tales,_legends_&_mythology"
+      },
+      {
+        "name": "Fiction, fantasy, dragons & mythical creatures",
+        "url": "https://openlibrary.org/subjects/fiction,_fantasy,_dragons_&_mythical_creatures"
+      },
+      {
+        "name": "Comics & graphic novels, fantasy, general",
+        "url": "https://openlibrary.org/subjects/comics_&_graphic_novels,_fantasy,_general"
+      },
+      {
+        "name": "Good and evil",
+        "url": "https://openlibrary.org/subjects/good_and_evil"
+      },
+      {
+        "name": "English Fantasy literature",
+        "url": "https://openlibrary.org/subjects/english_fantasy_literature"
+      },
+      {
+        "name": "English fiction",
+        "url": "https://openlibrary.org/subjects/english_fiction"
+      },
+      {
+        "name": "Adventure stories",
+        "url": "https://openlibrary.org/subjects/adventure_stories"
+      }
+    ],
+    "cover": {
+      "small": "https://covers.openlibrary.org/b/id/1052113-S.jpg",
+      "medium": "https://covers.openlibrary.org/b/id/1052113-M.jpg",
+      "large": "https://covers.openlibrary.org/b/id/1052113-L.jpg"
+    }
+  }
+}

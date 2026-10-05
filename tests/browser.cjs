@@ -9,7 +9,7 @@ const fs = require('node:fs');
   await page.goto('http://127.0.0.1:4173');await page.getByText('Tu primera historia empieza acá').waitFor();
   await page.screenshot({path:'qa/desktop-inicio.png',fullPage:true});
   await page.getByRole('button',{name:'Agregar mi primer libro'}).click();await page.getByRole('button',{name:'Cargar manualmente',exact:true}).click();
-  await page.locator('[name=title]').fill('Cuentos de la selva');await page.locator('[name=author]').fill('Horacio Quiroga');await page.locator('[name=copies]').fill('2');await page.locator('[name=contents]').fill('La tortuga gigante\nLas medias de los flamencos');await page.locator('[name=location]').fill('Estante A');
+  await page.locator('[name=title]').fill('Cuentos de la selva');await page.locator('[name=author]').fill('Horacio Quiroga');await page.locator('[name=copies]').fill('2');await page.locator('#optional-contents summary').click();await page.locator('[name=contents]').fill('La tortuga gigante\nLas medias de los flamencos');await page.locator('[name=location]').fill('Estante A');
   await page.getByRole('button',{name:'Guardar libro',exact:true}).click();await page.locator('#editor').waitFor({state:'hidden'});await page.getByRole('button',{name:'Ver Cuentos de la selva',exact:true}).waitFor();
   await page.reload();await page.getByRole('button',{name:'Ver Cuentos de la selva',exact:true}).waitFor();
   await page.getByRole('link',{name:'Ver biblioteca'}).click();await page.getByRole('searchbox').fill('tórtuga');await page.getByRole('button',{name:'Ver Cuentos de la selva',exact:true}).click();

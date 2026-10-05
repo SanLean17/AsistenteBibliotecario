@@ -1,5 +1,6 @@
-import { cleanISBN, validISBN } from './isbn.js';
-import { safeCover } from './metadata.js';
+import { validPhotoURL } from './photos.js?v=20261004-2';
+import { cleanISBN, validISBN } from './isbn.js?v=20261004-2';
+import { safeCover } from './metadata.js?v=20261004-2';
 export const categories = ['Cuentos', 'Novela', 'Poesía', 'Informativo', 'Otros'];
 export const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const searchable = value => normalize(value)
@@ -10,7 +11,7 @@ export function searchBooks(books, query, category = '') {
   const ignored = new Set(['de','del','la','el','los','las','un','una','que','con','sobre','tengan','tenga','libro','libros']);
   const words = searchable(query).trim().split(/\s+/).filter(w=>!ignored.has(w));
   return books.filter(book => (!category || book.category === category) &&
-    (cleanISBN(query) && cleanISBN(book.isbn).includes(cleanISBN(query)) || words.every(word => searchable([book.title,book.subtitle,book.author,book.isbn,book.publisher,book.location,book.category,...(book.subjects||[]),...(book.contents||[])].join(' ')).includes(word))));
+    (cleanISBN(query) && cleanISBN(book.isbn).includes(cleanISBN(query)) || words.every(word => searchable([book.title,book.subtitle,book.author,book.isbn,book.publisher,book.location,book.category,...(book.subjects||[]),...(book.sourceSubjects||[]),...(book.contents||[])].join(' ')).includes(word))));
 }
 export function validateBook(raw) {
   const text = (key,max) => String(raw[key] ?? '').trim().slice(0,max);
@@ -30,7 +31,7 @@ export function validateBook(raw) {
   const location=text('location',120);
   const sources=list(raw.sources).filter(s=>['Google Books','Open Library'].includes(s));
   const fieldSources=Object.fromEntries(Object.entries(raw.fieldSources||{}).filter(([k,v])=>['title','subtitle','authors','publisher','year','pages','language','subjects','cover','contents'].includes(k)&&typeof v==='string'&&v.split(' + ').every(s=>sources.includes(s))));
-  return {id,title,subtitle:text('subtitle',300),author,authors:list(author),isbn,category:categories.includes(raw.category)?raw.category:'Otros',publisher:text('publisher',120),year,pages,language:text('language',30),subjects:list(raw.subjects),copies,location,condition,contents:list(raw.contents,500),notes:text('notes',5000),createdAt:typeof raw.createdAt==='string'?raw.createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),cover:safeCover(raw.cover),sources,fieldSources,
+  return {id,title,subtitle:text('subtitle',300),author,authors:list(author),isbn,category:categories.includes(raw.category)?raw.category:'Otros',publisher:text('publisher',120),year,pages,language:text('language',30),subjects:list(raw.subjects),sourceSubjects:list(raw.sourceSubjects),subjectsLocalized:raw.subjectsLocalized===true,categorySuggested:raw.categorySuggested===true,copies,location,condition,contents:list(raw.contents,500),notes:text('notes',5000),createdAt:typeof raw.createdAt==='string'?raw.createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),cover:safeCover(raw.cover),sources,fieldSources,
     schemaVersion:2,workId:typeof raw.workId==='string'?raw.workId:crypto.randomUUID(),editionId:typeof raw.editionId==='string'?raw.editionId:id,
     exemplars:Array.from({length:copies},(_,i)=>({id:typeof raw.exemplars?.[i]?.id==='string'?raw.exemplars[i].id:crypto.randomUUID(),location,condition})),
     // Future photo/OCR jobs store images separately. Nothing is uploaded or inferred now.
@@ -39,8 +40,20 @@ export function validateBook(raw) {
 }
 export function parseBackup(text) {
   const data=JSON.parse(text);
-  if(data.app!=='asistente-bibliotecario'||![1,2].includes(data.version)||!Array.isArray(data.books)||data.books.length>10000)throw new Error('El archivo no es un respaldo compatible de Asistente Bibliotecario.');
+  if(data.app!=='asistente-bibliotecario'||![1,2,3].includes(data.version)||!Array.isArray(data.books)||data.books.length>10000)throw new Error('El archivo no es un respaldo compatible de Asistente Bibliotecario.');
   const books=data.books.map(validateBook);
   if(new Set(books.map(b=>b.id)).size!==books.length)throw new Error('El respaldo contiene identificadores repetidos.');
   return books;
+}
+
+export function parseArchive(text) {
+ const books=parseBackup(text), data=JSON.parse(text), photos=data.version===3?(data.photos||[]):[];
+ if(!Array.isArray(photos)||photos.length>10000)throw new Error('Las fotos del respaldo no son válidas.');
+ const seen=new Set();
+ for(const photo of photos){
+  const book=books.find(b=>b.id===photo.bookId);
+  if(!book?.exemplars.some(e=>e.id===photo.id)||seen.has(photo.id)||!validPhotoURL(photo.dataUrl))throw new Error('El respaldo contiene una foto inválida o sin ejemplar asociado.');
+  seen.add(photo.id);
+ }
+ return {books,photos:photos.map(p=>({id:p.id,bookId:p.bookId,dataUrl:p.dataUrl,takenAt:String(p.takenAt||'').slice(0,40)}))};
 }

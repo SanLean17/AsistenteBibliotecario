@@ -1,4 +1,5 @@
-import { cleanISBN, validISBN, canonicalISBN } from './isbn.js';
+import { localizeBook } from './subjects.js?v=20261004-2';
+import { cleanISBN, validISBN, canonicalISBN } from './isbn.js?v=20261004-2';
 export function safeCover(value) {
   try {
     const url = new URL(value);
@@ -31,7 +32,7 @@ export function mergeMetadata(records, isbn) {
     }
   }
   book.author = (book.authors || []).join('; ');
-  return book;
+  return localizeBook(book);
 }
 export async function lookupISBN(value, {signal, fetcher=fetch, timeout=10000}={}) {
   const isbn = cleanISBN(value);
