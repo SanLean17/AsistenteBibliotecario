@@ -44,9 +44,9 @@ html{scroll-behavior:smooth;scroll-padding-top:28px}
 #producto,#escuelas,.flow-section,.closing-section,.editorial-section{background:transparent}
 .hero-title em,.closing-section em{background:none;text-decoration:none}
 .intro-rule,.steps li:before{background:var(--accent)}
-.hero-sun{position:absolute;z-index:0;pointer-events:none;left:-6%;bottom:0;width:112%;max-width:700px;aspect-ratio:2/1;overflow:hidden;opacity:.32}.hero-sun img{display:block;width:100%;max-width:none;height:auto}
-.hero-grid{align-items:center}.hero-title{min-width:0;position:relative;isolation:isolate;padding-bottom:clamp(88px,8vw,115px)}.hero-title h1{position:relative;z-index:1}
+.hero-sun{position:relative;pointer-events:none;width:min(400px,90%);aspect-ratio:2/1;margin:24px 0 -20px 25px;overflow:hidden;opacity:.68}.hero-sun img{position:absolute;inset:0 auto auto 0;display:block;width:100%;max-width:none;height:auto}
+.hero-grid{align-items:center}.hero-title{min-width:0}
 .product-preview,.preview-process,.capability-grid article,.capability-grid article+article,.problem-grid article,.problem-grid article:nth-child(even),.steps li,.steps li:last-child{background:var(--glass)}
-:root[data-theme=dark] .hero-sun{opacity:.23}
-@media(max-width:600px){.hero-title{padding-bottom:88px}.hero-sun{width:108%;left:-4%;max-width:none}}
+:root[data-theme=dark] .hero-sun{opacity:.4}
+@media(max-width:600px){.hero-sun{width:min(260px,85%);margin:20px 0 0 15px}}
 .site-header nav>a:not(.button):hover{text-decoration:none;color:var(--primary)}
