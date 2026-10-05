@@ -1,4 +1,4 @@
-import { validISBN } from './isbn.js?v=20261005-1';
+import { validISBN } from './isbn.js?v=20261005-3';
 
 async function createZXingReader(){
   await import('../vendor/zxing-browser-0.2.1.min.js');

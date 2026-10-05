@@ -1,78 +1,24 @@
 <!doctype html>
 <html lang="es-AR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#EBF3FF">
-  <meta name="description" content="Gestión y consulta inteligente para bibliotecas escolares e institucionales.">
-  <title>Asistente Bibliotecario</title>
-  <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=20261005-2">
-  <link rel="stylesheet" href="./design.css?v=20261005-2">
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#EBF3FF">
+ <title>Asistente Bibliotecario · Bibliotecas escolares</title>
+ <meta name="description" content="Identificá libros por ISBN, organizá ejemplares y encontrá los contenidos de la biblioteca de tu escuela. Prototipo local para bibliotecas escolares argentinas.">
+ <link rel="icon" href="./icon.svg?v=20261005-3" type="image/svg+xml"><link rel="stylesheet" href="./theme.css?v=20261005-3"><link rel="stylesheet" href="./landing.css?v=20261005-3">
+ <script type="module" src="./src/landing.js?v=20261005-3"></script>
 </head>
-<body>
-  <aside class="sidebar">
-    <a href="#inicio" class="brand" aria-label="Asistente Bibliotecario, inicio">
-      <span class="brand-icon">AB</span>
-      <span>Asistente<br><strong>Bibliotecario</strong></span>
-    </a>
-    <span class="nav-label">TU BIBLIOTECA, EN MOVIMIENTO</span>
-    <nav aria-label="Principal">
-      <a href="#inicio" data-nav="inicio"><span class="nav-icon">⌂</span><span>Inicio</span></a>
-      <a href="#biblioteca" data-nav="biblioteca"><span class="nav-icon">▥</span><span>Catálogo</span></a>
-      <a href="#agregar" data-nav="agregar"><span class="nav-icon">＋</span><span>Incorporar material</span></a>
-    <a href="#configuracion" data-nav="configuracion"><span class="nav-icon">⚙︎</span><span>Configuración</span></a></nav>
-    <div class="sidebar-note"><span class="note-star" aria-hidden="true"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50 3v94M3 50h94M17 17l66 66M17 83l66-66" fill="none" stroke="currentColor" stroke-width="5"/></svg></span>
-      <strong>Pequeños libros.<br>Grandes mundos.</strong>
-      <p>Catalogación, consulta y seguimiento de ejemplares desde una interfaz simple.</p>
-    </div>
-    <div class="local-label"><i></i> Prototipo local <small>Los datos se guardan en este dispositivo.</small></div>
-  </aside>
-
-  <div class="workspace">
-    <header class="topbar">
-      <div>
-        <span class="mini-logo">AB</span>
-        <div class="institution">
-          <strong>Tu biblioteca</strong>
-          <small>Biblioteca escolar</small>
-        </div>
-        <span class="badge">PROTOTIPO</span>
-      </div>
-      <div class="top-actions">
-        <button class="icon-button" data-action="theme" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
-        <a href="#configuracion" class="icon-button settings-link" aria-label="Configuración" title="Configuración">⚙︎</a><button class="icon-button" data-action="help" aria-label="Información del sistema">?</button>
-      </div>
-    </header>
-    <main id="main"></main>
-    <footer><span>Asistente Bibliotecario · Historias que conectan</span><span>Catálogo local · Sin sincronización en la nube</span></footer>
-  </div>
-
-  <nav class="mobile-nav" aria-label="Navegación móvil">
-    <a href="#inicio" data-nav="inicio">⌂<span>Inicio</span></a>
-    <a href="#biblioteca" data-nav="biblioteca">▥<span>Catálogo</span></a>
-    <a href="#agregar" data-nav="agregar">＋<span>Incorporar</span></a>
-  </nav>
-
-  <dialog id="image-viewer" aria-labelledby="image-title">
-    <div class="dialog-heading"><h2 id="image-title"></h2><button class="close" data-close="image-viewer" aria-label="Cerrar imagen">×</button></div>
-    <img id="large-image" alt=""><p id="image-status" role="status"></p>
-  </dialog>
-
-  <dialog id="confirm-action" aria-labelledby="confirm-title" aria-describedby="confirm-message"><form method="dialog"><span class="danger-label">ZONA DE PELIGRO</span><h2 id="confirm-title"></h2><p id="confirm-message"></p><div class="button-row"><button id="confirm-cancel" class="button secondary" value="cancel" autofocus>Cancelar</button><button id="confirm-accept" class="button danger" value="confirm">Eliminar definitivamente</button></div></form></dialog>
-  <dialog id="help" aria-labelledby="help-title">
-    <div class="dialog-heading"><h2 id="help-title">Acerca de este prototipo</h2><button class="close" data-close="help" aria-label="Cerrar">×</button></div>
-    <p>Asistente Bibliotecario está pensado para instituciones educativas que necesitan registrar, localizar y consultar su patrimonio bibliográfico de forma simple.</p>
-    <p>La incorporación por ISBN consulta fuentes bibliográficas públicas. La información institucional y las fotos de ejemplares permanecen en este navegador durante esta etapa de prueba.</p>
-    <p>Exportá un respaldo con frecuencia. La futura versión institucional incorporará usuarios, préstamos, circulación, estadísticas, sincronización y herramientas de asistencia con IA.</p>
-  </dialog>
-
-  <input id="physical-photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden>
-  <input id="physical-camera" type="file" accept="image/*" capture="environment" hidden>
-  <input id="barcode-photo" type="file" accept="image/*" capture="environment" hidden>
-  <input id="import-file" type="file" accept="application/json,.json" hidden>
-  <div id="toast" role="status" aria-live="polite"></div>
-
-  <script type="module" src="./src/app.js?v=20261005-2"></script>
-</body>
-</html>
+<body class="landing-page">
+ <a href="#contenido" class="skip-link">Ir al contenido</a>
+ <header class="site-header"><a class="wordmark" href="./" aria-label="Asistente Bibliotecario, inicio"><span class="mark">ab<span>↗</span></span><span>Asistente<br>Bibliotecario</span></a><button id="menu-toggle" class="button secondary" aria-expanded="false" aria-controls="site-nav">Menú</button><nav id="site-nav" aria-label="Navegación pública"><a href="#producto">Producto</a><a href="#como-funciona">Cómo funciona</a><a href="#escuelas">Para escuelas</a><a href="#recursos">Recursos</a><a href="./app.html#inicio" class="button primary">Abrir catálogo <span aria-hidden="true">↗</span></a></nav><button data-theme-toggle class="theme-button" aria-label="Cambiar tema" title="Cambiar tema">◐</button></header>
+ <main id="contenido">
+  <section class="landing-hero wrap"><div class="hero-meta"><span>PARA BIBLIOTECAS ESCOLARES / ARGENTINA</span><span>01 — EL PUNTO DE PARTIDA</span></div><div class="hero-grid"><div class="hero-title"><h1>La biblioteca<br>de tu escuela.<br><em>Más fácil de<br>encontrar.</em></h1></div><div class="hero-intro"><span class="intro-rule"></span><h2>Organizá la biblioteca sin cargar cada libro a mano.</h2><p>Identificá una edición por su ISBN, registrá dónde está cada ejemplar y encontrá después sus temas y contenidos. Menos transcripción. Más tiempo para acompañar a quienes leen.</p><div class="cta-stack"><a class="button primary" href="./app.html#agregar">Comenzar catálogo <span aria-hidden="true">↗</span></a><a class="button secondary" href="#como-funciona">Ver cómo funciona <span aria-hidden="true">↓</span></a></div><p class="micro">Prototipo local, sin registro. Los datos quedan en este navegador; podés exportar un respaldo.</p></div></div>
+  <figure class="product-preview"><figcaption><span>UN VISTAZO AL PRODUCTO</span><span>Ejemplo ilustrativo · No modifica tu catálogo</span></figcaption><div class="preview-grid"><div class="preview-catalog"><div class="preview-heading"><span>BIBLIOTECA / CATÁLOGO</span><span>↗</span></div><div class="preview-search">⌕ <span>cuento sobre animales</span></div><div class="preview-book"><div class="editorial-cover"><small>HORACIO QUIROGA</small><strong>Cuentos<br>de la<br><em>selva</em></strong><span>LITERATURA / CUENTOS</span></div><div class="preview-book-info"><span class="micro">REGISTRO BIBLIOGRÁFICO</span><h3>Cuentos de la selva</h3><p>Horacio Quiroga</p><div class="preview-tags"><span>Animales</span><span>Naturaleza</span><span>Amistad</span></div><dl><div><dt>Ejemplares</dt><dd>2 registrados</dd></div><div><dt>Ubicación</dt><dd>Literatura · Estante 3</dd></div><div><dt>Circulación</dt><dd>Seguimiento en desarrollo</dd></div></dl></div></div></div><div class="preview-process"><span class="micro">DE LA CONTRATAPA A LA FICHA</span><div class="barcode" aria-hidden="true"></div><h3>Un código.<br>Menos carga manual.</h3><ol><li>ISBN identificado</li><li>Fuentes bibliográficas consultadas</li><li>Ficha lista para revisar</li></ol><p>Vos completás los datos que solo conoce tu biblioteca: cantidad, ubicación y estado.</p></div></div></figure>
+  </section>
+  <section id="producto" class="wrap editorial-section"><div class="section-index">02 / EL PRODUCTO</div><div class="section-body"><h2>Los libros están.<br><em>Hagamos que aparezcan.</em></h2><p class="section-lead">Una colección puede tener mucho para ofrecer y ser difícil de recorrer. Empezamos por volverla visible, sin sumar trabajo innecesario.</p><div class="problem-grid"><article><span>01</span><h3>Del estante al inventario.</h3><p>Registrá los materiales que todavía no tienen una ficha digital y ubicá cada copia física.</p></article><article><span>02</span><h3>Menos datos a mano.</h3><p>Consultá Google Books y Open Library con ISBN equivalentes. Revisá la edición y completá lo que falte.</p></article><article><span>03</span><h3>También lo que está adentro.</h3><p>Buscá cuentos, capítulos y temas recuperados de las fuentes o registrados en la ficha.</p></article><article><span>04</span><h3>Un recorrido que continúa.</h3><p>Reservas y préstamos tendrán su propio seguimiento. Hoy nos enfocamos en un catálogo confiable.</p></article></div></div></section>
+  <section id="como-funciona" class="flow-section"><div class="wrap"><div class="section-index">03 / CÓMO FUNCIONA</div><div class="flow-heading"><h2>De un libro en la mano<br><em>a una historia que se encuentra.</em></h2><a class="button secondary" href="./app.html#agregar">Probar la incorporación ↗</a></div><ol class="steps"><li><span>01</span><h3>Escaneá el ISBN.</h3><p>Cámara en vivo, fotografía del código o ingreso manual. Con o sin guiones.</p></li><li><span>02</span><h3>Recuperá la ficha.</h3><p>Se consultan las fuentes y combinan los datos de la misma edición. Vos la confirmás.</p></li><li><span>03</span><h3>Ubicá los ejemplares.</h3><p>Cantidad, ubicación, estado y una foto opcional de cada copia.</p></li><li><span>04</span><h3>Sumá los contenidos.</h3><p>El índice se recupera cuando la fuente lo ofrece. Transcribirlo es opcional; OCR/IA está previsto.</p></li><li><span>05</span><h3>Buscá y utilizá.</h3><p>Encontrá títulos, temas y cuentos dentro del catálogo de la institución.</p></li></ol></div></section>
+  <section id="escuelas" class="wrap editorial-section"><div class="section-index">04 / PARA ESCUELAS</div><div class="section-body"><h2>Una base concreta.<br><em>Un proyecto que puede crecer.</em></h2><p class="section-lead">Pensado para bibliotecarios y, en una próxima etapa, para docentes y estudiantes. Sin confundir lo disponible con lo que todavía estamos construyendo.</p><div class="capability-grid"><article><span class="status-label">DISPONIBLE AHORA</span><h3>Conocer la colección.</h3><ul><li>Identificación y catalogación por ISBN.</li><li>Catálogo y búsqueda sobre información indexada.</li><li>Ejemplares, estado, inventario y ubicación.</li><li>Portadas y fotografías físicas separadas.</li><li>Respaldo e importación del catálogo local.</li></ul><a href="./app.html#inicio" class="button primary">Entrar a la aplicación ↗</a></article><article><span class="status-label future">EN DESARROLLO / ROADMAP</span><h3>Conectar la biblioteca.</h3><ul><li>Reservas, préstamos y devoluciones.</li><li>Disponibilidad y avisos de retiro o vencimiento.</li><li>Acceso para docentes, estudiantes e instituciones.</li><li>Estadísticas, etiquetas y vocabularios controlados.</li><li>Índices con OCR/IA y búsqueda semántica.</li><li>Catálogo compartido y conexión entre escuelas.</li></ul></article></div></div></section>
+  <section id="recursos" class="wrap editorial-section resources"><div class="section-index">05 / RECURSOS</div><div class="section-body"><h2>Antes de empezar.</h2><details><summary>¿Qué ISBN conviene escanear?</summary><p>El de la contratapa, junto al código de barras, correspondiente a la edición impresa que tenés. Se aceptan ISBN-10 e ISBN-13, con o sin guiones.</p></details><details><summary>¿Dónde se guarda el catálogo?</summary><p>En este navegador y dispositivo, mediante almacenamiento local. Todavía no hay cuentas ni sincronización entre equipos. Exportá un respaldo desde Configuración antes de cambiar de dispositivo o borrar datos del navegador.</p><a class="button secondary" href="./app.html#configuracion">Ir a respaldos</a></details><details><summary>¿Qué fuentes se consultan?</summary><p>Open Library y Google Books se consultan automáticamente. BN Mariano Moreno, BNM e ISBN Argentina son fuentes argentinas diferentes: su consulta externa está disponible y sus integraciones se preparan por separado. La BN requiere un intermediario Z39.50, todavía no publicado.</p></details><details><summary>¿La búsqueda usa inteligencia artificial?</summary><p>Por ahora busca sobre títulos, autores, temas, sinónimos, descripciones y contenidos registrados. No infiere edades ni grados cuando esa información falta. La búsqueda semántica y el análisis de índices con IA son desarrollos futuros.</p></details><details><summary>¿Qué hago si no encuentra el libro?</summary><p>Probá el ISBN de la edición, verificá en las fuentes argentinas o usá la carga manual. Ninguna fuente externa tiene cobertura completa.</p><a class="button secondary" href="./app.html#agregar">Incorporar material</a></details></div></section>
+  <section class="closing-section wrap"><span class="section-index">EMPEZAR POR LO QUE YA TENÉS</span><h2>Tu biblioteca.<br><em>Un poco más cerca.</em></h2><a class="button primary" href="./app.html#agregar">Comenzar el catálogo ↗</a></section>
+ </main>
+ <footer class="site-footer wrap"><a class="wordmark" href="./"><span class="mark">ab<span>↗</span></span><span>Asistente<br>Bibliotecario</span></a><p>Bibliotecas escolares / Argentina<br>Nombre de trabajo · Prototipo local</p><a href="./app.html#inicio" class="button secondary">Abrir aplicación ↗</a></footer>
+</body></html>

@@ -1,26 +1,5 @@
-// Photos are separate from catalog records so listing/search never loads image bytes.
-let database;
-export function openDatabase() {
- return new Promise((resolve,reject)=>{
-  const request=indexedDB.open('asistente-bibliotecario',2);
-  request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains('books'))db.createObjectStore('books',{keyPath:'id'});if(!db.objectStoreNames.contains('photos')){const store=db.createObjectStore('photos',{keyPath:'id'});store.createIndex('bookId','bookId');}};
-  request.onsuccess=()=>{database=request.result;database.onversionchange=()=>database.close();resolve();};
-  request.onerror=()=>reject(request.error);request.onblocked=()=>reject(new Error('Cerrá otras pestañas de la biblioteca e intentá otra vez.'));
- });
-}
-function transaction(stores,mode,action) {
- return new Promise((resolve,reject)=>{const tx=database.transaction(stores,mode);const result=action(tx);tx.oncomplete=()=>resolve(result?.result);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error('No se pudo guardar.'));});
-}
-function putBook(tx,book) {
- tx.objectStore('books').put(book);
- const cursor=tx.objectStore('photos').index('bookId').openCursor(IDBKeyRange.only(book.id));
- const valid=new Set((book.exemplars||[]).map(e=>e.id));
- cursor.onsuccess=()=>{const c=cursor.result;if(c){if(!valid.has(c.value.id))c.delete();c.continue();}};
-}
-export const getBooks=()=>transaction(['books'],'readonly',tx=>tx.objectStore('books').getAll());
-export const saveBook=book=>transaction(['books','photos'],'readwrite',tx=>putBook(tx,book));
-export const deleteBook=id=>transaction(['books','photos'],'readwrite',tx=>{tx.objectStore('books').delete(id);const req=tx.objectStore('photos').index('bookId').openCursor(IDBKeyRange.only(id));req.onsuccess=()=>{const c=req.result;if(c){c.delete();c.continue();}};});
-export const clearCatalog=()=>transaction(['books','photos'],'readwrite',tx=>{tx.objectStore('books').clear();tx.objectStore('photos').clear();});
-export const mergeBooks=(books,photos=[])=>transaction(['books','photos'],'readwrite',tx=>{for(const b of books)putBook(tx,b);for(const p of photos)tx.objectStore('photos').put(p);});
-export const getPhotos=bookId=>transaction(['photos'],'readonly',tx=>bookId?tx.objectStore('photos').index('bookId').getAll(bookId):tx.objectStore('photos').getAll());
-export const savePhoto=photo=>transaction(['books','photos'],'readwrite',tx=>{const req=tx.objectStore('books').get(photo.bookId);req.onsuccess=()=>{if(!req.result?.exemplars?.some(e=>e.id===photo.id)){tx.abort();return;}tx.objectStore('photos').put(photo);};});
+import * as indexedDBAdapter from './storage/indexeddb.js?v=20261005-3';
+export const repositoryMethods=['openDatabase','getBooks','saveBook','deleteBook','clearCatalog','mergeBooks','getPhotos','savePhoto','deletePhoto','deleteExemplar'];
+export function createRepository(adapter){for(const method of repositoryMethods)if(typeof adapter[method]!=='function')throw new TypeError('Falta el método de almacenamiento: '+method);return Object.freeze(Object.fromEntries(repositoryMethods.map(key=>[key,adapter[key].bind(adapter)])));}
+export const repository=createRepository(indexedDBAdapter);
+export const {openDatabase,getBooks,saveBook,deleteBook,clearCatalog,mergeBooks,getPhotos,savePhoto,deletePhoto,deleteExemplar}=repository;
