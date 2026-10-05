@@ -1,6 +1,6 @@
 import { validPhotoURL } from './photos.js?v=20261004-2';
-import { cleanISBN, validISBN } from './isbn.js?v=20261004-2';
-import { safeCover } from './metadata.js?v=20261004-2';
+import { cleanISBN, validISBN } from './isbn.js?v=20261005-1';
+import { safeCover } from './metadata.js?v=20261005-1';
 export const categories = ['Cuentos', 'Novela', 'Poesía', 'Informativo', 'Otros'];
 export const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const searchable = value => normalize(value)
@@ -17,9 +17,9 @@ export function validateBook(raw) {
   const text = (key,max) => String(raw[key] ?? '').trim().slice(0,max);
   const list = (value,max=100) => (Array.isArray(value)?value:String(value??'').split(/\n|;/)).slice(0,max).map(v=>String(v).trim().slice(0,500)).filter(Boolean);
   const title=text('title',180);
-  if(!title)throw new Error('Escribí un título para el libro.');
+  if(!title)throw new Error('Ingresá un título para identificar el material.');
   const copies=Number(raw.copies);
-  if(!Number.isInteger(copies)||copies<1||copies>9999)throw new Error('La cantidad de ejemplares debe ser un entero entre 1 y 9999.');
+  if(!Number.isInteger(copies)||copies<1||copies>9999)throw new Error('La cantidad de ejemplares debe ser un número entero entre 1 y 9999.');
   const isbn=cleanISBN(raw.isbn);
   if(isbn&&!validISBN(isbn))throw new Error('Revisá el ISBN: debe ser un código válido de 10 o 13 caracteres. También podés dejarlo vacío.');
   const year=text('year',4), pages=raw.pages===''||raw.pages==null?null:Number(raw.pages);
