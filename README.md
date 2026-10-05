@@ -51,6 +51,7 @@ node tests/isbn-browser.cjs
 node tests/photos-browser.cjs
 node tests/migration-browser.cjs
 node tests/editorial-browser.cjs
+node tests/navigation-browser.cjs
 ```
 
 `PLAYWRIGHT_MODULE` puede señalar una instalación externa. `BROWSER_CHANNEL=chrome` selecciona Chrome (por defecto Edge); `TEST_ENGINE=webkit` usa WebKit/iPhone. `TEST_BASE_URL` permite probar la publicación. Los tests usan perfiles aislados y respuestas de proveedores controladas; ZXing sí decodifica códigos reales generados para las pruebas. `qa/` queda fuera de Git.

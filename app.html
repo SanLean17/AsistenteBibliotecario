@@ -6,15 +6,14 @@
   <meta name="theme-color" content="#EBF3FF">
   <meta name="description" content="Gestión y consulta inteligente para bibliotecas escolares e institucionales.">
   <title>Catálogo · Asistente Bibliotecario</title>
-  <link rel="icon" href="./icon.svg?v=20261005-3" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=20261005-3">
-  <link rel="stylesheet" href="./design.css?v=20261005-3">
+  <link rel="icon" href="./icon.svg?v=20261005-4" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css?v=20261005-4">
+  <link rel="stylesheet" href="./design.css?v=20261005-4">
 </head>
 <body class="app-page">
-  <aside class="sidebar">
-    <a href="#inicio" class="brand" aria-label="Asistente Bibliotecario, inicio">
-      <span class="brand-icon">AB</span>
-      <span>Asistente<br><strong>Bibliotecario</strong></span>
+  <aside class="sidebar" id="workspace-menu">
+    <a href="#inicio" class="brand wordmark" aria-label="Asistente Bibliotecario, inicio">
+      <span class="mark" aria-hidden="true">ab<span>↗</span></span><span>Asistente<br>Bibliotecario</span>
     </a>
     <span class="nav-label">ESPACIO DE TRABAJO</span>
     <nav aria-label="Principal">
@@ -22,36 +21,24 @@
       <a href="#biblioteca" data-nav="biblioteca"><span class="nav-icon">▥</span><span>Catálogo</span></a>
       <a href="#agregar" data-nav="agregar"><span class="nav-icon">＋</span><span>Incorporar material</span></a>
     <a href="#ejemplares" data-nav="ejemplares"><span class="nav-icon">▤</span><span>Ejemplares</span></a><a href="#configuracion" data-nav="configuracion"><span class="nav-icon">⚙︎</span><span>Configuración</span></a></nav>
+    <button class="button secondary mobile-help" data-action="help">Acerca de este prototipo</button>
     <a class="public-return" href="./">← Acerca del producto</a>
     <div class="local-label"><i></i> Prototipo local <small>Los datos se guardan en este dispositivo.</small></div>
   </aside>
 
   <div class="workspace">
     <header class="topbar">
-      <div>
-        <span class="mini-logo">AB</span>
-        <div class="institution">
-          <strong>Tu biblioteca</strong>
-          <small>Biblioteca escolar</small>
-        </div>
-        <span class="badge">PROTOTIPO</span>
-      </div>
+      <a href="#inicio" class="wordmark topbar-brand" aria-label="Asistente Bibliotecario, inicio"><span class="mark" aria-hidden="true">ab<span>↗</span></span><span>Asistente<br>Bibliotecario</span></a>
       <div class="top-actions">
         <button class="icon-button" data-action="theme" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
-        <a href="#configuracion" class="icon-button settings-link" aria-label="Configuración" title="Configuración">⚙︎</a><button class="icon-button" data-action="help" aria-label="Información del sistema">?</button>
+        <button class="icon-button" data-action="help" aria-label="Información del sistema">?</button><button id="app-menu-toggle" class="button secondary" aria-controls="workspace-menu" aria-expanded="false">Menú <span aria-hidden="true">☰</span></button>
       </div>
     </header>
     <main id="main"></main>
     <footer><span>Asistente Bibliotecario · Historias que conectan</span><span>Catálogo local · Sin sincronización en la nube</span></footer>
   </div>
 
-  <nav class="mobile-nav" aria-label="Navegación móvil">
-    <a href="#inicio" data-nav="inicio">⌂<span>Inicio</span></a>
-    <a href="#biblioteca" data-nav="biblioteca">▥<span>Catálogo</span></a>
-    <a href="#agregar" data-nav="agregar">＋<span>Incorporar</span></a>
-  </nav>
-
-  <dialog id="image-viewer" aria-labelledby="image-title">
+<dialog id="image-viewer" aria-labelledby="image-title">
     <div class="dialog-heading"><h2 id="image-title"></h2><button class="close" data-close="image-viewer" aria-label="Cerrar imagen">×</button></div>
     <img id="large-image" alt=""><p id="image-status" role="status"></p>
   </dialog>
@@ -71,6 +58,6 @@
   <input id="import-file" type="file" accept="application/json,.json" hidden>
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <script type="module" src="./src/app.js?v=20261005-3"></script>
+  <script type="module" src="./src/app.js?v=20261005-4"></script>
 </body>
 </html>

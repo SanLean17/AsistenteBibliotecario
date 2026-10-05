@@ -49,10 +49,19 @@ function cards(list){
 function empty(filtered=false){
   return `<div class="empty"><div class="empty-symbol">▥</div><h3>${filtered?'No se encontraron resultados':'Tu catálogo todavía no tiene registros.'}</h3><p>${filtered?'Probá con otro título, autor, ISBN, tema o contenido.':'Sumá el primer libro de la biblioteca. Escaneá su ISBN o completá una ficha: cada historia cuenta.'}</p><a class="button primary" href="${filtered?'#biblioteca':'#agregar'}">${filtered?'Volver al catálogo':'Incorporar material'}</a></div>`;
 }
+const menuToggle=$('#app-menu-toggle'),workspaceMenu=$('#workspace-menu');
+function closeWorkspaceMenu(restoreFocus=false){const wasOpen=menuToggle.getAttribute('aria-expanded')==='true';menuToggle.setAttribute('aria-expanded','false');workspaceMenu.classList.remove('is-open');if(wasOpen&&restoreFocus)menuToggle.focus();}
+menuToggle.addEventListener('click',()=>{const open=menuToggle.getAttribute('aria-expanded')!=='true';menuToggle.setAttribute('aria-expanded',String(open));workspaceMenu.classList.toggle('is-open',open);if(open)workspaceMenu.querySelector('[aria-current=page],nav a').focus();});
+workspaceMenu.addEventListener('click',event=>{if(event.target.closest('a,button'))closeWorkspaceMenu(true);});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeWorkspaceMenu(true);});
+document.addEventListener('click',event=>{if(!workspaceMenu.contains(event.target)&&!menuToggle.contains(event.target))closeWorkspaceMenu();});
+matchMedia('(max-width:760px)').addEventListener('change',()=>closeWorkspaceMenu());
+
 function updateNav(){
   document.querySelectorAll('[data-nav]').forEach(el=>{const active=el.dataset.nav===routeBase()||(el.dataset.nav==='biblioteca'&&['ficha','editar'].includes(routeBase()));el.classList.toggle('active',active);if(active)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
 }
 function render(){
+  closeWorkspaceMenu();
   updateNav();
   if(!ready)return;
   window.scrollTo(0,0);
