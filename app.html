@@ -20,7 +20,10 @@
       <a href="#inicio" data-nav="inicio"><span class="nav-icon">⌂</span><span>Inicio</span></a>
       <a href="#biblioteca" data-nav="biblioteca"><span class="nav-icon">▥</span><span>Catálogo</span></a>
       <a href="#agregar" data-nav="agregar"><span class="nav-icon">＋</span><span>Incorporar material</span></a>
-    <a href="#ejemplares" data-nav="ejemplares"><span class="nav-icon">▤</span><span>Ejemplares</span></a><a href="#configuracion" data-nav="configuracion"><span class="nav-icon">⚙︎</span><span>Configuración</span></a></nav>
+    <a href="#ejemplares" data-nav="ejemplares"><span class="nav-icon">▤</span><span>Ejemplares</span></a>
+      <a href="#circulacion" data-nav="circulacion"><span class="nav-icon">⇄</span><span>Préstamos y reservas</span></a>
+      <a href="#interoperabilidad" data-nav="interoperabilidad"><span class="nav-icon">↔</span><span>Importar / exportar</span></a>
+      <a href="#configuracion" data-nav="configuracion"><span class="nav-icon">⚙︎</span><span>Configuración</span></a></nav>
     <button class="button secondary mobile-help" data-action="help">Acerca de este prototipo</button>
     <a class="public-return" href="./">← Acerca del producto</a>
     <div class="local-label"><i></i> Prototipo local <small>Los datos se guardan en este dispositivo.</small></div>
@@ -56,8 +59,9 @@
   <input id="physical-camera" type="file" accept="image/*" capture="environment" hidden>
   <input id="barcode-photo" type="file" accept="image/*" capture="environment" hidden>
   <input id="import-file" type="file" accept="application/json,.json" hidden>
+  <input id="aguapey-file" type="file" accept=".iso,application/octet-stream" hidden>
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <script type="module" src="./src/app.js?v=20261005-7"></script>
+  <script type="module" src="./src/app.js?v=20261005-8"></script>
 </body>
 </html>
