@@ -1,4 +1,4 @@
-import { mobileNavigation } from './navigation.js?v=20261005-6';
+import { mobileNavigation } from './navigation.js?v=20261005-7';
 import { localizeBook } from './subjects.js?v=20261005-3';
 import { preparePhoto, validPhotoURL } from './photos.js?v=20261005-3';
 import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261005-3';

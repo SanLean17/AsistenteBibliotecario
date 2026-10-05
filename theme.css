@@ -24,3 +24,8 @@ body{background:var(--canvas-gradient);min-height:100vh}
 @media(prefers-reduced-motion:reduce){.menu-lines,.menu-lines:after{transition:none}#site-nav.is-open,#workspace-menu.is-open{animation:none!important}}
 
 :root{--sun-wash:#fff0b8;--sun-ink:#795800}:root[data-theme=dark]{--sun-wash:#41371f;--sun-ink:#ffe39a}
+
+/* One continuous canvas. Gradients belong to the page, never to sections. */
+:root{--sky-cloud:#b8e7fa;--sky-haze:#e3f5fd;--gold-glow:#fff4cd;--glass:rgba(255,255,255,.62);--canvas-gradient:radial-gradient(ellipse 85% 22% at 100% 8%,var(--sky-cloud),transparent 80%),radial-gradient(ellipse 60% 12% at 3% 29%,var(--gold-glow),transparent 85%),radial-gradient(ellipse 95% 25% at 0% 51%,var(--sky-cloud),transparent 80%),radial-gradient(ellipse 60% 15% at 95% 70%,var(--gold-glow),transparent 85%),radial-gradient(ellipse 90% 25% at 100% 92%,var(--sky-haze),transparent 85%),linear-gradient(var(--bg),var(--bg))}
+:root[data-theme=dark]{--sky-cloud:#102e46;--sky-haze:#11263d;--gold-glow:#252a31;--glass:rgba(15,27,47,.55)}
+body{background:var(--canvas-gradient);background-repeat:no-repeat;background-size:100% 100%}

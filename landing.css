@@ -24,7 +24,7 @@
 html{scroll-behavior:smooth;scroll-padding-top:28px}
 .site-header{position:relative;top:auto;background:transparent;border:0;max-width:none}
 .hero-meta,.editorial-section,.flow-section,.site-footer{border:0}
-.hero-title em,.closing-section em{background:linear-gradient(transparent 78%,var(--sun-wash) 78%,var(--sun-wash) 95%,transparent 95%);box-decoration-break:clone;-webkit-box-decoration-break:clone}
+
 .landing-page{background:radial-gradient(ellipse 430px 420px at 95% 140px,var(--sun-wash),transparent 75%),radial-gradient(ellipse 850px 800px at 0 350px,var(--wash-cyan),transparent 75%),var(--bg)}
 .intro-rule{height:7px;width:64px;border-radius:20px;background:linear-gradient(90deg,var(--accent),var(--sun))}
 #producto{background:radial-gradient(ellipse at 100% 40%,var(--sun-wash),transparent 65%)}
@@ -39,3 +39,14 @@ html{scroll-behavior:smooth;scroll-padding-top:28px}
 @media(max-width:850px){.site-header{position:relative;top:auto;background:transparent;border:0}.site-header:has([aria-expanded=true]){position:sticky;top:0;background:var(--surface)}}
 @media(max-width:600px){.steps{grid-template-columns:1fr;gap:16px}.steps li{display:grid;grid-template-columns:54px minmax(0,1fr);gap:0 18px;padding:26px}.steps h3{margin:3px 0 12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.steps li{transition:none}.steps li:hover,.steps li:nth-child(even):hover{transform:none}}
+
+.landing-page{background:var(--canvas-gradient);background-repeat:no-repeat;background-size:100% 100%}
+#producto,#escuelas,.flow-section,.closing-section,.editorial-section{background:transparent}
+.hero-title em,.closing-section em{background:none;text-decoration:none}
+.intro-rule,.steps li:before{background:var(--accent)}
+.hero-sun{width:min(370px,90%);height:auto;margin:24px 0 -35px 35px;overflow:hidden;opacity:.8;mask-image:linear-gradient(#000 80%,transparent);-webkit-mask-image:linear-gradient(#000 80%,transparent)}.hero-sun img{display:block;width:100%;height:auto}
+.hero-grid{align-items:center}.hero-title{min-width:0}
+.product-preview,.preview-process,.capability-grid article,.capability-grid article+article,.problem-grid article,.problem-grid article:nth-child(even),.steps li,.steps li:last-child{background:var(--glass)}
+:root[data-theme=dark] .hero-sun{opacity:.5}
+@media(max-width:600px){.hero-sun{width:240px;max-width:85%;margin:22px 0 -15px 15px}}
+.site-header nav>a:not(.button):hover{text-decoration:none;color:var(--primary)}
