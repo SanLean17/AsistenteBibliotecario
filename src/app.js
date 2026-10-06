@@ -1,17 +1,17 @@
-import {initAccessUI,renderAccess} from './access-ui.js?v=20261006-2';
-import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261006-2';
-import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261006-2';
-import {execute,exportArchive,restoreArchive} from './storage.js?v=20261006-2';
-import {JsonBackupProvider,AguapeyMarcProvider} from './imports.js?v=20261006-2';
-import { mobileNavigation } from './navigation.js?v=20261006-2';
-import { localizeBook } from './subjects.js?v=20261006-2';
-import { preparePhoto, validPhotoURL } from './photos.js?v=20261006-2';
-import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261006-2';
-import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261006-2';
-import { canonicalISBN, cleanISBN } from './isbn.js?v=20261006-2';
-import { categories, searchBooks, validateBook, parseArchive } from './catalog.js?v=20261006-2';
-import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261006-2';
-import { assignMissingInventoryCodes } from './domain.js?v=20261006-2';
+import {initAccessUI,renderAccess} from './access-ui.js?v=20261006-3';
+import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261006-3';
+import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261006-3';
+import {execute,exportArchive,restoreArchive} from './storage.js?v=20261006-3';
+import {JsonBackupProvider,AguapeyMarcProvider} from './imports.js?v=20261006-3';
+import { mobileNavigation } from './navigation.js?v=20261006-3';
+import { localizeBook } from './subjects.js?v=20261006-3';
+import { preparePhoto, validPhotoURL } from './photos.js?v=20261006-3';
+import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261006-3';
+import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261006-3';
+import { canonicalISBN, cleanISBN } from './isbn.js?v=20261006-3';
+import { categories, searchBooks, validateBook, parseArchive } from './catalog.js?v=20261006-3';
+import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261006-3';
+import { assignMissingInventoryCodes } from './domain.js?v=20261006-3';
 
 const $=s=>document.querySelector(s);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -186,7 +186,7 @@ function renderSelectedPhoto(){
  const p=selectedPhoto(),box=$('#photo-preview');if(!box)return;
  const book=books.find(b=>b.id===route().split('/')[1]),copy=book?.exemplars?.find(e=>e.id===$('#photo-copy')?.value);
  document.querySelectorAll('[data-photo]').forEach(b=>b.disabled=!copy);
- const details=$('#copy-details');if(details)details.innerHTML=copy?copyHTML(copy):'<p class=muted>No hay ejemplares físicos. Podés agregarlos desde Editar registro.</p>';
+ const details=$('#copy-details');if(details)details.innerHTML=copy?copyHTML(copy):'<p class=muted>La biblioteca todavía no registró ejemplares físicos de este material.</p>';
  box.innerHTML=p&&validPhotoURL(p.dataUrl)?`<button class="photo-thumbnail" data-view-photo="${escape(p.id)}"><img src="${p.dataUrl}" alt="Foto del ejemplar físico"></button>`:'<div class="photo-empty">Sin fotografía del ejemplar</div>';
 }
 function copyHTML(copy){return `<p><strong>Código interno: ${escape(copy.internalCode||'Pendiente')} · ${escape(holdingState(copy))}</strong></p><div class="button-row"><a class="button secondary" href="#ejemplar/${escape(copy.id)}">Ubicación y circulación</a><a class="button secondary" href="#etiquetas/${escape(copy.id)}">Imprimir etiqueta</a></div><p class="copy-summary">${escape(copy.inventoryCode||'Sin código de inventario')} · ${escape(copy.location||'Ubicación pendiente')} · ${escape(copy.condition||'Bueno')}</p><details class="copy-editor"><summary>Editar datos de este ejemplar</summary><form id="copy-form"><h3>Datos de este ejemplar</h3><label>Inventario<input name="inventoryCode" maxlength="100" value="${escape(copy.inventoryCode||'')}" placeholder="Código interno opcional"></label><label>Ubicación<input name="location" maxlength="120" value="${escape(copy.location||'')}"></label><label>Estado físico<select name="condition">${['Nuevo','Bueno','Regular','Deteriorado'].map(c=>`<option ${c===copy.condition?'selected':''}>${c}</option>`).join('')}</select></label><p class="error" id="copy-error" role="alert"></p><button class="button secondary">Guardar ejemplar</button></form></details>${dangerZone('Foto y ejemplar','Borrar la foto conserva el ejemplar. Eliminar el ejemplar también elimina su fotografía, pero conserva la ficha bibliográfica.',`<div class="button-row"><button class="button danger" data-delete-photo="${escape(copy.id)}" ${selectedPhoto()?'':'disabled'}>Borrar fotografía</button><button class="button danger" data-delete-copy="${escape(copy.id)}">Eliminar ejemplar</button></div>`)}`;}

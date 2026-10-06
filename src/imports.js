@@ -1,7 +1,7 @@
-import {parseArchive} from './catalog.js?v=20261006-2';
-import {importAguapeyISO} from './marc.js?v=20261006-2';
-import {STORES,activeLoan,activeReservation} from './local-domain.js?v=20261006-2';
-import {PERMISSIONS,ROLES,PROFILES,isEnabled,validWindow} from './permissions.js?v=20261006-2';
+import {parseArchive} from './catalog.js?v=20261006-3';
+import {importAguapeyISO} from './marc.js?v=20261006-3';
+import {STORES,activeLoan,activeReservation} from './local-domain.js?v=20261006-3';
+import {PERMISSIONS,ROLES,PROFILES,isEnabled,validWindow} from './permissions.js?v=20261006-3';
 export class ImportProvider{parse(){throw new Error('Implementar parse en el proveedor.');}}
 export const AguapeyMarcProvider={id:'aguapey-marc',parse(input){const result=importAguapeyISO(input);if(result.records>10000)throw new Error('El archivo supera 10000 registros.');if(result.skipped)throw new Error('Hay registros sin título. Revisá el archivo para evitar una importación incompleta.');return result;}};
 export const JsonBackupProvider={id:'json-backup',parse(text){const data=JSON.parse(text),legacy=parseArchive(text);if(data.version<4)return legacy;if(data.version===4)for(const name of ['people','memberships','invitations','saved'])data[name]??=[];for(const store of STORES){if(!Array.isArray(data[store])||data[store].length>100000)throw new Error('Respaldo incompleto: '+store);if(data[store].some(v=>!v||typeof v.id!=='string'||!v.id)||new Set(data[store].map(v=>v.id)).size!==data[store].length)throw new Error('Identificadores inválidos en '+store);}

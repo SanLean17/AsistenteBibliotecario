@@ -1,4 +1,4 @@
-import { mobileNavigation } from './navigation.js?v=20261006-2';
+import { mobileNavigation } from './navigation.js?v=20261006-3';
 const legacy=['inicio','biblioteca','agregar','editar','ficha','configuracion','ejemplares'];
 function redirectLegacy(){if(legacy.includes(location.hash.slice(1).split('/')[0]))location.replace('./app.html'+location.hash);}
 redirectLegacy();window.addEventListener('hashchange',redirectLegacy);

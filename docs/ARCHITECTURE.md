@@ -123,7 +123,7 @@ Los respaldos completos versión 5 contienen la institución actual y sus person
 - `src/catalog.js`, `src/imports.js`: respaldos versión 5 y compatibilidad.
 - Pruebas de acceso, perfiles, migración, circulación, incorporación y responsive en `tests/`.
 
-Los demás módulos de fuentes, escaneo, circulación y etiquetas solo actualizan la versión compartida de sus importaciones (`20261006-2`) para evitar mezclar código viejo y nuevo en caché. Las hojas de estilo no se modificaron.
+Los demás módulos de fuentes, escaneo, circulación y etiquetas solo actualizan la versión compartida de sus importaciones (`20261006-3`) para evitar mezclar código viejo y nuevo en caché. Las hojas de estilo no se modificaron.
 
 ### Verificación de esta entrega
 

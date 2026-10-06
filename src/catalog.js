@@ -1,9 +1,9 @@
-import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261006-2';
-import { validPhotoURL } from './photos.js?v=20261006-2';
-import { cleanISBN, validISBN } from './isbn.js?v=20261006-2';
-import { safeCover } from './metadata.js?v=20261006-2';
-import { SOURCE_NAMES } from './providers/registry.js?v=20261006-2';
-import { LOCAL_SCOPE, CIRCULATION_STATES } from './domain.js?v=20261006-2';
+import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261006-3';
+import { validPhotoURL } from './photos.js?v=20261006-3';
+import { cleanISBN, validISBN } from './isbn.js?v=20261006-3';
+import { safeCover } from './metadata.js?v=20261006-3';
+import { SOURCE_NAMES } from './providers/registry.js?v=20261006-3';
+import { LOCAL_SCOPE, CIRCULATION_STATES } from './domain.js?v=20261006-3';
 export const categories = ['Cuentos', 'Novela', 'Poesía', 'Informativo', 'Otros'];
 export const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const searchable = value => normalize(value)
