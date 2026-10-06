@@ -1,7 +1,7 @@
-import { validISBN } from './isbn.js?v=20261006-1';
+import { validISBN } from './isbn.js?v=20261006-2';
 
 async function createZXingReader(){
-  await import('../vendor/zxing-browser-0.2.1.min.js?v=20261006-1');
+  await import('../vendor/zxing-browser-0.2.1.min.js?v=20261006-2');
   return new globalThis.ZXingBrowser.BrowserMultiFormatOneDReader();
 }
 export async function createISBNDetector() {
@@ -78,7 +78,7 @@ export async function scanISBNFromFile(file){
 
 // Multi-format acquisition: QR content and linear codes use the same review flow.
 export async function createMaterialDetector(){
- await import('../vendor/zxing-browser-0.2.1.min.js?v=20261006-1');
+ await import('../vendor/zxing-browser-0.2.1.min.js?v=20261006-2');
  const reader=new globalThis.ZXingBrowser.BrowserMultiFormatReader();
  return {async detect(source){try{return [{rawValue:reader.decode(source).getText()}];}catch(error){const kind=error.getKind?.()||error.name;if(['NotFoundException','ChecksumException','FormatException'].includes(kind))return [];throw error;}}};
 }

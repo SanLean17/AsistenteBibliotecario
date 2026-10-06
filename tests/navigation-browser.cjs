@@ -8,7 +8,7 @@ const {setup,noOverflow,assert,base}=require('./ui-helpers.cjs');
    assert.ok(await page.evaluate(()=>document.fonts.check('14px Inter')&&document.fonts.check('italic 36px Lora')));
    await page.screenshot({animations:'disabled',path:`qa/gradient-public-${theme}-${width}.png`,fullPage:true});if(width<=850){const pt=page.locator('#menu-toggle');await pt.click();assert.equal(await page.locator('main').evaluate(el=>el.inert),true);await page.screenshot({animations:'disabled',path:`qa/public-menu-${theme}-${width}.png`});await page.locator('#site-nav a[href="#recursos"]').click();assert.equal(await pt.getAttribute('aria-expanded'),'false');assert.equal(await page.locator('main').evaluate(el=>el.inert),false);}
    await go('inicio');await page.evaluate(t=>document.documentElement.dataset.theme=t,theme);await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(200);await noOverflow(page,`app ${theme} ${width}`);
-   assert.equal(await page.locator('.mobile-nav').count(),0);assert.equal(await page.locator('.teacher-card').count(),3);assert.ok(await page.locator('.teacher-discovery').innerText().then(t=>t.includes('Próximamente')));
+   assert.equal(await page.locator('.mobile-nav').count(),0);assert.ok(await page.getByRole('heading',{name:'Resumen institucional',exact:true}).isVisible());
    await page.screenshot({animations:'disabled',path:`qa/gradient-app-${theme}-${width}.png`,fullPage:true});
    if(width<=760){
     const toggle=page.locator('#app-menu-toggle');await toggle.click();await page.locator('#workspace-menu').waitFor();

@@ -1,16 +1,17 @@
-import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261006-1';
-import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState} from './local-ui.js?v=20261006-1';
-import {execute,exportArchive,restoreArchive} from './storage.js?v=20261006-1';
-import {JsonBackupProvider,AguapeyMarcProvider} from './imports.js?v=20261006-1';
-import { mobileNavigation } from './navigation.js?v=20261006-1';
-import { localizeBook } from './subjects.js?v=20261006-1';
-import { preparePhoto, validPhotoURL } from './photos.js?v=20261006-1';
-import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261006-1';
-import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261006-1';
-import { canonicalISBN, cleanISBN } from './isbn.js?v=20261006-1';
-import { categories, searchBooks, validateBook, parseArchive } from './catalog.js?v=20261006-1';
-import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261006-1';
-import { assignMissingInventoryCodes } from './domain.js?v=20261006-1';
+import {initAccessUI,renderAccess} from './access-ui.js?v=20261006-2';
+import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261006-2';
+import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261006-2';
+import {execute,exportArchive,restoreArchive} from './storage.js?v=20261006-2';
+import {JsonBackupProvider,AguapeyMarcProvider} from './imports.js?v=20261006-2';
+import { mobileNavigation } from './navigation.js?v=20261006-2';
+import { localizeBook } from './subjects.js?v=20261006-2';
+import { preparePhoto, validPhotoURL } from './photos.js?v=20261006-2';
+import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261006-2';
+import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261006-2';
+import { canonicalISBN, cleanISBN } from './isbn.js?v=20261006-2';
+import { categories, searchBooks, validateBook, parseArchive } from './catalog.js?v=20261006-2';
+import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261006-2';
+import { assignMissingInventoryCodes } from './domain.js?v=20261006-2';
 
 const $=s=>document.querySelector(s);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -32,7 +33,7 @@ function confirmAction(title,message,label='Eliminar definitivamente'){
 }
 function dangerZone(title,message,button){return `<section class="danger-zone"><h2>Zona de peligro</h2><div class="danger-row"><div><h3>${title}</h3><p>${message}</p></div>${button}</div></section>`;}
 function renderSettings(){
-  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">TU ESPACIO DE TRABAJO</span><h1>Configuración</h1><p class="muted">Cuidá el catálogo de tu biblioteca y elegí cómo trabajar.</p></div></div><section class="panel settings-panel"><h2>Una copia, mucha tranquilidad.</h2><p>Los registros y las fotos se guardan en este navegador. Exportá un respaldo antes de cambiar de dispositivo o borrar datos.</p><div class="button-row"><button class="button primary" data-action="export">Exportar respaldo</button><button class="button secondary" data-action="import">Importar respaldo</button><button class="button secondary" data-action="theme">Cambiar tema claro / oscuro</button></div></section>${dangerZone('Vaciar el catálogo de este dispositivo','Se eliminarán todos los registros, ejemplares y fotografías guardados en este navegador. Esta acción no se puede deshacer. Exportá primero un respaldo.',`<button class="button danger" data-action="clear-catalog" ${books.length?'':'disabled'}>Vaciar catálogo</button>`)}`;
+  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">TU ESPACIO DE TRABAJO</span><h1>Configuración</h1><p class="muted">Cuidá el catálogo de tu biblioteca y elegí cómo trabajar.</p></div></div><section class="panel settings-panel"><h2>Una copia, mucha tranquilidad.</h2><p>Los registros y las fotos se guardan en este navegador. Exportá un respaldo antes de cambiar de dispositivo o borrar datos.</p><div class="button-row"><button class="button primary" data-action="export">Exportar respaldo</button><button class="button secondary" data-action="import">Importar respaldo</button><button class="button secondary" data-action="theme">Cambiar tema claro / oscuro</button></div></section>${dangerZone('Vaciar el catálogo de esta institución','Se eliminarán los registros, ejemplares y fotografías de la institución actual. Esta acción no se puede deshacer. Exportá primero un respaldo.',`<button class="button danger" data-action="clear-catalog" ${books.length?'':'disabled'}>Vaciar catálogo</button>`)}`;
 }
 function setTheme(theme){document.documentElement.dataset.theme=theme;try{localStorage.setItem('ab-theme',theme);}catch{}document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='dark'?'#0A112F':'#EBF3FF');}
 let savedTheme;try{savedTheme=localStorage.getItem('ab-theme');}catch{}
@@ -68,7 +69,9 @@ async function render(){
   cancelLookup();
   const current=route();
   await refreshSession();if(current!==route())return;
+  if(current.startsWith('registro')){await renderAccess(current);return;}
   if(!accessForRoute(current)){$('#main').innerHTML='<section class="notice"><h1>Acceso no habilitado</h1><p>El perfil seleccionado no tiene permiso vigente. Elegí un perfil local habilitado en el menú.</p></section>';return;}
+  if(await renderAccess(current))return;
   if(await renderLocal(current))return;
   if(current==='biblioteca')return renderLibrary();
   if(current==='agregar')return renderAdd();
@@ -159,9 +162,9 @@ function formHTML(book={},suggested=false){
 }
 function renderEditor(id){
   const existing=id==='nuevo'?null:books.find(b=>b.id===id);
-  const book=existing||draft||{copies:1,category:'Otros'};
+  const book=structuredClone(existing||draft||{copies:1,category:'Otros'});if(!existing&&!can('holdings.create')){book.copies=0;book.exemplars=[];}
   if(id!=='nuevo'&&!existing){location.hash='#biblioteca';return;}
-  $('#main').innerHTML=`<div class="flow-header"><a href="${existing?'#ficha/'+existing.id:'#agregar'}" class="button secondary back-link">← Volver</a><span class="step">${existing?'EDICIÓN DE REGISTRO':'INCORPORACIÓN · PASO 2 DE 2'}</span></div><div class="page-heading"><div><h1>${existing?'Editar registro bibliográfico':'Revisar e incorporar material'}</h1><p class="muted">${existing?'Actualizá los datos bibliográficos o de inventario.':'El sistema se adapta al material. Revisá la información y completá solamente lo que falta.'}</p></div></div>${formHTML(book,!existing&&Boolean(draft?.sources?.length))}`;
+  $('#main').innerHTML=`<div class="flow-header"><a href="${existing?'#ficha/'+existing.id:'#agregar'}" class="button secondary back-link">← Volver</a><span class="step">${existing?'EDICIÓN DE REGISTRO':'INCORPORACIÓN · PASO 2 DE 2'}</span></div><div class="page-heading"><div><h1>${existing?'Editar registro bibliográfico':'Revisar e incorporar material'}</h1><p class="muted">${existing?'Actualizá los datos bibliográficos o de inventario.':'El sistema se adapta al material. Revisá la información y completá solamente lo que falta.'}</p></div></div>${!existing&&!can('holdings.create')?'<p class="notice">Podés incorporar la ficha del material. Una persona con permiso para agregar ejemplares completará las copias físicas.</p>':''}${formHTML(book,!existing&&Boolean(draft?.sources?.length))}`;if(!can('holdings.create')&&!existing){const input=$('[name=copies]');input.readOnly=true;}
 }
 async function renderDetail(id,copyId){
   const detailRoute=route();
@@ -240,7 +243,7 @@ document.addEventListener('input',event=>{event.target.removeAttribute('aria-inv
 document.addEventListener('change',event=>{if(event.target.id==='category'){category=event.target.value;renderLibrary();}if(event.target.id==='photo-copy')renderSelectedPhoto();});
 $('#barcode-photo').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;const status=$('#lookup-status');status.textContent='Analizando la fotografía del código…';try{const isbn=await scanMaterialFromFile(file);if(route()!=='agregar')return;$('#isbn-query').value=isbn;await runLookup(isbn);}catch(error){showRecognitionFallback(error.message);}});
 $('#aguapey-file').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;try{if(file.size>25*1024*1024)throw new Error('El archivo ISO supera 25 MB.');const parsed=AguapeyMarcProvider.parse(await file.arrayBuffer());if(!parsed.books.length)throw new Error('No encontramos registros MARC válidos en el archivo.');if(!await confirmAction('Importar desde Aguapey',`Se detectaron ${parsed.records} registros y ${parsed.books.length} fichas utilizables. Se incorporarán al catálogo local; revisá luego inventarios y ubicaciones.`,'Importar registros'))return;const prepared=parsed.books.map(validateBook);await mergeBooks(prepared,[],'aguapey.imported');books=await readBooks();renderInteroperability();notify(`Importación completa: ${prepared.length} registros.`);}catch(error){notify(error.message||'No se pudo importar el archivo de Aguapey.');}});
-$('#import-file').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;try{if(file.size>50*1024*1024)throw new Error('El archivo supera 50 MB.');const archive=JsonBackupProvider.parse(await file.text());if(!await confirmAction('Importar respaldo','Se incorporarán '+archive.books.length+' registros. Un respaldo completo reemplaza el estado local (incluye personas y circulación); los respaldos antiguos combinan catálogo y fotos. Exportá el catálogo actual antes de continuar.','Importar y reemplazar coincidencias'))return;if(archive.version===4)await restoreArchive(archive);else await mergeBooks(archive.books.map(localizeBook),archive.photos);books=await readBooks();render();notify('Respaldo importado.');}catch(error){notify(error.message||'No se pudo importar.');}});
+$('#import-file').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;try{if(file.size>50*1024*1024)throw new Error('El archivo supera 50 MB.');const archive=JsonBackupProvider.parse(await file.text());if(!await confirmAction('Importar respaldo','Se incorporarán '+archive.books.length+' registros. Un respaldo completo reemplaza su institución (incluye personas y circulación). Si todavía no existe en este navegador, se recupera como otro espacio; los respaldos antiguos combinan catálogo y fotos. Exportá el catálogo actual antes de continuar.','Importar y reemplazar coincidencias'))return;if(archive.version>=4)await restoreArchive(archive);else await mergeBooks(archive.books.map(localizeBook),archive.photos);books=await readBooks();render();notify('Respaldo importado.');}catch(error){notify(error.message||'No se pudo importar.');}});
 for(const input of [$('#physical-photo'),$('#physical-camera')])input.addEventListener('change',async event=>{const file=event.target.files[0],target=photoTarget;event.target.value='';if(!file||!target)return;try{const dataUrl=await preparePhoto(file);if(detailPhotos.some(p=>p.id===target.id)&&!await confirmAction('Reemplazar fotografía','La foto anterior de este ejemplar será reemplazada por la nueva.','Reemplazar fotografía'))return;await savePhoto({...target,dataUrl,takenAt:new Date().toISOString()});detailPhotos=await getPhotos(target.bookId);renderSelectedPhoto();notify('Foto del ejemplar guardada localmente.');}catch(error){notify(error.message||'No se pudo guardar la foto.');}});
 $('#large-image').addEventListener('error',()=>$('#image-status').textContent='No se pudo cargar la imagen.');
 $('#image-viewer').addEventListener('close',()=>$('#large-image').removeAttribute('src'));
@@ -249,6 +252,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)stopScan();
 window.addEventListener('pagehide',cancelLookup);
 document.addEventListener('error',event=>{if(event.target.matches?.('.real-cover img')){event.target.hidden=true;event.target.nextElementSibling.hidden=false;}},true);
 
-initLocalUI(async()=>{books=await readBooks();await render();});
+initAccessUI(async context=>{if(context){query='';category='';draft=null;detailPhotos=[];cancelLookup();}books=await readBooks();await render();});
+initLocalUI(async context=>{if(context){query='';category='';draft=null;detailPhotos=[];cancelLookup();}books=await readBooks();await render();});
 $('#main').innerHTML='<p class="muted">Abriendo catálogo institucional…</p>';
 try{await openDatabase();const existing=await getBooks();books=existing.map(b=>localizeBook(b.schemaVersion===2?b:validateBook(b)));if(existing.some(b=>b.schemaVersion!==2))await mergeBooks(books);await refreshSession();ready=true;render();}catch{$('#main').innerHTML='<div class="notice"><h1>No pudimos abrir el catálogo local</h1><p>Revisá los permisos de almacenamiento del navegador y volvé a cargar la página.</p></div>';}

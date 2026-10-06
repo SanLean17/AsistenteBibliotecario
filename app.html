@@ -15,6 +15,7 @@
     <a href="#inicio" class="brand wordmark" aria-label="Asistente Bibliotecario, inicio">
       <span class="mark" aria-hidden="true">ab<span>↗</span></span><span>Asistente<br>Bibliotecario</span>
     </a>
+    <div class="local-profile"><label for="institution-context">Institución actual</label><select id="institution-context" aria-label="Institución actual"></select><label for="local-actor">Persona local · simulación sin contraseña</label><select id="local-actor" aria-label="Perfil local"></select></div>
     <span class="nav-label">ESPACIO DE TRABAJO</span>
     <nav aria-label="Principal">
       <a href="#inicio" data-nav="inicio"><span class="nav-icon">⌂</span><span>Inicio</span></a>
@@ -24,7 +25,7 @@
       <a href="#circulacion" data-nav="circulacion"><span class="nav-icon">⇄</span><span>Préstamos y reservas</span></a>
       <a href="#interoperabilidad" data-nav="interoperabilidad"><span class="nav-icon">↔</span><span>Importar / exportar</span></a>
       <a href="#usuarios" data-nav="usuarios"><span>Personas y permisos</span></a><a href="#organizacion" data-nav="organizacion"><span>Institución</span></a><a href="#etiquetas" data-nav="etiquetas"><span>Etiquetas</span></a><a href="#actividad" data-nav="actividad"><span>Historial</span></a><a href="#configuracion" data-nav="configuracion"><span class="nav-icon">⚙︎</span><span>Configuración</span></a></nav>
-    <div class="local-profile"><label for="local-actor">Perfil local · sin contraseña</label><select id="local-actor" aria-label="Perfil local"></select></div><button class="button secondary mobile-help" data-action="help">Acerca de este prototipo</button>
+<button class="button secondary mobile-help" data-action="help">Acerca de este prototipo</button>
     <a class="public-return" href="./">← Acerca del producto</a>
     <div class="local-label"><i></i> Prototipo local <small>Los datos se guardan en este dispositivo.</small></div>
   </aside>
@@ -62,6 +63,6 @@
   <input id="aguapey-file" type="file" accept=".iso,application/octet-stream" hidden>
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <script type="module" src="./src/app.js?v=20261006-1"></script>
+  <script type="module" src="./src/app.js?v=20261006-2"></script>
 </body>
 </html>

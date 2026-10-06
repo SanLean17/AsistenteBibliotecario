@@ -96,3 +96,35 @@ Diarios: publication, publicationDate, edition, issn, subjects, description y co
 ### Asistencia por fotografía: futura, no implementada
 
 Fotografiar tapa/portada/primera plana podrá proponer titulares, nombres, fechas, temas, palabras clave, contenidos y un resumen inicial. El contrato futuro debe conservar foto de origen, propuestas por campo, procedencia y decisión humana (aceptada/rechazada/editada). No debe escribir el catálogo ni crear ejemplares al terminar el reconocimiento. **La automatización propone. La persona confirma.** No se anuncia como disponible ni se contratan servicios en esta etapa.
+
+## Instituciones, personas y acceso local (2026-10-06)
+
+La versión 5 de IndexedDB migra el catálogo existente sin cambiar identificadores de materiales, ejemplares, fotos, préstamos ni eventos. `people` representa a la persona; `memberships` conserva cargo, perfil, estado y vigencia en cada institución. `grants` pertenece siempre a una institución y una persona. Cargo, perfil y permisos adicionales no son equivalentes. Las invitaciones quedan pendientes hasta una validación local explícita.
+
+`access-model.js` proyecta el contexto institucional y vuelve a combinarlo dentro de una única transacción de IndexedDB. Catálogo, circulación, permisos, configuración, auditoría e inventario quedan separados por institución. Los identificadores en conflicto con otra institución se rechazan. La administración principal se guarda en la institución, nunca como cargo. Puede transferirse mediante confirmación del nombre; desactivar la institución retiene historial y retira las vinculaciones. Exportaciones completas y vaciado masivo requieren esa responsabilidad y no son permisos adicionales delegables.
+
+`permissions.js` define perfiles y permisos con nombres legibles. `access-domain.js` valida cambios, invitaciones, permisos y responsabilidades; `access-ui.js` proporciona registro, onboarding, pantallas diferenciadas y gestión de accesos usando los componentes visuales existentes. La biblioteca puede delegar tareas operativas, pero no convertir a otra persona en autoridad ni delegar administración máxima. Nadie modifica su propio cargo/perfil ni se otorga permisos. La autoridad principal debe asignar nuevos perfiles de Autoridad Institucional.
+
+Las fechas se capturan con hora local y se persisten como instantes ISO. La autorización consulta la vigencia en cada operación. Se registra un único evento de vencimiento al abrir la aplicación, operar o revisar el contexto periódicamente (30 segundos cuando está visible). No hay tareas ejecutándose con el navegador cerrado. Al finalizar una suplencia se inactiva la vinculación; al terminar una suspensión se reactiva. Las personas y las referencias históricas permanecen.
+
+Las renovaciones propias requieren política habilitada, préstamo vigente, ningún atraso, ninguna reserva de otra persona y no haber usado la renovación permitida. El personal institucional solo recibe préstamos si se habilita esa política. Temas/contenidos y alta de ejemplares tienen operaciones específicas para que un permiso granular no requiera editar toda la ficha.
+
+### Límites explícitos del prototipo
+
+No se creó Supabase, Firebase, backend, cuenta externa ni dependencia paga. Registrar una institución crea un espacio únicamente en el navegador actual. El selector de persona simula la identidad y no es autenticación ni una barrera de seguridad ante alguien con acceso al dispositivo o sus herramientas de desarrollo. Los correos son datos de contacto: no se envían invitaciones reales. No existe sincronización ni recuperación desde un servidor. Las recomendaciones y novedades personalizadas siguen siendo futuras.
+
+Los respaldos completos versión 5 contienen la institución actual y sus personas vinculadas, sin exportar otros espacios. Se validan antes de restaurar. Para reemplazar un espacio existente se debe seleccionar esa institución; si todavía no existe en el navegador, se recupera como un espacio separado, conservando las demás instituciones. Los respaldos versión 4 siguen siendo compatibles; los anteriores conservan la incorporación de catálogo y fotos. La capa de persistencia puede reemplazarse por un repositorio remoto; en esa etapa la identidad, autorización, auditoría y vencimientos deberán verificarse en el servidor, y las identidades locales tendrán que vincularse a cuentas verificadas.
+
+### Archivos de esta entrega
+
+- `src/access-model.js`, `src/access-domain.js`, `src/access-ui.js`: modelo, reglas y experiencia institucional.
+- `src/permissions.js`, `src/local-domain.js`, `src/storage/indexeddb.js`: perfiles, circulación, migración y separación de datos.
+- `src/app.js`, `src/local-ui.js`, `app.html`, `index.html`: integración, selector institucional y CTA de registro.
+- `src/catalog.js`, `src/imports.js`: respaldos versión 5 y compatibilidad.
+- Pruebas de acceso, perfiles, migración, circulación, incorporación y responsive en `tests/`.
+
+Los demás módulos de fuentes, escaneo, circulación y etiquetas solo actualizan la versión compartida de sus importaciones (`20261006-2`) para evitar mezclar código viejo y nuevo en caché. Las hojas de estilo no se modificaron.
+
+### Verificación de esta entrega
+
+38 pruebas de lógica aprobadas. Pruebas de navegador aprobadas: registro y onboarding completos; invitaciones, perfiles y aislamiento institucional; recuperación de respaldo en un navegador nuevo; los cinco paneles de acceso; restricciones de autoasignación; préstamos, reservas, renovación y materiales guardados; migraciones v1/v3; escaneo/ISBN/QR, fotos y MARC; navegación y estados claro/oscuro. Responsive comprobado a 320, 390, 768 y 1440 px (también 1280 en gestión de personas). Se ejecutaron Chromium/Chrome y WebKit con emulación iPhone; no equivale a una prueba física de cámara en todos los modelos de teléfono.

@@ -1,9 +1,9 @@
-import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261006-1';
-import { validPhotoURL } from './photos.js?v=20261006-1';
-import { cleanISBN, validISBN } from './isbn.js?v=20261006-1';
-import { safeCover } from './metadata.js?v=20261006-1';
-import { SOURCE_NAMES } from './providers/registry.js?v=20261006-1';
-import { LOCAL_SCOPE, CIRCULATION_STATES } from './domain.js?v=20261006-1';
+import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261006-2';
+import { validPhotoURL } from './photos.js?v=20261006-2';
+import { cleanISBN, validISBN } from './isbn.js?v=20261006-2';
+import { safeCover } from './metadata.js?v=20261006-2';
+import { SOURCE_NAMES } from './providers/registry.js?v=20261006-2';
+import { LOCAL_SCOPE, CIRCULATION_STATES } from './domain.js?v=20261006-2';
 export const categories = ['Cuentos', 'Novela', 'Poesía', 'Informativo', 'Otros'];
 export const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const searchable = value => normalize(value)
@@ -48,7 +48,7 @@ export function validateBook(raw) {
 }
 export function parseBackup(text) {
   const data=JSON.parse(text);
-  if(data.app!=='asistente-bibliotecario'||![1,2,3,4].includes(data.version)||!Array.isArray(data.books)||data.books.length>10000)throw new Error('El archivo no es un respaldo compatible de Asistente Bibliotecario.');
+  if(data.app!=='asistente-bibliotecario'||![1,2,3,4,5].includes(data.version)||!Array.isArray(data.books)||data.books.length>10000)throw new Error('El archivo no es un respaldo compatible de Asistente Bibliotecario.');
   const books=data.books.map(validateBook);
   if(new Set(books.map(b=>b.id)).size!==books.length)throw new Error('El respaldo contiene identificadores repetidos.');
   return books;
