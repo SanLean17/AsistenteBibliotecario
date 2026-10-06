@@ -1,8 +1,8 @@
-import {readState,execute,getActorId,setActorId,expireDueReservations} from './storage.js?v=20261005-9';
-import {ROLES,PERMISSIONS,hasPermission,isEnabled} from './permissions.js?v=20261005-9';
-import {effectiveState,activeLoan,activeReservation,findCopy,config} from './local-domain.js?v=20261005-9';
-import {drawLabel,internalDetector,internalFromPhoto} from './labels.js?v=20261005-9';
-import {scanISBN} from './scanner.js?v=20261005-9';
+import {readState,execute,getActorId,setActorId,expireDueReservations} from './storage.js?v=20261006-1';
+import {ROLES,PERMISSIONS,hasPermission,isEnabled} from './permissions.js?v=20261006-1';
+import {effectiveState,activeLoan,activeReservation,findCopy,config} from './local-domain.js?v=20261006-1';
+import {drawLabel,internalDetector,internalFromPhoto} from './labels.js?v=20261006-1';
+import {scanISBN} from './scanner.js?v=20261006-1';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const STATE_NAMES={available:'Disponible',reserved:'Reservado',loaned:'Prestado',overdue:'Vencido',lost:'Extraviado',damaged:'Deteriorado',withdrawn:'Dado de baja',requested:'Solicitada',approved:'Aprobada',ready:'Lista para retirar',collected:'Retirada',cancelled:'Cancelada',expired:'Vencida'};
 let session,refresh,scanner;

@@ -11,16 +11,16 @@ La landing explica el producto; la aplicación abre un panel con buscador, catá
 
 ## Disponible
 
-- Cámara con BarcodeDetector y alternativa ZXing, fotografía del código e ISBN manual.
+- Entrada única por cámara con ZXing multiformato. Si no reconoce el material, reintento, código/enlace o incorporación manual; sin elegir previamente ISBN, ISSN, DOI o QR.
 - Consulta en paralelo a Open Library y Google Books, con equivalencia ISBN-10/ISBN-13.
 - Combinación de metadatos con procedencia por campo, conflictos y datos originales de fuente.
-- Confirmación de edición y formulario centrado en cantidad, ubicación y estado físicos. Los campos bibliográficos recuperados quedan plegados, pero editables.
+- Revisión posterior al reconocimiento: tipo de material, datos disponibles, temas, resumen y contenidos; copias físicas solamente cuando corresponden. Libros, revistas, diarios, artículos, documentos, producciones escolares y recursos digitales.
 - Búsqueda en título, autor, temas, sinónimos acotados, descripción y contenidos; sin inferencias de edad/grado ni IA.
 - Fichas compactas, portada ampliable, fotos independientes por ejemplar, inventario y edición individual de ubicación/estado.
 - Confirmaciones propias en zonas de peligro: borrar foto, reemplazar foto, eliminar ejemplar, reducir cantidad, eliminar registro, vaciar catálogo e importar coincidencias.
 - IndexedDB, exportación/importación JSON con fotografías, tema claro/oscuro y controles móviles de al menos 16 px.
 
-El catálogo conserva la misma base IndexedDB de versiones anteriores. La landing no abre esa base. La información no se sincroniza entre dispositivos y no existen cuentas reales ni disponibilidad de circulación confirmada en esta etapa.
+El catálogo conserva la misma base IndexedDB de versiones anteriores. La landing no abre esa base. La información no se sincroniza entre dispositivos y no existen cuentas reales; la circulación y los permisos funcionan en este dispositivo.
 
 ## Arquitectura y fuentes
 
@@ -65,3 +65,9 @@ La regresión de guardado tiene prueba de ISBN → ficha → datos físicos → 
 - `node tests/import-browser.cjs`: MARC UTF-8, 852/859, duplicados y auditoría.
 
 Elegí el **perfil local** desde el menú. El perfil inicial Responsable local permite dar de alta personas y conceder permisos. No hay autenticación real: todos los datos y perfiles pertenecen exclusivamente a este navegador. Exportá un respaldo completo antes de trasladar la biblioteca a otro equipo.
+
+### Reconocer antes de preguntar
+
+`src/recognition.js` clasifica identificadores sin abrir enlaces arbitrarios. Recuperación automática disponible por ISBN; DOI, ISSN y URL se conservan para completar la ficha, sin afirmar que existe un proveedor conectado. Fotografiar una tapa/primera plana para proponer contenidos es futuro y exige confirmación humana.
+
+`node tests/recognition-browser.cjs` verifica cámara primero, ISSN, diario con búsqueda temática, persistencia, QR real, recurso digital sin ejemplares y respaldos.

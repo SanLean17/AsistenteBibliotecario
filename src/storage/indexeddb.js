@@ -1,5 +1,5 @@
-import {STORES,normalizeHoldings,config,command,audit,ensureRemovable,activeLoan,activeReservation,expireReservations} from '../local-domain.js?v=20261005-9';
-import {requirePermission} from '../permissions.js?v=20261005-9';
+import {STORES,normalizeHoldings,config,command,audit,ensureRemovable,activeLoan,activeReservation,expireReservations} from '../local-domain.js?v=20261006-1';
+import {requirePermission} from '../permissions.js?v=20261006-1';
 let database,actorId='local-admin';try{actorId=sessionStorage.getItem('ab-actor')||actorId;}catch{}
 export const getActorId=()=>actorId;
 export function setActorId(id){actorId=id;try{sessionStorage.setItem('ab-actor',id);}catch{}}

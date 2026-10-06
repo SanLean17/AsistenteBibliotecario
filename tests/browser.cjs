@@ -1,7 +1,7 @@
 const {setup,save,noOverflow,assert,fs}=require('./ui-helpers.cjs');
 (async()=>{
  const {page,go,finish}=await setup();
- await go('agregar');await page.getByRole('button',{name:'Continuar con carga manual'}).click();
+ await go('agregar');await page.getByRole('button',{name:'No puedo usar la cámara'}).click();await page.getByRole('button',{name:'Incorporar manualmente'}).click();
  await page.getByRole('button',{name:'Guardar en el catálogo'}).click();assert.ok(await page.locator('#form-error').textContent());
  await page.locator('[name=title]').fill('Cuentos de la selva');await page.locator('[name=author]').fill('Horacio Quiroga');await page.locator('[name=copies]').fill('2');await page.locator('[name=location]').fill('Estante A');
  await page.locator('.optional-section summary').click();await page.locator('[name=contents]').fill('La tortuga gigante\nLas medias de los flamencos');await save(page);const detailHash=new URL(page.url()).hash.slice(1);
@@ -25,6 +25,6 @@ const {setup,save,noOverflow,assert,fs}=require('./ui-helpers.cjs');
  await page.locator('#import-file').setInputFiles('qa/backup.json');await page.locator('#confirm-accept').click();await page.locator('.book-card').waitFor();
  await go('configuracion');await page.getByRole('button',{name:'Vaciar catálogo',exact:true}).click();await page.locator('#confirm-cancel').click();await go('biblioteca');assert.equal(await page.locator('.book-card').count(),1);
  await go('configuracion');await page.getByRole('button',{name:'Vaciar catálogo',exact:true}).click();await page.locator('#confirm-accept').click();await page.waitForFunction(()=>document.querySelector('[data-action="clear-catalog"]').disabled);
- await go('agregar');await page.getByRole('button',{name:'Continuar con carga manual'}).click();await page.locator('[name=title]').fill('<img src=x onerror=alert(1)>');await save(page);assert.equal(await page.locator('.record-info h1').textContent(),'<img src=x onerror=alert(1)>');assert.equal(await page.locator('.record-info h1 img').count(),0);
+ await go('agregar');await page.getByRole('button',{name:'No puedo usar la cámara'}).click();await page.getByRole('button',{name:'Incorporar manualmente'}).click();await page.locator('[name=title]').fill('<img src=x onerror=alert(1)>');await save(page);assert.equal(await page.locator('.record-info h1').textContent(),'<img src=x onerror=alert(1)>');assert.equal(await page.locator('.record-info h1 img').count(),0);
  await finish();console.log('PASS: manual save, reload, edit, continuous search, backups, delete/cancel/clear, escaped text; 84 responsive route/theme checks.');
 })().catch(e=>{console.error(e);process.exit(1)});

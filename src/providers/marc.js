@@ -1,4 +1,4 @@
-import { canonicalISBN, cleanISBN, validISBN } from '../isbn.js?v=20261005-9';
+import { canonicalISBN, cleanISBN, validISBN } from '../isbn.js?v=20261006-1';
 const clean=value=>String(value??'').trim().replace(/[\s/:;,]+$/,'').trim();
 const unique=values=>[...new Set(values.filter(Boolean))];
 

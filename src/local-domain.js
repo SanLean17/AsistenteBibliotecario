@@ -1,5 +1,5 @@
-import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261005-9';
-import {normalizeLocation,displayLocation} from './domain.js?v=20261005-9';
+import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261006-1';
+import {normalizeLocation,displayLocation} from './domain.js?v=20261006-1';
 export const STORES=['books','photos','loans','reservations','patrons','activity','grants','settings','institutions','libraries','collections','works','editions'];
 export const activeLoan=l=>['loaned','overdue'].includes(l.status)&&!l.returnedAt;
 export const activeReservation=r=>['requested','approved','ready'].includes(r.status);

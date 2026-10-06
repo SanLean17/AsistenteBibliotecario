@@ -80,3 +80,19 @@ Los perfiles son seleccionables en el menú **sin contraseña**. Este RBAC es un
 `imports.js` expone ImportProvider, AguapeyMarcProvider y JsonBackupProvider. El lector ISO 2709 valida offsets y longitudes en bytes UTF-8, rechaza truncamiento/codificación no compatible y conserva los campos fuente. Para archivos MARC-8 se requiere conversión explícita a UTF-8; no se interpreta arbitrariamente como Windows-1252. No se inventan ejemplares cuando el archivo no incluye holdings.
 
 El mapeo local 859 (inventario, parte/volumen, procedencia, estado, ubicación, clasificación, librística) y 852 institucional sigue el [manual oficial de Aguapey](https://www.bnm.me.gov.ar/giga1/libros/manual-aguapey-bera.pdf). El fallback estándar 852 usa $p identificación, $b sububicación, $c ubicación, $h clasificación y $i librística según [MARC21](https://www.loc.gov/marc/bibliographic/bd852.html). La prueba usa fixtures sintéticos, no un archivo real de una escuela. Se requiere validación con ese archivo antes de afirmar compatibilidad universal o habilitar Marc21ExportProvider. Fuentes remotas ISBN conservan sus providers y no se agrega scraping.
+
+## Decisión de producto cerrada: reconocer antes de preguntar (2026-10-06)
+
+La incorporación parte de **Abrir cámara → escanear → detectar identificador → recuperar información disponible → revisar → completar solamente lo que falta**. No hay selector previo de tipo de material o identificador. Después de un intento fallido o de no poder usar la cámara se ofrecen Intentar nuevamente, Ingresar un código e Incorporar manualmente. La fotografía de un código es una alternativa de lectura, no OCR.
+
+El reconocimiento local distingue ISBN, ISSN, DOI, URL y códigos internos AB. Un QR es un soporte del dato: se clasifica su contenido. Nunca se abre ni consulta una URL arbitraria automáticamente. Los proveedores bibliográficos actuales recuperan por ISBN; los demás identificadores se conservan para revisión, sin fabricar metadatos. Futuros resolvers por identificador deberán declarar disponibilidad, procedencia y campos sugeridos, y tolerar ausencia de resultados.
+
+El modelo contempla libros, revistas, diarios/periódicos, artículos, documentos, producciones escolares, recursos digitales y otros. Tipo de material se confirma en la revisión, no antes del reconocimiento. Todo material admite subjects (palabras clave/temas), description y contents; ninguno requiere ISBN, autor, editorial o páginas. Los recursos sin copia física pueden tener cero ejemplares. Una entrada de contents no crea un ejemplar ni una obra independiente.
+
+Diarios: publication, publicationDate, edition, issn, subjects, description y contents describen la publicación y sus titulares, artículos, suplementos o secciones. Las copias conservan ubicación, estado, disponibilidad derivada y código interno AB. El buscador consulta esos datos junto con los temas de todos los tipos: un diario sobre Segunda Guerra Mundial puede aparecer junto con un libro sobre el mismo tema. Hoy devuelve el material contenedor; un resultado diferenciado de contenido interno es una evolución futura.
+
+**El sistema se adapta al material. El material no debe adaptarse al formulario.**
+
+### Asistencia por fotografía: futura, no implementada
+
+Fotografiar tapa/portada/primera plana podrá proponer titulares, nombres, fechas, temas, palabras clave, contenidos y un resumen inicial. El contrato futuro debe conservar foto de origen, propuestas por campo, procedencia y decisión humana (aceptada/rechazada/editada). No debe escribir el catálogo ni crear ejemplares al terminar el reconocimiento. **La automatización propone. La persona confirma.** No se anuncia como disponible ni se contratan servicios en esta etapa.
