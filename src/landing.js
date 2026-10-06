@@ -7,3 +7,7 @@ function setTheme(value){document.documentElement.dataset.theme=value;try{localS
 setTheme(theme|| (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
 document.querySelector('[data-theme-toggle]').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
 mobileNavigation({toggle:document.querySelector('#menu-toggle'),panel:document.querySelector('#site-nav'),breakpoint:850,background:[document.querySelector('main'),document.querySelector('footer')],header:document.querySelector('.site-header')});
+// Registration currently leads to an honest explanation, not a simulated signup.
+function revealRegistration(){if(location.hash==='#registro-escuela'){const detail=document.getElementById('registro-escuela');detail.open=true;requestAnimationFrame(()=>detail.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}));}}
+document.querySelectorAll('a[href="#registro-escuela"]').forEach(link=>link.addEventListener('click',()=>{document.getElementById('registro-escuela').open=true;if(location.hash==='#registro-escuela')revealRegistration();}));
+window.addEventListener('hashchange',revealRegistration);revealRegistration();
