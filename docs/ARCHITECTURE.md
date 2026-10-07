@@ -128,3 +128,21 @@ Los demás módulos de fuentes, escaneo, circulación y etiquetas solo actualiza
 ### Verificación de esta entrega
 
 38 pruebas de lógica aprobadas. Pruebas de navegador aprobadas: registro y onboarding completos; invitaciones, perfiles y aislamiento institucional; recuperación de respaldo en un navegador nuevo; los cinco paneles de acceso; restricciones de autoasignación; préstamos, reservas, renovación y materiales guardados; migraciones v1/v3; escaneo/ISBN/QR, fotos y MARC; navegación y estados claro/oscuro. Responsive comprobado a 320, 390, 768 y 1440 px (también 1280 en gestión de personas). Se ejecutaron Chromium/Chrome y WebKit con emulación iPhone; no equivale a una prueba física de cámara en todos los modelos de teléfono.
+
+## Landing pública editorial (2026-10-07)
+
+La experiencia pública utiliza `index.html`, `landing.css` y `src/landing.js`; no importa el almacenamiento ni la aplicación interna. Conserva las fuentes Inter/Lora y los colores de `theme.css`. Las referencias Corndel/Oodi se interpretan por comportamiento y composición: cabecera flotante, menú con fondo desenfocado, imágenes amplias y bloques narrativos alternados. No se incorporan sus marcas, textos, fotografías o estilos tipográficos.
+
+El orden ahora es: hero con captura del producto; mosaico de cuatro etapas; narrativa de incorporación y búsqueda; manifiesto; funcionalidades seleccionables; comunidad escolar; vista móvil; cifras de demostración; preguntas frecuentes; CTA final y footer en cinco columnas. Los enlaces internos se desplazan suavemente y dejan libre la cabecera. La navegación tiene cierre con Escape, devolución del foco, fondo inerte y cierre al cambiar de tamaño. Las capturas pueden ampliarse en un diálogo. La preferencia de movimiento reducido desactiva transiciones, aparición y conteos animados.
+
+`assets/product/` contiene capturas reales de la aplicación con un escenario ficticio: una institución, ocho materiales, doce ejemplares y tres operaciones de circulación. Los valores están descritos en `demo.json` y señalados explícitamente en la página; no son métricas de usuarios reales. `scripts/capture-product.cjs` reproduce las capturas en un contexto nuevo y aislado de Playwright, con ilustraciones locales interceptadas como fixtures. Nunca incorpora estos datos al navegador del usuario. No se hicieron cambios al dominio, CNAME ni publicación de Pages.
+
+### Orientación de la plataforma interna
+
+La estructura pública explica dos experiencias internas, sobre las rutas y autorizaciones existentes:
+
+- Docentes/lectores: una pregunta y un buscador como entrada, seguidos de accesos a sus préstamos (`#circulacion`), reservas (`#reservas`), temas (`#temas`) y catálogo (`#biblioteca`). La futura selección de materiales nuevos debe usar fechas documentadas, no recomendaciones inventadas.
+- Biblioteca: búsqueda, incorporación (`#agregar`), circulación, ejemplares (`#inventario`) y personas (`#usuarios`), más el resumen real de la biblioteca.
+- Autoridades: institución, personas, accesos, actividad y configuración; las funciones operativas se muestran según sus permisos, sin concederlos por el diseño.
+
+Esta iteración no modifica formularios, permisos, almacenamiento ni circulación. La distinción entre cargo y acceso, la incorporación con cámara primero y la revisión humana de metadatos siguen vigentes.
