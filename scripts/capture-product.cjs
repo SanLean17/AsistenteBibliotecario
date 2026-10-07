@@ -15,6 +15,8 @@ const fs=require('node:fs');
  async function route(hash,selector){await page.goto('http://127.0.0.1:4173/app.html#'+hash);await page.locator(selector).first().waitFor();await page.evaluate(()=>document.fonts.ready);}
  async function shot(name){for(const theme of ['light','dark']){await page.evaluate(t=>document.documentElement.dataset.theme=t,theme);await page.screenshot({path:'assets/product/'+name+'-'+theme+'.jpg',type:'jpeg',quality:88,animations:'disabled'});}}
  await route('biblioteca','#search');await shot('catalog');
+ await page.locator('#search').fill('animales');await page.waitForTimeout(250);await shot('search');
+ await route('agregar','#scan-start');await page.route('https://www.googleapis.com/books/v1/**',r=>r.fulfill({json:{}}));await page.route('https://openlibrary.org/api/books?**',r=>r.fulfill({json:JSON.parse(fs.readFileSync('tests/fixtures/hobbit.json','utf8').replace(/^\uFEFF/,''))}));await page.getByRole('button',{name:'No puedo usar la cámara'}).click();await page.getByRole('button',{name:'Ingresar un código',exact:true}).click();await page.locator('#isbn-query').fill('9505470630');await page.locator('#isbn-search').click();await page.locator('#confirm-isbn').waitFor();await page.locator('#confirm-isbn').click();await page.locator('#book-form').waitFor();await shot('scan');
  await route('ficha/'+ids[0].id,'.record-page');await page.getByText('Contenidos indexados (2)',{exact:true}).click();await shot('record');
  await route('ejemplares','.holdings-list');await shot('holdings');
  await route('circulacion','#local-loan');await shot('circulation');
@@ -22,5 +24,5 @@ const fs=require('node:fs');
  await page.setViewportSize({width:390,height:844});await route('agregar','#scan-start');await shot('mobile');
  await route('biblioteca','#search');await shot('mobile-catalog');
  fs.writeFileSync('assets/product/demo.json',JSON.stringify({kind:'demonstration',institutions:1,materials:8,holdings:12,circulation:3,notice:'Datos ficticios del escenario utilizado para las capturas; no son estadísticas de uso real.'},null,2)+'\n');
- await browser.close();console.log('Captured seven real screens, light/dark, in an isolated demonstration context.');
+ await browser.close();console.log('Captured nine real screens, light/dark, in an isolated demonstration context.');
 })().catch(e=>{console.error(e);process.exit(1)});

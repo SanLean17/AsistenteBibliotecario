@@ -146,3 +146,13 @@ La estructura pública explica dos experiencias internas, sobre las rutas y auto
 - Autoridades: institución, personas, accesos, actividad y configuración; las funciones operativas se muestran según sus permisos, sin concederlos por el diseño.
 
 Esta iteración no modifica formularios, permisos, almacenamiento ni circulación. La distinción entre cargo y acceso, la incorporación con cámara primero y la revisión humana de metadatos siguen vigentes.
+
+## Corrección de identidad y estructura (2026-10-07)
+
+La fuente de verdad del copy aprobado y de la escala tipográfica es el commit `2663691`, inmediatamente anterior al rediseño público. Se recuperan literalmente el hero «La biblioteca de tu escuela. Más cerca de todos.», su introducción, la frase completa «Los materiales están. Hagamos que aparezcan.», la presentación de la comunidad y las FAQ anteriores. Inter y Lora siguen alojadas localmente sin cambios. El manifiesto mantiene «La biblioteca no guarda conocimiento. Lo pone en movimiento.». Los nuevos bloques estructurales se conservan, pero la gran captura sale del hero; los ejemplos reales acompañan incorporación, búsqueda, ejemplares y circulación.
+
+`landing-refinement.css` ajusta la jerarquía y los contrastes de esta corrección sobre el layout existente. Los menús Producto, Para escuelas y Recursos abren con hover/foco en escritorio, tienen tolerancia de salida y cierre con Escape. En móvil se abren por toque dentro del menú desplazable. Todos sus destinos existen; no se agregan páginas vacías. Los textos superpuestos utilizan una superficie opaca y borde visible en ambos temas.
+
+`workspace.css` organiza la presentación interna sin modificar reglas de acceso. La marca aparece en el sidebar; la cabecera muestra contexto de trabajo. La navegación agrupa Biblioteca, Circulación, Gestión y Herramientas. Se conserva `applyAccess` como filtro de las rutas y se ocultan grupos vacíos. `src/dashboard.js` solo renderiza el estado institucional ya leído, usando los permisos vigentes: acciones y estadísticas compactas para biblioteca/autoridades, búsqueda y operaciones propias para docentes/lectores. La acción de incorporar se muestra según `catalog.create`, incluyendo permisos temporales; el cargo no se modifica. Las novedades son incorporaciones reales ordenadas por fecha, no recomendaciones generadas.
+
+No se modifican IndexedDB, modelo de datos, permisos, circulación, importaciones, fuentes, cámara, etiquetas ni respaldos. Las capturas se regeneran en un contexto aislado y ahora incluyen búsqueda temática y revisión de la ficha recuperada. La landing continúa sin abrir el catálogo local.
