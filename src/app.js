@@ -1,6 +1,6 @@
-import {initAccessUI,renderAccess} from './access-ui.js?v=20261006-3';
+import {initAccessUI,renderAccess} from './access-ui.js?v=20261007-2';
 import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261006-3';
-import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261006-3';
+import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261007-2';
 import {execute,exportArchive,restoreArchive} from './storage.js?v=20261006-3';
 import {JsonBackupProvider,AguapeyMarcProvider} from './imports.js?v=20261006-3';
 import { mobileNavigation } from './navigation.js?v=20261006-3';
@@ -256,3 +256,5 @@ initAccessUI(async context=>{if(context){query='';category='';draft=null;detailP
 initLocalUI(async context=>{if(context){query='';category='';draft=null;detailPhotos=[];cancelLookup();}books=await readBooks();await render();});
 $('#main').innerHTML='<p class="muted">Abriendo catálogo institucional…</p>';
 try{await openDatabase();const existing=await getBooks();books=existing.map(b=>localizeBook(b.schemaVersion===2?b:validateBook(b)));if(existing.some(b=>b.schemaVersion!==2))await mergeBooks(books);await refreshSession();ready=true;render();}catch{$('#main').innerHTML='<div class="notice"><h1>No pudimos abrir el catálogo local</h1><p>Revisá los permisos de almacenamiento del navegador y volvé a cargar la página.</p></div>';}
+
+document.addEventListener('click',e=>{const b=e.target.closest('[data-dashboard-scroll]');if(b)document.getElementById(b.dataset.dashboardScroll)?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});});
