@@ -62,6 +62,7 @@ function fieldEntries(book){
     ['Autoría',7,[book.author,...(book.authors||[])]],
     ['Curso / audiencia',7,[book.audience,book.courseLevel]],
     ['Publicación',6,[book.publication,book.containerTitle]],
+    ['Fecha',6,[book.publicationDate,book.year]],
     ['Descripción',4,[book.description,book.notes]],
     ['Área / entidad',4,[book.schoolArea,book.issuingBody]],
     ['Identificadores',6,[book.isbn,book.issn,book.doi,book.documentNumber,book.otherIdentifier]],
