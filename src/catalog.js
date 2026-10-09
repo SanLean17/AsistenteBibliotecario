@@ -12,10 +12,10 @@ const searchable = value => normalize(value)
   .replace(/\b(primera|1ra|1a|i|1) guerra mundial\b|\bguerra mundial (primera|1ra|1a|i|1)\b/g,' primera guerra mundial ')
   .replace(/\b(cuentos|relatos|relato)\b/g,'cuento').replace(/\b(monstruos|criaturas)\b/g,'monstruo').replace(/\bamistades\b/g,'amistad')
   .replace(/\b(murcielagos|bats|bat)\b/g,'murcielago').replace(/\b(quinto|5to|5)\b/g,'quinto').replace(/[^a-z0-9]+/g,' ');
-export function searchBooks(books, query, category = '') {
+export function searchBooks(books, query, category = '', materialType = '') {
   const ignored = new Set(['de','del','la','el','los','las','un','una','que','con','sobre','tengan','tenga','libro','libros','algo','para','en','necesito','busco','quiero']);
   const words = searchable(query).trim().split(/\s+/).filter(w=>!ignored.has(w));
-  return books.filter(book => (!category || book.category === category) &&
+  return books.filter(book => (!category || book.category === category) && (!materialType || book.materialType===materialType) &&
     (/^[\dXx\s-]+$/.test(query)&&cleanISBN(query)&&cleanISBN(book.isbn).includes(cleanISBN(query)) || words.every(word => searchable([book.materialType,MATERIAL_TYPES[book.materialType],book.publication,book.publicationDate,book.edition,book.issn,book.doi,book.resourceUrl,book.otherIdentifier,book.title,book.subtitle,book.author,book.isbn,book.publisher,book.location,book.category,book.description,book.audience,...(book.subjects||[]),...(book.sourceSubjects||[]),contentSearchText(book),book.containerTitle,book.volume,book.issueNumber,book.editionLabel,book.pageRange,book.issuingBody,book.documentNumber,book.schoolArea,book.courseLevel,book.digitalFormat,...(book.exemplars||[]).flatMap(e=>[e.location,e.internalCode,e.inventoryCode,...Object.values(e.physicalLocation||{})])].join(' ')).includes(word))));
 }
 export function validateBook(raw) {
