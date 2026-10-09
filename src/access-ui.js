@@ -1,9 +1,9 @@
-import {renderDashboard} from './dashboard.js?v=20261009-5';
-import {readState,execute,createInstitution,getActorId,setInstitutionId,getInstitutionId} from './storage.js?v=20261009-5';
-import {PROFILES,CARGOS,LABELS,RESTRICTED,hasPermission,isEnabled,suggestProfile} from './permissions.js?v=20261009-5';
-import {normalizeLoanPolicy} from './loan-policy.js?v=20261009-5';
-import {config,activeLoan,activeReservation} from './local-domain.js?v=20261009-5';
-import {libraryAnalytics} from './analytics.js?v=20261009-8';
+import {renderDashboard} from './dashboard.js?v=20261009-9';
+import {readState,execute,createInstitution,getActorId,setInstitutionId,getInstitutionId} from './storage.js?v=20261009-9';
+import {PROFILES,CARGOS,LABELS,RESTRICTED,hasPermission,isEnabled,suggestProfile} from './permissions.js?v=20261009-9';
+import {normalizeLoanPolicy} from './loan-policy.js?v=20261009-9';
+import {config,activeLoan,activeReservation} from './local-domain.js?v=20261009-9';
+import {libraryAnalytics} from './analytics.js?v=20261009-9';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const options=(values,selected='')=>values.map(([v,label])=>`<option value="${esc(v)}" ${v===selected?'selected':''}>${esc(label)}</option>`).join('');
 const field=(label,name,value='',type='text',extra='')=>`<label>${label}<input name="${name}" value="${esc(value)}" type="${type}" ${extra}></label>`;
