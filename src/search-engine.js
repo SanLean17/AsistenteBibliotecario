@@ -31,10 +31,10 @@ const TYPE_TERMS={
   libro:['libro','libros'],
   revista:['revista','revistas'],
   diario:['diario','diarios','periodico','periodicos'],
-  articulo:['articulo','articulos','nota','notas'],
+  articulo:['articulo','articulos'],
   documento:['documento','documentos'],
-  produccion:['produccion','producciones','trabajo escolar','trabajos escolares'],
-  digital:['digital','pdf','web','online','recurso digital']
+  produccion:['produccion escolar','producciones escolares'],
+  digital:['recurso digital','recursos digitales']
 };
 
 function materialIntent(query){
