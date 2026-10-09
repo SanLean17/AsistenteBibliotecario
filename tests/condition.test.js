@@ -80,3 +80,38 @@ test('no prestar permanece en la cola aunque ya haya sido revisado',()=>{
   assert.deepEqual(items[0].reasons,['No prestar']);
   assert.equal(effectiveState(s.books[0].exemplars[0],s),'damaged');
 });
+
+
+test('acción rápida de inventario marca peor estado y lo agrega a atención',()=>{
+  const s=state();normalizeHoldings(s);
+  const copy=s.books[0].exemplars[0];
+  command(s,'lib','copy.condition.quick',{id:copy.id,action:'worse'});
+  assert.equal(copy.condition,'Regular');
+  assert.equal(copy.careLevel,'careful');
+  const items=conditionAttentionItems(s);
+  assert.equal(items.length,1);
+  assert.ok(items[0].reasons.includes('Volvió en peor estado'));
+  assert.ok(items[0].reasons.includes('Usar con cuidado'));
+});
+
+test('acciones rápidas de inventario permiten cuidado o no prestar',()=>{
+  const s=state();normalizeHoldings(s);
+  const copy=s.books[0].exemplars[0];
+  command(s,'lib','copy.condition.quick',{id:copy.id,action:'careful'});
+  assert.equal(copy.careLevel,'careful');
+  assert.equal(effectiveState(copy,s),'available');
+  command(s,'lib','copy.condition.quick',{id:copy.id,action:'restricted'});
+  assert.equal(copy.careLevel,'restricted');
+  assert.equal(copy.status,'damaged');
+  assert.equal(effectiveState(copy,s),'damaged');
+});
+
+test('devolución puede registrar explícitamente peor estado aunque ya sea Deteriorado',()=>{
+  const s=state();normalizeHoldings(s);
+  const copy=s.books[0].exemplars[0];
+  copy.condition='Deteriorado';copy.careLevel='careful';copy.status='available';
+  const loan=command(s,'lib','loan.create',{exemplarId:'e1',patronId:'teacher'});
+  command(s,'lib','loan.return',{id:loan.id,status:'available',condition:'Deteriorado',careLevel:'careful',worsenedExplicit:'true',note:'La tapa quedó aún más floja.'});
+  assert.equal(loan.conditionWorsened,true);
+  assert.ok(s.activity.some(a=>a.type==='holding.condition.worsened'&&a.exemplarId==='e1'));
+});

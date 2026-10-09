@@ -90,3 +90,10 @@
 .attention-item[data-priority="2"] .attention-level{background:color-mix(in srgb,#b76e00 9%,var(--surface));border-color:color-mix(in srgb,#b76e00 28%,var(--line));color:#965900}
 .attention-item .local-form{margin:0}
 @media(max-width:760px){.attention-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.attention-item{grid-template-columns:1fr;gap:12px}}
+
+.return-presets,.quick-condition-actions{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:0 0 10px}
+.return-presets .button,.quick-condition-actions .button{min-height:34px;padding:7px 9px;font-size:10px}
+.quick-condition-actions>span{font-size:10px;color:var(--muted);font-weight:600}
+#inventory-last-condition{margin:9px 0 4px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2)}
+.inventory-findings .quick-condition-actions{margin:0;justify-content:flex-end}
+@media(max-width:760px){.return-presets .button,.quick-condition-actions .button{flex:1 1 auto;min-width:0}.inventory-findings .quick-condition-actions{width:100%;justify-content:stretch}}

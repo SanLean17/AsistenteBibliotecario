@@ -508,3 +508,27 @@ La acción **Guardar revisión**:
 - lo retira de la lista si vuelve a Uso normal y no queda un empeoramiento pendiente de revisión.
 
 Esto evita mantener una segunda lista manual que pueda quedar desactualizada. La cola es una vista derivada del estado real del ejemplar.
+
+
+### Acciones rápidas durante devolución e inventario
+
+Para evitar abrir la ficha completa en tareas operativas, el estado físico puede registrarse en el momento.
+
+**Durante una devolución** aparecen atajos que preparan el formulario:
+- **Sin cambios**: recupera el estado con el que salió;
+- **Volvió peor**: propone el siguiente nivel de condición y marca que hubo empeoramiento;
+- **Usar con cuidado**: mantiene el ejemplar disponible pero lo incorpora a la cola de atención;
+- **No prestar**: lo deja fuera de circulación.
+
+“Volvió peor” también puede registrarse si el ejemplar ya estaba categorizado como Deteriorado. En ese caso la categoría no cambia, pero queda documentado el empeoramiento observado.
+
+Los atajos de devolución no registran nada hasta confirmar **Registrar devolución**; la persona todavía puede corregir estado, cuidado y observación.
+
+**Durante un inventario físico**, para cada ejemplar ya escaneado Biblioteca puede marcar directamente:
+- **Está peor**;
+- **Usar con cuidado**;
+- **No prestar**.
+
+En cámara continua, estas acciones también aparecen para el último código leído sin detener la recorrida. “Está peor” genera una incidencia de estado físico pendiente de revisión. Las otras decisiones actualizan el nivel de cuidado de forma explícita.
+
+Ninguna acción asigna responsabilidad a la persona que tuvo el préstamo. El sistema registra una observación material y una decisión actual de Biblioteca.

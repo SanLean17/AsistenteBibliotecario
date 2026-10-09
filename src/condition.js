@@ -12,6 +12,8 @@ export function normalizeCareLevel(value,condition='Bueno'){
   return condition==='Deteriorado'?'careful':'normal';
 }
 
+export function nextWorseCondition(value){const condition=normalizePhysicalCondition(value);const i=PHYSICAL_CONDITIONS.indexOf(condition);return PHYSICAL_CONDITIONS[Math.min(PHYSICAL_CONDITIONS.length-1,i+1)];}
+
 export function conditionWorsened(before,after){
   const a=RANK[normalizePhysicalCondition(before)]??1;
   const b=RANK[normalizePhysicalCondition(after)]??1;
