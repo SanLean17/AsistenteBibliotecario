@@ -1,8 +1,8 @@
 import {normalizeLocation,displayLocation} from './domain.js?v=20261009-12';
 
 export const LOCATION_TYPES=Object.freeze(['sector','shelving','shelf']);
-export const INVENTORY_STATUSES=Object.freeze(['open','closed']);
-export const INVENTORY_FINDING_STATUSES=Object.freeze(['found','misplaced','outside-scope','unscanned']);
+export const INVENTORY_STATUSES=Object.freeze(['draft','open','closed']);
+export const INVENTORY_FINDING_STATUSES=Object.freeze(['captured','found','misplaced','outside-scope','unscanned']);
 
 const clean=(v,max=160)=>String(v??'').trim().slice(0,max);
 
@@ -79,7 +79,11 @@ export function expectedCopiesForScope(books,scope){
 }
 
 export function classifyInventoryScan({session,book,copy}){
-  if(!session||session.status!=='open')throw new Error('El inventario no está abierto.');
+  if(!session||!['draft','open'].includes(session.status))throw new Error('El inventario no está abierto.');
+  if(session.status==='draft'||!session.scope)return {
+    exemplarId:copy.id,bookId:book.id,internalCode:copy.internalCode,title:book.title,
+    status:'captured',expectedLocation:displayLocation(copy.physicalLocation)||copy.location||'',scannedAt:new Date().toISOString()
+  };
   const expected=(session.expectedExemplarIds||[]).includes(copy.id);
   if(!expected)return {
     exemplarId:copy.id,bookId:book.id,internalCode:copy.internalCode,title:book.title,
@@ -94,7 +98,19 @@ export function classifyInventoryScan({session,book,copy}){
 
 export function inventorySummary(session){
   const findings=session?.findings||[];
-  const counts={found:0,misplaced:0,'outside-scope':0,unscanned:0};
+  const counts={captured:0,found:0,misplaced:0,'outside-scope':0,unscanned:0};
   for(const f of findings)if(Object.hasOwn(counts,f.status))counts[f.status]++;
   return {...counts,totalExpected:(session?.expectedExemplarIds||[]).length,totalScanned:findings.filter(f=>f.status!=='unscanned').length};
+}
+
+
+export function reclassifyInventoryFindings(session,books){
+  if(!session?.scope)throw new Error('Elegí una zona antes de clasificar el inventario.');
+  const copies=new Map((books||[]).flatMap(book=>(book.exemplars||[]).map(copy=>[copy.id,{book,copy}])));
+  session.findings=(session.findings||[]).filter(f=>f.status!=='unscanned').map(f=>{
+    const item=copies.get(f.exemplarId);
+    if(!item)return f;
+    return classifyInventoryScan({session:{...session,status:'open'},book:item.book,copy:item.copy});
+  });
+  return session.findings;
 }
