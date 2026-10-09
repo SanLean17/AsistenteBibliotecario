@@ -238,3 +238,30 @@ Los resultados se ordenan por relevancia y muestran por qué coincidieron, por e
 Las búsquedas enviadas explícitamente desde el inicio se registran en la auditoría local con cantidad de resultados. No se registra cada tecla. Biblioteca y Autoridad pueden ver la cantidad de búsquedas sin resultado y consultar los términos concretos para detectar necesidades de la colección. Estos datos permanecen en el almacenamiento local del prototipo y no se envían a terceros.
 
 Las sugerencias del buscador se construyen con temas reales ya existentes en la colección; nunca se rellenan con recomendaciones inventadas.
+
+
+## Disponibilidad visible y demanda de colección — 2026-10-09
+
+Los resultados del catálogo no ocultan un material solo porque todos sus ejemplares estén prestados o reservados. La búsqueda muestra el material con un estado explícito:
+
+- **Disponible**: existe al menos un ejemplar físico que puede circular.
+- **No disponible**: el material existe en la institución, pero ningún ejemplar está libre.
+- **Disponible en línea**: el registro no tiene ejemplar físico y dispone de URL o DOI.
+- **Sin ejemplar físico**: existe el registro, pero no hay copia física ni acceso digital registrado.
+
+Cuando no hay disponibilidad física, el sistema intenta mostrar una fecha aproximada únicamente si existe una fecha confiable en la circulación. Se usa la devolución prevista más temprana o, para una reserva asignada, su vencimiento registrado. La fecha siempre se presenta como **estimada**. Si existe un préstamo vencido, un ejemplar deteriorado/extraviado o no hay fecha registrada, se muestra “No disponible” sin inventar una fecha. Si existen reservas activas, se aclara que la estimación depende de devoluciones y del orden de reservas.
+
+La ficha completa muestra la descripción directamente, no escondida como dato técnico, junto con la disponibilidad general. Cada ejemplar conserva además su situación individual y su fecha aproximada cuando corresponde. Si el material no está disponible y el perfil puede reservar, la ficha ofrece acceso directo a la reserva con el material preseleccionado.
+
+### Estadísticas útiles para gestión
+
+El panel de Biblioteca/Autoridad deriva información real del catálogo, la circulación y las búsquedas locales:
+
+- materiales más prestados;
+- materiales con ejemplares que nunca fueron prestados;
+- ejemplares deteriorados;
+- préstamos vencidos;
+- búsquedas sin resultado;
+- términos de búsqueda sin resultado agrupados por frecuencia.
+
+La intención no es mostrar métricas decorativas, sino ofrecer señales para inventario, revisión física y decisiones de adquisición/incorporación. Las búsquedas se registran solo cuando la persona envía una consulta; no se captura cada tecla ni se envían datos a terceros.
