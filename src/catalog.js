@@ -1,4 +1,5 @@
-import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261009-5';
+import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261009-6';
+import {searchBooks as rankedSearchBooks,searchCatalog} from './search-engine.js?v=20261009-6';
 import {normalizeContentEntries,contentSearchText,createAssistanceDraft} from './material-types.js?v=20261009-5';
 import { validPhotoURL } from './photos.js?v=20261006-3';
 import { cleanISBN, validISBN } from './isbn.js?v=20261006-3';
@@ -7,17 +8,9 @@ import { SOURCE_NAMES } from './providers/registry.js?v=20261006-3';
 import { LOCAL_SCOPE, CIRCULATION_STATES } from './domain.js?v=20261006-3';
 export const categories = ['Cuentos', 'Novela', 'Poesía', 'Informativo', 'Otros'];
 export const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-const searchable = value => normalize(value)
-  .replace(/\b(segunda|2da|2a|ii|2) guerra mundial\b|\bguerra mundial (segunda|2da|2a|ii|2)\b/g,' segunda guerra mundial ')
-  .replace(/\b(primera|1ra|1a|i|1) guerra mundial\b|\bguerra mundial (primera|1ra|1a|i|1)\b/g,' primera guerra mundial ')
-  .replace(/\b(cuentos|relatos|relato)\b/g,'cuento').replace(/\b(monstruos|criaturas)\b/g,'monstruo').replace(/\bamistades\b/g,'amistad')
-  .replace(/\b(murcielagos|bats|bat)\b/g,'murcielago').replace(/\b(quinto|5to|5)\b/g,'quinto').replace(/[^a-z0-9]+/g,' ');
-export function searchBooks(books, query, category = '', materialType = '') {
-  const ignored = new Set(['de','del','la','el','los','las','un','una','que','con','sobre','tengan','tenga','libro','libros','algo','para','en','necesito','busco','quiero']);
-  const words = searchable(query).trim().split(/\s+/).filter(w=>!ignored.has(w));
-  return books.filter(book => (!category || book.category === category) && (!materialType || book.materialType===materialType) &&
-    (/^[\dXx\s-]+$/.test(query)&&cleanISBN(query)&&cleanISBN(book.isbn).includes(cleanISBN(query)) || words.every(word => searchable([book.materialType,MATERIAL_TYPES[book.materialType],book.publication,book.publicationDate,book.edition,book.issn,book.doi,book.resourceUrl,book.otherIdentifier,book.title,book.subtitle,book.author,book.isbn,book.publisher,book.location,book.category,book.description,book.audience,...(book.subjects||[]),...(book.sourceSubjects||[]),contentSearchText(book),book.containerTitle,book.volume,book.issueNumber,book.editionLabel,book.pageRange,book.issuingBody,book.documentNumber,book.schoolArea,book.courseLevel,book.digitalFormat,...(book.exemplars||[]).flatMap(e=>[e.location,e.internalCode,e.inventoryCode,...Object.values(e.physicalLocation||{})])].join(' ')).includes(word))));
-}
+export {searchCatalog};
+export function searchBooks(books,query,category='',materialType=''){return rankedSearchBooks(books,query,category,materialType);}
+
 export function validateBook(raw) {
   const text = (key,max) => String(raw[key] ?? '').trim().slice(0,max);
   const list = (value,max=100) => (Array.isArray(value)?value:String(value??'').split(/\n|;/)).slice(0,max).map(v=>String(v).trim().slice(0,500)).filter(Boolean);
