@@ -55,7 +55,7 @@ export function locationLabelsFromNode(locations,id){
 
 export function scopeContainsLocation(scope,copyLocation={}){
   const l=normalizeLocation(copyLocation);
-  if(!scope)return true;
+  if(!scope||scope.type==='all')return true;
   if(scope.type==='sector')return scope.id?l.sectorId===scope.id:clean(l.sector).toLowerCase()===clean(scope.name).toLowerCase();
   if(scope.type==='shelving')return scope.id?l.shelvingId===scope.id:clean(l.shelving).toLowerCase()===clean(scope.name).toLowerCase();
   if(scope.type==='shelf')return scope.id?l.shelfId===scope.id:clean(l.shelf).toLowerCase()===clean(scope.name).toLowerCase();
