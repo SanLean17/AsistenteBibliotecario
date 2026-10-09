@@ -1,5 +1,5 @@
 // Presentation only. Read the institution-scoped state and existing permission checks.
-import {PROFILES,isEnabled} from './permissions.js?v=20261006-3';
+import {PROFILES,isEnabled} from './permissions.js?v=20261009-2';
 import {activeLoan,activeReservation,config} from './local-domain.js?v=20261009-2';
 import {normalizeLoanPolicy,renewalRequestStatus} from './loan-policy.js?v=20261009-2';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
