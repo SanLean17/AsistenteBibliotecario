@@ -53,7 +53,7 @@ function subjectChips(book,limit=5){
   return `<div class="subject-chips">${topics.slice(0,limit).map(t=>`<span>${escape(t)}</span>`).join('')}${topics.length>limit?`<span class="more-chip">+${topics.length-limit}</span>`:''}</div>`;
 }
 function cards(list){
-  return `<div class="book-grid">${list.map(item=>{const result=item?.book?item:null,b=result?.book||item,available=(b.exemplars||[]).filter(e=>holdingState(e)==='Disponible').length;return `<a class="book-card" href="#ficha/${escape(b.id)}">${cover(b)}<h3>${escape(b.title)}</h3><p>${escape(b.author||b.publication||'Responsable no informado')}</p>${result&&query?`<small class="search-match">${escape(searchSummary(result))}</small>`:''}<div class="book-meta"><span>${escape(MATERIAL_TYPES[b.materialType]||b.category||'Material')}</span><span>${b.copies?available+' disp. · '+b.copies+' ej.':'Digital / sin ejemplar'}</span></div></a>`;}).join('')}</div>`;
+  return `<div class="book-grid">${list.map(item=>{const result=item?.book?item:null,b=result?.book||item,available=(b.exemplars||[]).filter(e=>holdingState(e)==='Disponible').length;return `<a class="book-card" href="#ficha/${escape(b.id)}">${cover(b)}<h3>${escape(b.title)}</h3><p>${escape(b.author||b.publication||'Responsable no informado')}</p>${result&&query?`<small class="search-match">${escape(searchSummary(result))}</small>`:''}<div class="book-meta"><span>${escape(MATERIAL_TYPES[b.materialType]||b.category||'Material')}</span><span>${b.copies?available+' disp. · '+b.copies+' ej.':(b.resourceUrl||b.doi?'Recurso en línea':'Sin ejemplar físico')}</span></div></a>`;}).join('')}</div>`;
 }
 function empty(filtered=false){
   return `<div class="empty"><div class="empty-symbol">▥</div><h3>${filtered?'No se encontraron resultados':'Tu catálogo todavía no tiene registros.'}</h3><p>${filtered?'Probá con otro título, autor, ISBN, tema o contenido.':'Sumá el primer material de la biblioteca. Primero intentamos reconocerlo; después completás lo que falta.'}</p><a class="button primary" href="${filtered?'#biblioteca':'#agregar'}">${filtered?'Volver al catálogo':'Agregar al catálogo'}</a></div>`;
@@ -104,7 +104,7 @@ function renderExemplars(){
  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">INVENTARIO FÍSICO</span><h1>Ejemplares</h1><p class="muted">Cada copia conserva su identidad, ubicación, estado y fotografía. Préstamos y reservas disponibles en este navegador.</p></div><a class="button primary" href="#agregar">Agregar al catálogo</a></div><div class="holdings-list">${books.flatMap(b=>(b.exemplars||[]).map((e,i)=>`<article class="holding-row"><div><span class="eyebrow">${escape(e.internalCode||e.inventoryCode||'Ejemplar '+(i+1))}</span><h2>${escape(b.title)}</h2><p>${escape(e.location||'Ubicación pendiente')} · ${escape(holdingState(e))} · ${escape(e.condition||'Bueno')}</p></div><a class="button secondary" href="#ficha/${escape(b.id)}/${escape(e.id)}">Ver ejemplar</a></article>`)).join('')||empty()} </div>`;
 }
 function renderLibrary(){
-  const isAvailable=book=>(book.exemplars||[]).some(e=>holdingState(e)==='Disponible')||book.copies===0;
+  const isAvailable=book=>(book.exemplars||[]).some(e=>holdingState(e)==='Disponible')||(book.copies===0&&Boolean(book.resourceUrl||book.doi));
   const results=searchCatalog(books,query,{category,materialType:materialFilter,availability:availabilityFilter,isAvailable});
   const list=results;
   const suggestions=suggestedQueries(books,5);
