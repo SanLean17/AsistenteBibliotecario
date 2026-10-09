@@ -35,6 +35,7 @@ function normalizeCondition(value){
   if(v.includes('nuevo'))return 'Nuevo';
   return 'Bueno';
 }
+function marcMaterialType(record){const type=record.leader?.[6]||'',level=record.leader?.[7]||'';if(type==='m')return 'digital';if(level==='s'||level==='i')return 'revista';return 'libro';}
 export function marcRecordToCatalog(record,{source='Aguapey · MARC ISO 2709'}={}){
   const titleField=fields(record,'245')[0];
   const title=trim(firstSub(record,'245','a'));
@@ -73,7 +74,7 @@ export function marcRecordToCatalog(record,{source='Aguapey · MARC ISO 2709'}={
   const copies=holdings.length;
   const exemplars=holdings.length?holdings:Array.from({length:copies},()=>({...LOCAL_SCOPE,id:crypto.randomUUID(),inventoryCode:'',location:'',condition:'Bueno',status:'available'}));
   return {
-    id:crypto.randomUUID(),workId:crypto.randomUUID(),editionId:crypto.randomUUID(),
+    id:crypto.randomUUID(),workId:crypto.randomUUID(),editionId:crypto.randomUUID(),materialType:marcMaterialType(record),
     title,subtitle,author:authors.join('; '),authors,isbn:isbnRaw,category:'Otros',publisher,
     publishedDate,year:yearFrom(publishedDate),pages:pagesFrom(extent),language:firstSub(record,'041','a'),
     subjects,sourceSubjects:[...subjects],contents,description:firstSub(record,'520','a'),audience:firstSub(record,'521','a'),
