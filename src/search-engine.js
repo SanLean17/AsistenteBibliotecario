@@ -77,11 +77,11 @@ function fieldEntries(book){
   ].map(([label,weight,values])=>[label,weight,normalizeSearch(values.filter(Boolean).join(' '))]);
 }
 
-export function searchCatalog(books,query,{category='',materialType='',availability='',isAvailable=()=>true}={}){
+export function searchCatalog(books,query,{category='',materialType='',availability='',isAvailable=()=>true,inferIntent=true}={}){
   const raw=String(query||'').trim();
   const isbn=cleanISBN(raw);
-  const inferredType=materialType||materialIntent(raw);
-  const inferredAvailability=availability||availabilityIntent(raw);
+  const inferredType=materialType||(inferIntent?materialIntent(raw):'');
+  const inferredAvailability=availability||(inferIntent?availabilityIntent(raw):'');
   const terms=tokens(raw);
   const results=[];
 
@@ -121,7 +121,7 @@ export function searchCatalog(books,query,{category='',materialType='',availabil
 }
 
 export function searchBooks(books,query,category='',materialType=''){
-  return searchCatalog(books,query,{category,materialType}).map(result=>result.book);
+  return searchCatalog(books,query,{category,materialType,inferIntent:false}).map(result=>result.book);
 }
 
 export function searchSummary(result){
