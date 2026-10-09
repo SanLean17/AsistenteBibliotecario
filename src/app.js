@@ -10,9 +10,9 @@ import { preparePhoto, validPhotoURL } from './photos.js?v=20261009-3';
 import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261009-3';
 import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261009-3';
 import { canonicalISBN, cleanISBN } from './isbn.js?v=20261009-3';
-import { categories, searchBooks, validateBook, parseArchive } from './catalog.js?v=20261009-3';
+import { categories, searchBooks, validateBook, parseArchive } from './catalog.js?v=20261009-4';
 import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261009-3';
-import { assignMissingInventoryCodes } from './domain.js?v=20261009-3';
+import { assignMissingInventoryCodes } from './domain.js?v=20261009-4';
 
 const $=s=>document.querySelector(s);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
