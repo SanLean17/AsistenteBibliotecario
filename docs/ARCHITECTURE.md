@@ -310,3 +310,53 @@ Los permisos específicos son:
 - recommendations.manage.
 
 Responsable de Biblioteca y Autoridad Institucional los reciben por perfil. También pueden delegarse según las reglas generales de permisos, sin cambiar el cargo de la persona.
+
+
+## Adquisiciones y cooperación futura entre escuelas — 2026-10-09
+
+Una necesidad planificada o resuelta puede registrar **cómo** se intenta cubrir o se cubrió. Los métodos admitidos son:
+
+- compra;
+- donación;
+- material ya existente;
+- recurso digital;
+- préstamo interbibliotecario;
+- intercambio entre instituciones;
+- otra vía.
+
+La necesidad puede conservar proveedor/procedencia, institución externa, costo estimado, fecha prevista, material finalmente vinculado y una resolución escrita. Definir una vía no genera una compra ni un pedido externo automático. La decisión continúa siendo institucional.
+
+### Cooperación entre bibliotecas
+
+La pantalla de planificación admite borradores locales de cooperación con otra institución. Un registro puede representar:
+
+- solicitar un material a otra biblioteca;
+- ofrecer un material propio a otra biblioteca.
+
+Estados locales:
+- borrador;
+- preparada para contactar;
+- acordada externamente;
+- recibida;
+- devuelta;
+- cancelada.
+
+Estos registros **no se envían** a otras escuelas en el prototipo. “Preparada para contactar” significa solamente que la biblioteca dejó listo el registro para continuar el acuerdo por fuera de la plataforma. Esto evita simular una red que todavía no existe.
+
+Los borradores pueden vincularse a una necesidad de colección y/o a un material propio. Si una ficha del catálogo se elimina, el historial de cooperación conserva el título del material pero elimina la referencia rota.
+
+IndexedDB v7 incorpora el store local resourceSharingRequests. El respaldo institucional sigue usando el formato JSON v5 y agrega este array cuando existe; respaldos v5 anteriores lo inicializan vacío.
+
+### Contrato futuro de catálogo compartido
+
+src/federation.js define una proyección mínima y segura para una futura búsqueda entre instituciones. Solo contempla:
+
+- institución y biblioteca;
+- identificadores de obra/edición/registro;
+- título, autoría, tipo, publicación, temas e identificadores bibliográficos;
+- cantidad y estado resumido de disponibilidad;
+- fecha estimada de disponibilidad cuando exista.
+
+No incluye personas, correos, nombres de prestatarios, préstamos individuales, reservas individuales, permisos, auditoría ni datos internos de la institución.
+
+La futura red debería buscar sobre esta proyección y mantener la circulación real dentro de la institución propietaria. Antes de habilitar intercambio real hará falta backend, autenticación, autorización institucional, reglas de privacidad y acuerdos operativos entre escuelas. En esta etapa solo queda definido el contrato y su validación local.
