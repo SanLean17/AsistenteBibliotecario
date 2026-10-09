@@ -87,7 +87,8 @@ export function searchCatalog(books,query,{category='',materialType='',availabil
 
   for(const book of books){
     if(category&&book.category!==category)continue;
-    if(inferredType&&book.materialType!==inferredType)continue;
+    const effectiveType=book.materialType||(book.isbn?'libro':'otro');
+    if(inferredType&&effectiveType!==inferredType)continue;
     if(inferredAvailability==='available'&&!isAvailable(book))continue;
 
     if(isbn&&/^[\dXx\s-]+$/.test(raw)){
