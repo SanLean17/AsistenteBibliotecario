@@ -27,7 +27,7 @@ async function requestRearCamera(){
   }
 }
 // La cámara y la decodificación ocurren en el dispositivo; no se envían fotogramas.
-export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFactory=createISBNDetector,accept=validISBN}) {
+export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFactory=createISBNDetector,accept=validISBN,continuous=false,cooldown=900}) {
   if (!globalThis.isSecureContext || !navigator.mediaDevices?.getUserMedia) throw new Error('La cámara necesita una conexión HTTPS y permiso del navegador.');
   if (signal.aborted) return;
   const stream = await requestRearCamera();
@@ -46,7 +46,13 @@ export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFac
       try {
         const found=(await detector.detect(video)).find(b=>accept(b.rawValue));
         if(stopped||signal.aborted)return;
-        if(found){stop();onISBN(found.rawValue);return;}
+        if(found){
+          if(!continuous){stop();onISBN(found.rawValue);return;}
+          await onISBN(found.rawValue);
+          if(stopped||signal.aborted)return;
+          timer=setTimeout(read,Math.max(300,Number(cooldown)||900));
+          return;
+        }
         timer=setTimeout(read,180);
       } catch(error){stop();if(!signal.aborted)onError(error);}
     };
