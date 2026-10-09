@@ -1,1 +1,12 @@
-{"name":"asistente-bibliotecario","version":"0.1.0","private":true,"type":"module","scripts":{"start":"node scripts/serve.mjs","test":"node --test tests/*.test.js"}}
+{
+  "name": "asistente-bibliotecario",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "check": "node scripts/check-integrity.mjs",
+    "test": "node --test tests/*.test.js",
+    "verify": "npm run check && npm test"
+  }
+}
