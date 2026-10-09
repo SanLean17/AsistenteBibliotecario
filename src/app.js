@@ -52,6 +52,7 @@ function subjectChips(book,limit=5){
   if(!topics.length)return '';
   return `<div class="subject-chips">${topics.slice(0,limit).map(t=>`<span>${escape(t)}</span>`).join('')}${topics.length>limit?`<span class="more-chip">+${topics.length-limit}</span>`:''}</div>`;
 }
+function isBookAvailable(book){return (book.exemplars||[]).some(e=>holdingState(e)==='Disponible')||(book.copies===0&&Boolean(book.resourceUrl||book.doi));}
 function cards(list){
   return `<div class="book-grid">${list.map(item=>{const result=item?.book?item:null,b=result?.book||item,available=(b.exemplars||[]).filter(e=>holdingState(e)==='Disponible').length;return `<a class="book-card" href="#ficha/${escape(b.id)}">${cover(b)}<h3>${escape(b.title)}</h3><p>${escape(b.author||b.publication||'Responsable no informado')}</p>${result&&query?`<small class="search-match">${escape(searchSummary(result))}</small>`:''}<div class="book-meta"><span>${escape(MATERIAL_TYPES[b.materialType]||b.category||'Material')}</span><span>${b.copies?available+' disp. · '+b.copies+' ej.':(b.resourceUrl||b.doi?'Recurso en línea':'Sin ejemplar físico')}</span></div></a>`;}).join('')}</div>`;
 }
@@ -104,8 +105,7 @@ function renderExemplars(){
  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">INVENTARIO FÍSICO</span><h1>Ejemplares</h1><p class="muted">Cada copia conserva su identidad, ubicación, estado y fotografía. Préstamos y reservas disponibles en este navegador.</p></div><a class="button primary" href="#agregar">Agregar al catálogo</a></div><div class="holdings-list">${books.flatMap(b=>(b.exemplars||[]).map((e,i)=>`<article class="holding-row"><div><span class="eyebrow">${escape(e.internalCode||e.inventoryCode||'Ejemplar '+(i+1))}</span><h2>${escape(b.title)}</h2><p>${escape(e.location||'Ubicación pendiente')} · ${escape(holdingState(e))} · ${escape(e.condition||'Bueno')}</p></div><a class="button secondary" href="#ficha/${escape(b.id)}/${escape(e.id)}">Ver ejemplar</a></article>`)).join('')||empty()} </div>`;
 }
 function renderLibrary(){
-  const isAvailable=book=>(book.exemplars||[]).some(e=>holdingState(e)==='Disponible')||(book.copies===0&&Boolean(book.resourceUrl||book.doi));
-  const results=searchCatalog(books,query,{category,materialType:materialFilter,availability:availabilityFilter,isAvailable});
+  const results=searchCatalog(books,query,{category,materialType:materialFilter,availability:availabilityFilter,isAvailable:isBookAvailable});
   const list=results;
   const suggestions=suggestedQueries(books,5);
   $('#main').innerHTML=`
@@ -261,7 +261,7 @@ document.addEventListener('click',async event=>{
  if(button.dataset.action==='clear-catalog'&&await confirmAction('Vaciar catálogo',`Se eliminarán ${books.length} registros y todas sus fotografías de este navegador. Necesitarás un respaldo para recuperarlos.`,'Vaciar catálogo definitivamente')){try{await clearCatalog();books=[];renderSettings();notify('Catálogo local vaciado.');}catch(error){notify(storageMessage(error));}}
 });
 document.addEventListener('submit',async event=>{
- if(event.target.matches('#home-search')){event.preventDefault();query=$('#home-query').value;category='';location.hash='#biblioteca';return;}
+ if(event.target.matches('#home-search')){event.preventDefault();query=$('#home-query').value.trim();category='';materialFilter='';availabilityFilter='';const count=searchCatalog(books,query,{isAvailable:isBookAvailable}).length;try{await execute('search.record',{query,results:count});}catch{}location.hash='#biblioteca';return;}
  if(event.target.matches('#copy-form')){event.preventDefault();const form=event.target,submit=form.querySelector('button');submit.disabled=true;try{const id=$('#photo-copy').value,book=books.find(b=>b.id===route().split('/')[1]),fields=Object.fromEntries(new FormData(form));const copy=book.exemplars.find(e=>e.id===id);await execute('copy.save',{id,...(fields.location===copy.location?copy.physicalLocation:{}),...fields,status:['lost','withdrawn','damaged'].includes(copy.status)?copy.status:'available'});books=await readBooks();await renderDetail(book.id,id);notify('Ejemplar actualizado.');}catch(error){$('#copy-error').textContent=storageMessage(error);}finally{submit.disabled=false;}return;}
  if(event.target.matches('#isbn-form')){event.preventDefault();runLookup($('#isbn-query').value);return;}
  // A form control named "id" shadows HTMLFormElement.id in browsers.
