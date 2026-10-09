@@ -481,3 +481,30 @@ Bueno → Regular
 Esto permite detectar deterioro asociado a una devolución sin asignar automáticamente una sanción ni afirmar quién produjo el daño.
 
 Las notas posibles pueden describir situaciones como tapa desprendida, hojas marcadas, lomo flojo o material frágil. No se exige registrar reparación, responsable del daño ni costo.
+
+
+### Cola automática de estado físico
+
+La plataforma no crea órdenes de reparación. En su lugar deriva una lista de **ejemplares que requieren atención** a partir de los datos ya existentes.
+
+Aparecen automáticamente:
+- ejemplares con **Usar con cuidado**;
+- ejemplares con **No prestar**;
+- ejemplares que registraron una devolución en peor estado y todavía no fueron revisados por Biblioteca.
+
+La prioridad visual es:
+1. No prestar;
+2. volvió en peor estado;
+3. usar con cuidado.
+
+La pantalla muestra código interno, material, estado físico, nivel de cuidado, observación y último empeoramiento registrado. Biblioteca puede revisar la situación y dejar una decisión actualizada.
+
+La acción **Guardar revisión**:
+- conserva todo el historial anterior;
+- registra quién revisó y cuándo;
+- actualiza estado físico, nivel de cuidado y observación;
+- marca como revisado el último empeoramiento;
+- mantiene el ejemplar en la lista si continúa como Usar con cuidado o No prestar;
+- lo retira de la lista si vuelve a Uso normal y no queda un empeoramiento pendiente de revisión.
+
+Esto evita mantener una segunda lista manual que pueda quedar desactualizada. La cola es una vista derivada del estado real del ejemplar.

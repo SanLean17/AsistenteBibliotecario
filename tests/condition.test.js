@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {command,effectiveState,normalizeHoldings} from '../src/local-domain.js';
-import {conditionWorsened,careLabel} from '../src/condition.js';
+import {conditionWorsened,careLabel,conditionAttentionItems} from '../src/condition.js';
 
 function state(){
   return {
@@ -53,4 +53,30 @@ test('devolución marcada no prestar bloquea el ejemplar',()=>{
   const copy=s.books[0].exemplars[0];
   assert.equal(copy.status,'damaged');
   assert.equal(effectiveState(copy,s),'damaged');
+});
+
+
+test('cola de atención detecta devoluciones peores y se limpia al revisar como uso normal',()=>{
+  const s=state();normalizeHoldings(s);
+  const loan=command(s,'lib','loan.create',{exemplarId:'e1',patronId:'teacher'});
+  command(s,'lib','loan.return',{id:loan.id,status:'available',condition:'Regular',careLevel:'careful',note:'Volvió marcado.'});
+  let items=conditionAttentionItems(s);
+  assert.equal(items.length,1);
+  assert.ok(items[0].reasons.includes('Volvió en peor estado'));
+  assert.ok(items[0].reasons.includes('Usar con cuidado'));
+  command(s,'lib','copy.care.review',{id:'e1',condition:'Regular',careLevel:'normal',note:'Revisado por Biblioteca.'});
+  items=conditionAttentionItems(s);
+  assert.equal(items.length,0);
+  assert.ok(s.books[0].exemplars[0].conditionReviewedAt);
+  assert.ok(s.activity.some(a=>a.type==='holding.condition.reviewed'));
+});
+
+test('no prestar permanece en la cola aunque ya haya sido revisado',()=>{
+  const s=state();normalizeHoldings(s);
+  command(s,'lib','copy.care.review',{id:'e1',condition:'Deteriorado',careLevel:'restricted',note:'Tapa muy floja.'});
+  const items=conditionAttentionItems(s);
+  assert.equal(items.length,1);
+  assert.equal(items[0].careLevel,'restricted');
+  assert.deepEqual(items[0].reasons,['No prestar']);
+  assert.equal(effectiveState(s.books[0].exemplars[0],s),'damaged');
 });

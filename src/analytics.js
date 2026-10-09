@@ -1,3 +1,5 @@
+import {conditionAttentionItems} from './condition.js?v=20261009-13';
+
 const activeLoan=l=>['loaned','overdue'].includes(l.status)&&!l.returnedAt;
 
 export function libraryAnalytics({books=[],loans=[],reservations=[],activity=[]}={}){
@@ -13,9 +15,8 @@ export function libraryAnalytics({books=[],loans=[],reservations=[],activity=[]}
   })).filter(x=>x.count>0).sort((a,b)=>b.count-a.count||String(a.book.title).localeCompare(String(b.book.title),'es')).slice(0,5);
 
   const neverLoaned=books.filter(book=>(book.exemplars||[]).length>0&&!loansByBook.has(book.id));
-
-  const damaged=books.flatMap(book=>(book.exemplars||[]).filter(e=>e.status==='damaged'||e.condition==='Deteriorado').map(copy=>({book,copy})));
-
+  const attention=conditionAttentionItems({books,activity});
+  const damaged=attention.filter(x=>x.copy.condition==='Deteriorado'||x.careLevel==='restricted');
   const overdue=loans.filter(l=>activeLoan(l)&&Date.parse(l.dueAt)<Date.now());
 
   const demandMap=new Map();
@@ -29,21 +30,16 @@ export function libraryAnalytics({books=[],loans=[],reservations=[],activity=[]}
     demandMap.set(key,current);
   }
   const unmetDemand=[...demandMap.values()].sort((a,b)=>b.count-a.count||Date.parse(b.lastAt)-Date.parse(a.lastAt)).slice(0,8);
-
   const activeReservations=reservations.filter(r=>['requested','approved','ready'].includes(r.status));
 
   return {
-    topLoaned,
-    neverLoaned,
-    damaged,
-    overdue,
-    unmetDemand,
-    activeReservations,
+    topLoaned,neverLoaned,damaged,attention,overdue,unmetDemand,activeReservations,
     totals:{
       materials:books.length,
       exemplars:books.reduce((n,b)=>n+(b.exemplars||[]).length,0),
       loans:loans.length,
       activeLoans:loans.filter(activeLoan).length,
+      attention:attention.length,
       searchesWithoutResults:activity.filter(a=>a.type==='search.no_results').length
     }
   };
