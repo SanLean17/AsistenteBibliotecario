@@ -211,3 +211,30 @@ No se activa OCR ni IA en esta etapa. El modelo ya admite una sesión de asisten
 El resultado de una foto nunca escribe directamente el catálogo. Para un diario podría proponer fecha, publicación, titulares, temas y resumen; para una antología podría proponer cuentos/capítulos desde el índice; para una portada podría proponer título, responsables y otros datos visibles. **La automatización propone. La persona confirma.**
 
 No se agregó ningún proveedor pago, cuenta externa ni servicio de OCR.
+
+
+## Búsqueda docente por relevancia — 2026-10-09
+
+La búsqueda interna sigue siendo local y determinística: no usa embeddings ni un modelo de IA. Combina normalización segura, filtros explícitos y ranking por relevancia sobre datos realmente registrados.
+
+Campos ponderados:
+- título/subtítulo;
+- contenidos internos;
+- temas;
+- autoría;
+- curso/audiencia documentada;
+- publicación y fecha;
+- descripción;
+- área/entidad;
+- identificadores;
+- ubicación física.
+
+Se normalizan equivalencias seguras como cuento/relato, monstruo/criatura, murciélago/bat, 5°/5to/quinto y WWII/Segunda Guerra Mundial. No se infiere edad, grado, adecuación pedagógica ni temática que no esté documentada.
+
+Palabras explícitas como libro, revista, diario, artículo o documento pueden actuar como intención de tipo. “Disponible” puede activar disponibilidad como filtro. El catálogo también expone filtros visibles por tipo y disponibilidad para que la persona pueda corregir o acotar la búsqueda manualmente.
+
+Los resultados se ordenan por relevancia y muestran por qué coincidieron, por ejemplo “Título”, “Contenido interno”, “Temas” o “Curso / audiencia”. Sin consulta escrita, el catálogo mantiene un orden estable y no prioriza disponibilidad de forma implícita.
+
+Las búsquedas enviadas explícitamente desde el inicio se registran en la auditoría local con cantidad de resultados. No se registra cada tecla. Biblioteca y Autoridad pueden ver la cantidad de búsquedas sin resultado y consultar los términos concretos para detectar necesidades de la colección. Estos datos permanecen en el almacenamiento local del prototipo y no se envían a terceros.
+
+Las sugerencias del buscador se construyen con temas reales ya existentes en la colección; nunca se rellenan con recomendaciones inventadas.
