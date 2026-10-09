@@ -31,6 +31,8 @@ export function validateBook(raw) {
   if(year&&!/^\d{4}$/.test(year))throw new Error('El año debe tener cuatro cifras.');
   if(pages!==null&&(!Number.isInteger(pages)||pages<1||pages>100000))throw new Error('Revisá la cantidad de páginas.');
   if(raw.issn&&!validISSN(raw.issn))throw new Error('Revisá el ISSN o dejalo vacío.');
+  if(raw.publicationDate&&!/^\d{4}-\d{2}-\d{2}$/.test(String(raw.publicationDate)))throw new Error('Revisá la fecha de publicación.');
+  if(raw.doi&&!/^10\.\d{4,9}\/\S+$/i.test(String(raw.doi).replace(/^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)/i,'')))throw new Error('Revisá el DOI o dejalo vacío.');
   if(raw.resourceUrl){try{const u=new URL(raw.resourceUrl);if(!['https:','http:'].includes(u.protocol)||u.username||u.password)throw Error();}catch{throw new Error('Ingresá un enlace HTTP o HTTPS válido.');}}
   const id=typeof raw.id==='string'&&raw.id?raw.id:crypto.randomUUID();
   const author=text('author',1000) || list(raw.authors).join('; ');
