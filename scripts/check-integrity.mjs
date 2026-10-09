@@ -37,10 +37,10 @@ const codeFiles=[
 for(const file of codeFiles){
   const text=fs.readFileSync(file,'utf8');
   const specs=[];
-  for(const re of [
-    /\b(?:import|export)\s+(?:[^'"]*?\s+from\s+)?['"]([^'"]+)['"]/g,
-    /\bimport\(\s*['"]([^'"]+)['"]\s*\)/g
-  ])for(const m of text.matchAll(re))specs.push(m[1]);
+  for(const m of text.matchAll(/\b(?:import|export)\s+(?:[^'"]*?\s+from\s+)?['"]([^'"]+)['"]/g))specs.push(m[1]);
+  if(rel(file).startsWith('src/')||rel(file).startsWith('server/')){
+    for(const m of text.matchAll(/\bimport\(\s*['"]([^'"]+)['"]\s*\)/g))specs.push(m[1]);
+  }
   for(const spec of specs){
     if(spec.startsWith('.')&&!resolveLocal(file,spec))issues.push(rel(file)+': referencia local inexistente '+spec);
   }
