@@ -419,3 +419,65 @@ IndexedDB v8 incorpora:
 Los respaldos JSON v5 actuales incluyen estos arrays cuando existen. Los respaldos v5 anteriores los inicializan vacíos para mantener compatibilidad.
 
 La lógica de inventario usa el mismo código interno AB que etiquetas, QR y CODE128. El ISBN continúa identificando la edición bibliográfica; nunca sustituye el identificador físico del ejemplar.
+
+
+### Dos formas de iniciar un inventario
+
+El inventario admite dos flujos equivalentes.
+
+**1. Empezar escaneando · mobile-first**
+- pensado como camino principal desde celular;
+- crea una sesión local en estado borrador, sin zona asignada;
+- abre la cámara y permite registrar códigos AB de forma continua;
+- cada captura guarda ejemplar, material, hora de lectura y ubicación que ya tenía registrada;
+- mientras no exista una zona objetivo, los hallazgos se guardan como **Capturado · zona pendiente**;
+- no se calculan encontrados, fuera de lugar ni no escaneados todavía;
+- la sesión puede abandonarse y retomarse después sin perder lo capturado.
+
+Cuando la persona elige posteriormente Toda la biblioteca, un Sector, una Estantería o un Estante, todos los ejemplares ya capturados se reclasifican con esa zona y se calcula qué ejemplares se esperaban encontrar.
+
+**2. Elegir zona primero**
+- calcula desde el inicio los ejemplares esperados;
+- cada escaneo se clasifica en el momento;
+- está pensado para un inventario planificado desde PC o cuando la ubicación ya está configurada.
+
+Una sesión sin zona no se puede cerrar como inventario final: primero debe completarse la zona. Esto impide generar falsos “no escaneados”.
+
+La sesión rápida se guarda automáticamente en IndexedDB. Como el prototipo todavía no tiene backend ni sincronización entre dispositivos, continuar en otra computadora requiere por ahora **exportar el respaldo institucional desde el celular e importarlo en la PC**. El respaldo conserva la sesión borrador y sus capturas. Con un backend futuro este traspaso podrá ser automático.
+
+La cámara continua evita insertar múltiples veces el mismo código mientras permanece frente al lector. Los flujos manual, fotografía y lector USB siguen disponibles.
+
+## Estado físico y cuidado del ejemplar — 2026-10-09
+
+El modelo no presupone que la escuela tenga un circuito de reparación. El objetivo es registrar el estado real y orientar el uso.
+
+Cada ejemplar conserva dos dimensiones separadas:
+
+**Estado físico**
+- Nuevo
+- Bueno
+- Regular
+- Deteriorado
+
+**Indicador de cuidado**
+- Uso normal
+- Usar con cuidado
+- No prestar
+
+Un ejemplar puede estar **Deteriorado + Usar con cuidado** y seguir disponible para préstamo. “Deteriorado” describe su condición física; no lo retira automáticamente de circulación.
+
+**No prestar** sí lo deja fuera de circulación hasta que Biblioteca cambie esa decisión. No se presenta como “en reparación”: simplemente queda identificado como material que no conviene prestar.
+
+Al generar un préstamo se guarda una fotografía lógica del estado de salida. En la devolución se puede registrar:
+- estado físico con el que volvió;
+- indicador de cuidado;
+- observación libre.
+
+Si volvió en un estado peor que al salir, se registra un evento específico en el historial del ejemplar y del préstamo. Ejemplo:
+
+Bueno → Regular  
+“Volvió con el lomo más flojo.”
+
+Esto permite detectar deterioro asociado a una devolución sin asignar automáticamente una sanción ni afirmar quién produjo el daño.
+
+Las notas posibles pueden describir situaciones como tapa desprendida, hojas marcadas, lomo flojo o material frágil. No se exige registrar reparación, responsable del daño ni costo.
