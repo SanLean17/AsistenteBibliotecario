@@ -1,6 +1,6 @@
-import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261009-6';
-import {searchBooks as rankedSearchBooks,searchCatalog} from './search-engine.js?v=20261009-6';
-import {normalizeContentEntries,contentSearchText,createAssistanceDraft} from './material-types.js?v=20261009-6';
+import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261009-7';
+import {searchBooks as rankedSearchBooks,searchCatalog} from './search-engine.js?v=20261009-7';
+import {normalizeContentEntries,contentSearchText,createAssistanceDraft} from './material-types.js?v=20261009-7';
 import { validPhotoURL } from './photos.js?v=20261006-3';
 import { cleanISBN, validISBN } from './isbn.js?v=20261006-3';
 import { safeCover } from './metadata.js?v=20261006-3';
