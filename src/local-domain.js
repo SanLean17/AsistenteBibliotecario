@@ -1,7 +1,7 @@
-import {accessCommand,expireAccess} from './access-domain.js?v=20261009-10';
-import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261009-10';
-import {normalizeLoanPolicy,policyForPatron,activeLoansForPatron,overdueLoansForPatron,dueDateFromPolicy,reservationExpiryFromPolicy,renewalRequestStatus,renewalDueDate} from './loan-policy.js?v=20261009-10';
-import {normalizeLocation,displayLocation} from './domain.js?v=20261009-10';
+import {accessCommand,expireAccess} from './access-domain.js?v=20261009-11';
+import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261009-11';
+import {normalizeLoanPolicy,policyForPatron,activeLoansForPatron,overdueLoansForPatron,dueDateFromPolicy,reservationExpiryFromPolicy,renewalRequestStatus,renewalDueDate} from './loan-policy.js?v=20261009-11';
+import {normalizeLocation,displayLocation} from './domain.js?v=20261009-11';
 export const STORES=['books','photos','loans','reservations','patrons','activity','grants','settings','institutions','libraries','collections','works','editions','people','memberships','invitations','saved','collectionNeeds','recommendations','resourceSharingRequests'];
 export const activeLoan=l=>['loaned','overdue'].includes(l.status)&&!l.returnedAt;
 export const activeReservation=r=>['requested','approved','ready'].includes(r.status);
