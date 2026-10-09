@@ -31,7 +31,7 @@ export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFac
   if (!globalThis.isSecureContext || !navigator.mediaDevices?.getUserMedia) throw new Error('La cámara necesita una conexión HTTPS y permiso del navegador.');
   if (signal.aborted) return;
   const stream = await requestRearCamera();
-  let timer, stopped=false;
+  let timer, stopped=false,lastContinuousValue='',lastContinuousAt=0;
   const stop = () => {stopped=true;clearTimeout(timer);stream.getTracks().forEach(t=>t.stop());if(video.srcObject===stream)video.srcObject=null;};
   if (signal.aborted) {stop();return;}
   signal.addEventListener('abort',stop,{once:true});
@@ -48,11 +48,15 @@ export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFac
         if(stopped||signal.aborted)return;
         if(found){
           if(!continuous){stop();onISBN(found.rawValue);return;}
+          const now=Date.now();
+          if(found.rawValue===lastContinuousValue&&now-lastContinuousAt<2500){timer=setTimeout(read,180);return;}
+          lastContinuousValue=found.rawValue;lastContinuousAt=now;
           await onISBN(found.rawValue);
           if(stopped||signal.aborted)return;
           timer=setTimeout(read,Math.max(300,Number(cooldown)||900));
           return;
         }
+        if(continuous&&Date.now()-lastContinuousAt>1200)lastContinuousValue='';
         timer=setTimeout(read,180);
       } catch(error){stop();if(!signal.aborted)onError(error);}
     };
