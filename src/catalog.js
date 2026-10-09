@@ -1,5 +1,5 @@
-import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261009-4';
-import {normalizeContentEntries,contentSearchText,createAssistanceDraft} from './material-types.js?v=20261009-4';
+import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261009-5';
+import {normalizeContentEntries,contentSearchText,createAssistanceDraft} from './material-types.js?v=20261009-5';
 import { validPhotoURL } from './photos.js?v=20261006-3';
 import { cleanISBN, validISBN } from './isbn.js?v=20261006-3';
 import { safeCover } from './metadata.js?v=20261006-3';
