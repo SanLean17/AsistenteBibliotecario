@@ -1,4 +1,5 @@
 export const PROFILES={biblioteca:'Responsable de Biblioteca',autoridad:'Autoridad Institucional',docente:'Docente',personal:'Personal Institucional',lector:'Estudiante / Lector'};
+export const PROFILE_LEVELS=Object.freeze({lector:10,personal:20,docente:30,biblioteca:60,autoridad:80});
 export const CARGOS=['Director/a','Vicedirector/a','Rector/a','Vicerrector/a','Regente','Secretario/a','Bibliotecario/a','Docente','Preceptor/a','Estudiante','Otro'];
 export const LABELS={'catalog.view':'Buscar materiales','catalog.create':'Incorporar materiales','catalog.edit':'Editar materiales','catalog.delete':'Eliminar un material','holdings.create':'Agregar ejemplares','holdings.edit':'Editar ejemplares','contents.manage':'Gestionar contenidos','topics.manage':'Gestionar temas y palabras clave','circulation.loan':'Gestionar préstamos','circulation.return':'Registrar devoluciones','reservations.create':'Solicitar reservas','reservations.manage':'Gestionar reservas','inventory.manage':'Realizar inventario','people.invite':'Invitar personas','people.validate':'Validar personas','users.manage':'Editar personas','profiles.manage':'Administrar perfiles de acceso','permissions.manage':'Otorgar permisos','permissions.revoke':'Revocar permisos','institution.edit':'Editar datos institucionales','library.configure':'Configurar biblioteca','policy.configure':'Configurar políticas de préstamo','reports.view':'Ver estadísticas de biblioteca','institution.stats':'Ver estadísticas institucionales','sensitive.export':'Exportar respaldo completo','catalog.clear':'Vaciar catálogo','institution.transfer':'Transferir administración principal','institution.disable':'Desactivar institución'};
 export const PERMISSIONS=Object.freeze(Object.keys(LABELS));
@@ -18,3 +19,12 @@ export function requirePermission(state,actorId,permission,at=new Date()){const 
 export function validWindow(startsAt,expiresAt){if(startsAt&&!Number.isFinite(Date.parse(startsAt))||expiresAt&&!Number.isFinite(Date.parse(expiresAt)))throw new Error('Fecha de habilitación inválida.');if(startsAt&&expiresAt&&Date.parse(expiresAt)<=Date.parse(startsAt))throw new Error('El vencimiento debe ser posterior al inicio.');}
 export function userRecord(raw,old={}){const name=String(raw.name||'').trim().slice(0,160);if(!name)throw new Error('Ingresá el nombre de la persona.');if(raw.role&&!ROLES[raw.role])throw new Error('Rol inválido.');validWindow(raw.startsAt,raw.expiresAt);return {...old,id:old.id||raw.id||crypto.randomUUID(),name,role:raw.role||'',course:String(raw.course||'').slice(0,80),active:raw.active!==false,startsAt:raw.startsAt||'',expiresAt:raw.expiresAt||'',institutionId:old.institutionId||'local-institution'};}
 export function grantRecord(raw,actorId){if(!PERMISSIONS.includes(raw.permission))throw new Error('Permiso inválido.');validWindow(raw.startsAt,raw.expiresAt);return {id:crypto.randomUUID(),userId:raw.userId,permission:raw.permission,grantedBy:actorId,startsAt:raw.startsAt||new Date().toISOString(),expiresAt:raw.expiresAt||'',note:String(raw.note||'').slice(0,1000),active:true,createdAt:new Date().toISOString()};}
+
+export function canManageTarget(actor,target){
+ if(!actor||!target||actor.id===target.id)return false;
+ if(actor.mainAdmin)return true;
+ const a=PROFILE_LEVELS[actor.accessProfile]||0,t=PROFILE_LEVELS[target.accessProfile]||0;
+ if(actor.accessProfile==='autoridad')return !target.mainAdmin&&t<a;
+ if(actor.accessProfile==='biblioteca')return !target.mainAdmin&&t<PROFILE_LEVELS.biblioteca;
+ return false;
+}
