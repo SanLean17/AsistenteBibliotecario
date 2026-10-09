@@ -156,3 +156,19 @@ La fuente de verdad del copy aprobado y de la escala tipográfica es el commit `
 `workspace.css` organiza la presentación interna sin modificar reglas de acceso. La marca aparece en el sidebar; la cabecera muestra contexto de trabajo. La navegación agrupa Biblioteca, Circulación, Gestión y Herramientas. Se conserva `applyAccess` como filtro de las rutas y se ocultan grupos vacíos. `src/dashboard.js` solo renderiza el estado institucional ya leído, usando los permisos vigentes: acciones y estadísticas compactas para biblioteca/autoridades, búsqueda y operaciones propias para docentes/lectores. La acción de incorporar se muestra según `catalog.create`, incluyendo permisos temporales; el cargo no se modifica. Las novedades son incorporaciones reales ordenadas por fecha, no recomendaciones generadas.
 
 No se modifican IndexedDB, modelo de datos, permisos, circulación, importaciones, fuentes, cámara, etiquetas ni respaldos. Las capturas se regeneran en un contexto aislado y ahora incluyen búsqueda temática y revisión de la ficha recuperada. La landing continúa sin abrir el catálogo local.
+
+
+## Renovaciones autorizadas y restricciones de circulación — 2026-10-09
+
+La política institucional de circulación es configurable y no depende del diseño de la interfaz. Cada perfil puede tener un plazo y un máximo de préstamos activos. La institución define además si permite reservas, préstamos a personal institucional, cantidad máxima de renovaciones, ventana para solicitar extensión, duración de la extensión y plazo de retiro de una reserva preparada.
+
+La renovación no es automática. Cuando un préstamo entra en la ventana configurada antes de su vencimiento (por defecto, 1 día), la persona puede **solicitar una extensión**. El vencimiento no cambia hasta que una persona con el permiso `circulation.renew.approve` la autoriza. La solicitud puede rechazarse. Una extensión aprobada suma la cantidad de días configurada y consume una de las renovaciones permitidas. No puede solicitarse si el préstamo está vencido, existe una reserva de otra persona, el material no admite renovación o ya se alcanzó el máximo institucional. Todos los pasos quedan auditados.
+
+Los materiales admiten una regla de circulación propia:
+- `standard`: préstamo y renovación según política institucional;
+- `non-renewable`: puede prestarse, pero no admite extensión;
+- `room-only`: solo consulta en sala; no puede generarse un préstamo domiciliario.
+
+La ficha del ejemplar muestra su historial de movimientos a partir de la auditoría institucional: préstamos, devoluciones, solicitudes/aprobaciones de extensión, cambios y otros eventos asociados a su identificador físico. La portada personal muestra alertas de préstamos próximos a vencer y solicitudes pendientes; Biblioteca/Autoridad ve las solicitudes que requieren autorización.
+
+No se aplican sanciones automáticas por atraso en esta etapa. Una futura regla de bloqueo o tolerancia deberá ser configurable por institución y quedar registrada, en lugar de asumir una política disciplinaria única para todas las escuelas.
