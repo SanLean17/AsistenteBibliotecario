@@ -3,6 +3,8 @@ export const DEFAULT_LOAN_POLICY=Object.freeze({
   allowRenewals:true,
   allowStaffLoans:false,
   maxRenewals:1,
+  renewalRequestWindowDays:1,
+  renewalExtensionDays:7,
   reservationPickupDays:2,
   profiles:Object.freeze({
     autoridad:Object.freeze({loanDays:14,maxLoans:5}),
@@ -32,6 +34,8 @@ export function normalizeLoanPolicy(raw={}){
     allowRenewals:raw.allowRenewals!==false,
     allowStaffLoans:raw.allowStaffLoans===true,
     maxRenewals:clamp(raw.maxRenewals,0,10,DEFAULT_LOAN_POLICY.maxRenewals),
+    renewalRequestWindowDays:clamp(raw.renewalRequestWindowDays,1,14,DEFAULT_LOAN_POLICY.renewalRequestWindowDays),
+    renewalExtensionDays:clamp(raw.renewalExtensionDays,1,90,DEFAULT_LOAN_POLICY.renewalExtensionDays),
     reservationPickupDays:clamp(raw.reservationPickupDays,1,30,DEFAULT_LOAN_POLICY.reservationPickupDays),
     profiles
   };
@@ -59,5 +63,27 @@ export function reservationExpiryFromPolicy(policy,from=new Date()){
   const d=new Date(from);
   d.setDate(d.getDate()+reservationPickupDays);
   d.setHours(23,59,59,999);
+  return d;
+}
+
+export function daysUntilDue(loan,at=new Date()){
+  return (Date.parse(loan?.dueAt||'')-+at)/86400000;
+}
+export function renewalRequestStatus(loan,policy,{reservations=[],book=null,at=new Date()}={}){
+  const p=normalizeLoanPolicy(policy);
+  if(!loan||!['loaned','overdue'].includes(loan.status)||loan.returnedAt)return {allowed:false,reason:'inactive'};
+  if(!p.allowRenewals||p.maxRenewals<1)return {allowed:false,reason:'disabled'};
+  if(book?.circulationPolicy==='non-renewable'||book?.circulationPolicy==='room-only')return {allowed:false,reason:'material'};
+  if((loan.renewals||0)>=p.maxRenewals)return {allowed:false,reason:'limit'};
+  if(loan.renewalRequest?.status==='pending')return {allowed:false,reason:'pending'};
+  if(Date.parse(loan.dueAt)<+at)return {allowed:false,reason:'overdue'};
+  if(reservations.some(r=>r.bookId===loan.bookId&&r.patron?.id!==loan.patron?.id&&['requested','approved','ready'].includes(r.status)))return {allowed:false,reason:'reserved'};
+  const remaining=daysUntilDue(loan,at);
+  if(remaining>p.renewalRequestWindowDays)return {allowed:false,reason:'too-early',days:remaining};
+  return {allowed:true,reason:'eligible',days:remaining};
+}
+export function renewalDueDate(policy,loan){
+  const p=normalizeLoanPolicy(policy),d=new Date(loan.dueAt);
+  d.setDate(d.getDate()+p.renewalExtensionDays);
   return d;
 }
