@@ -111,7 +111,7 @@ export function searchCatalog(books,query,{category='',materialType='',availabil
     if(raw&&title===normalizeSearch(raw))score+=30;
     else if(terms.length&&includesAll(title,terms))score+=12;
     if(inferredType)score+=4;
-    if(isAvailable(book))score+=1;
+    if(raw&&isAvailable(book))score+=1;
 
     results.push({book,score,matches:[...new Set(matches)].slice(0,4),queryTerms:terms});
   }
