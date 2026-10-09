@@ -83,7 +83,7 @@ export function classifyInventoryScan({session,book,copy}){
   const expected=(session.expectedExemplarIds||[]).includes(copy.id);
   if(!expected)return {
     exemplarId:copy.id,bookId:book.id,internalCode:copy.internalCode,title:book.title,
-    status:'outside-scope',expectedLocation:displayLocation(copy.physicalLocation)||copy.location||'',scannedAt:new Date().toISOString()
+    status:'misplaced',expectedLocation:displayLocation(copy.physicalLocation)||copy.location||'',scannedAt:new Date().toISOString()
   };
   const inScope=scopeContainsLocation(session.scope,copy.physicalLocation||copy.location);
   return {
