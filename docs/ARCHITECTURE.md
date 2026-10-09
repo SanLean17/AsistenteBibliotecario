@@ -360,3 +360,62 @@ src/federation.js define una proyección mínima y segura para una futura búsqu
 No incluye personas, correos, nombres de prestatarios, préstamos individuales, reservas individuales, permisos, auditoría ni datos internos de la institución.
 
 La futura red debería buscar sobre esta proyección y mantener la circulación real dentro de la institución propietaria. Antes de habilitar intercambio real hará falta backend, autenticación, autorización institucional, reglas de privacidad y acuerdos operativos entre escuelas. En esta etapa solo queda definido el contrato y su validación local.
+
+
+## Ubicaciones estructuradas e inventario físico — 2026-10-09
+
+La ubicación física deja de depender exclusivamente de texto libre. La biblioteca puede configurar una jerarquía:
+
+**Sector → Estantería → Estante**
+
+Cada nodo es una entidad local con identificador propio. Los ejemplares pueden vincularse a un estante configurado y conservan tanto los identificadores estructurados como las etiquetas legibles de sector, estantería y estante. El texto libre anterior sigue siendo compatible para no perder ubicaciones cargadas antes de esta versión.
+
+No se puede eliminar una ubicación si:
+- tiene ubicaciones hijas;
+- existen ejemplares vinculados a ella.
+
+Renombrar/reasignar mantiene la identidad del ejemplar y su código interno AB.
+
+### Sesiones de inventario
+
+El inventario puede abarcar toda la biblioteca o una ubicación concreta. Al iniciarlo, el sistema toma una fotografía lógica de los ejemplares que se esperan físicamente en esa zona.
+
+No se consideran esperados en el estante los ejemplares que el sistema ya sabe que están:
+- prestados;
+- vencidos en préstamo;
+- extraviados;
+- dados de baja.
+
+Durante una sesión se puede registrar el código interno AB por:
+- cámara;
+- fotografía del código;
+- lector USB/teclado;
+- ingreso manual.
+
+Cada ejemplar escaneado queda clasificado como:
+- **Encontrado**: pertenece a la zona inventariada;
+- **Fuera de lugar**: se encontró físicamente en la zona, pero su ubicación registrada corresponde a otra;
+- **No escaneado · revisar**: se esperaba en la zona y no apareció antes de cerrar la sesión.
+
+Cerrar un inventario **no cambia automáticamente el estado de un ejemplar a perdido/extraviado**. Los no escaneados son incidencias para revisión humana. Esto evita que una omisión de escaneo, una etiqueta dañada o un error operativo genere una baja falsa.
+
+Cada sesión cerrada conserva:
+- zona;
+- fecha/hora de inicio y cierre;
+- persona que la realizó;
+- ejemplares esperados;
+- hallazgos;
+- incidencias;
+- resumen de encontrados, fuera de lugar y no escaneados.
+
+La pantalla permite revisar posteriormente los ejemplares concretos que quedaron con incidencias.
+
+### Persistencia
+
+IndexedDB v8 incorpora:
+- libraryLocations;
+- inventorySessions.
+
+Los respaldos JSON v5 actuales incluyen estos arrays cuando existen. Los respaldos v5 anteriores los inicializan vacíos para mantener compatibilidad.
+
+La lógica de inventario usa el mismo código interno AB que etiquetas, QR y CODE128. El ISBN continúa identificando la edición bibliográfica; nunca sustituye el identificador físico del ejemplar.
