@@ -44,3 +44,14 @@
 .insight-list .muted{grid-column:2;margin:4px 0 0;font-size:11px}
 .search-match{display:block;margin-top:6px;color:var(--muted);font-size:10px;line-height:1.45}
 @media(max-width:760px){.material-availability{padding:13px}.insight-list{grid-template-columns:1fr;gap:8px}.insight-list .muted{grid-column:1}.dashboard-insights{padding:16px}}
+
+.dashboard-recommendations{margin-top:28px;padding-top:4px}
+.recommendation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.recommendation-grid>a{display:flex;flex-direction:column;gap:6px;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);min-width:0}
+.recommendation-grid>a:hover{border-color:var(--primary);background:var(--surface-2)}
+.recommendation-grid strong{font:600 13px/1.4 var(--sans)}
+.recommendation-grid span{font-size:10px;letter-spacing:.4px;color:var(--primary);text-transform:uppercase}
+.recommendation-grid p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+[data-access-route=coleccion]+#access-feedback+section .holding-row{align-items:flex-start}
+@media(max-width:900px){.recommendation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.recommendation-grid{grid-template-columns:1fr}}
