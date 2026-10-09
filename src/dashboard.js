@@ -1,9 +1,9 @@
 // Presentation only. Read the institution-scoped state and existing permission checks.
-import {PROFILES,isEnabled} from './permissions.js?v=20261009-10';
-import {activeLoan,activeReservation,config} from './local-domain.js?v=20261009-10';
-import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261009-10';
-import {suggestedQueries} from './search-engine.js?v=20261009-10';
-import {libraryAnalytics} from './analytics.js?v=20261009-10';
+import {PROFILES,isEnabled} from './permissions.js?v=20261009-11';
+import {activeLoan,activeReservation,config} from './local-domain.js?v=20261009-11';
+import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261009-11';
+import {suggestedQueries} from './search-engine.js?v=20261009-11';
+import {libraryAnalytics} from './analytics.js?v=20261009-11';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const action=(route,label,detail,icon)=>`<a class="dashboard-action" href="#${route}"><span class="action-symbol" aria-hidden="true">${icon}</span><span><strong>${label}</strong><small>${detail}</small></span><span aria-hidden="true">↗</span></a>`;
 const statistic=(label,n,route)=>`<a href="#${route}" class="dashboard-stat"><strong>${n}</strong><span>${label}</span></a>`;
