@@ -80,3 +80,33 @@ test('no permite eliminar una ubicación usada por ejemplares o con descendiente
 test('scope all acepta cualquier ubicación',()=>{
   assert.equal(scopeContainsLocation({type:'all'},{sector:'X'}),true);
 });
+
+
+test('modo rápido captura ejemplares sin zona y los reclasifica al configurarla',()=>{
+  const s=base(),{shelfA}=configure(s);
+  const inv=command(s,'lib','inventory.quick.start',{});
+  assert.equal(inv.status,'draft');
+  assert.equal(inv.scope,null);
+  const f1=command(s,'lib','inventory.scan',{id:inv.id,code:'AB-000001'});
+  const f2=command(s,'lib','inventory.scan',{id:inv.id,code:'AB-000003'});
+  assert.equal(f1.status,'captured');
+  assert.equal(f2.status,'captured');
+  assert.throws(()=>command(s,'lib','inventory.close',{id:inv.id}),/completá la zona/i);
+  command(s,'lib','inventory.scope.assign',{id:inv.id,locationId:shelfA.id});
+  assert.equal(inv.status,'open');
+  assert.equal(inv.scope.id,shelfA.id);
+  assert.equal(inv.findings.find(f=>f.exemplarId==='e1').status,'found');
+  assert.equal(inv.findings.find(f=>f.exemplarId==='e3').status,'misplaced');
+  command(s,'lib','inventory.close',{id:inv.id});
+  assert.equal(inv.summary.unscanned,1);
+});
+
+test('modo rápido puede configurarse como inventario de toda la biblioteca',()=>{
+  const s=base();configure(s);
+  const inv=command(s,'lib','inventory.quick.start',{});
+  command(s,'lib','inventory.scan',{id:inv.id,code:'AB-000001'});
+  command(s,'lib','inventory.scope.assign',{id:inv.id,locationId:''});
+  assert.equal(inv.scope.type,'all');
+  assert.equal(inv.expectedExemplarIds.length,3);
+  assert.equal(inv.findings[0].status,'found');
+});
