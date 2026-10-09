@@ -265,3 +265,48 @@ El panel de Biblioteca/Autoridad deriva información real del catálogo, la circ
 - términos de búsqueda sin resultado agrupados por frecuencia.
 
 La intención no es mostrar métricas decorativas, sino ofrecer señales para inventario, revisión física y decisiones de adquisición/incorporación. Las búsquedas se registran solo cuando la persona envía una consulta; no se captura cada tecla ni se envían datos a terceros.
+
+
+## Planificación de colección y recomendaciones internas — 2026-10-09
+
+Las búsquedas sin resultado funcionan como **señales**, no como órdenes de compra. Biblioteca/Autoridad puede revisar la demanda agregada y convertir una señal en una necesidad formal. También puede registrar necesidades manualmente aunque no provengan del buscador.
+
+Una necesidad de colección conserva:
+
+- título o descripción de lo que hace falta;
+- origen: búsqueda o carga manual;
+- cantidad de búsquedas sin resultado asociadas;
+- prioridad baja, normal o alta;
+- estado: detectada, en evaluación, planificada, resuelta o descartada;
+- notas de análisis/decisión;
+- resolución;
+- material del catálogo vinculado cuando finalmente se incorpora;
+- autoría y fechas de creación/actualización.
+
+Registrar una necesidad **no implica adquirirla**. El flujo permite evaluar si ya existe un recurso equivalente, si conviene incorporarlo, si debe planificarse una compra/donación o si la señal se descarta. Una necesidad resuelta puede vincularse a la ficha que finalmente cubre esa demanda.
+
+La pantalla **Necesidades y recomendaciones** separa tres bloques:
+1. señales de demanda todavía no formalizadas;
+2. necesidades en seguimiento;
+3. recomendaciones internas.
+
+### Recomendaciones internas
+
+Biblioteca/Autoridad puede recomendar un material que ya existe en el catálogo y agregar:
+
+- contexto o destinatario documentado, por ejemplo “5° grado · Ciencias Sociales”;
+- motivo de la recomendación.
+
+Las recomendaciones activas aparecen en el inicio de docentes/lectores como una selección de la propia institución. No son generadas por IA ni se presentan como adecuación pedagógica automática. Siempre provienen de una acción explícita de la biblioteca.
+
+Una recomendación puede archivarse sin eliminar el material ni el historial. Si se elimina una ficha del catálogo, sus recomendaciones activas se archivan automáticamente. Las necesidades vinculadas conservan el nombre histórico del material aunque la ficha deje de existir.
+
+### Persistencia y permisos
+
+IndexedDB v6 agrega stores locales collectionNeeds y recommendations. Los respaldos versión 5 actuales los incluyen cuando existen; respaldos v5 anteriores que todavía no tenían esos arrays se cargan como listas vacías para mantener compatibilidad.
+
+Los permisos específicos son:
+- collection.needs.manage;
+- recommendations.manage.
+
+Responsable de Biblioteca y Autoridad Institucional los reciben por perfil. También pueden delegarse según las reglas generales de permisos, sin cambiar el cargo de la persona.
