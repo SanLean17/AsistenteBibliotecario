@@ -1,6 +1,6 @@
-import {MATERIAL_TYPES} from './recognition.js?v=20261009-7';
-import {contentSearchText} from './material-types.js?v=20261009-7';
-import {cleanISBN} from './isbn.js?v=20261009-7';
+import {MATERIAL_TYPES} from './recognition.js?v=20261009-8';
+import {contentSearchText} from './material-types.js?v=20261009-8';
+import {cleanISBN} from './isbn.js?v=20261009-8';
 
 export const STOPWORDS=new Set(['de','del','la','el','los','las','un','una','que','con','sobre','tengan','tenga','algo','para','en','necesito','busco','quiero','material','materiales','recurso','recursos','tema','temas']);
 
