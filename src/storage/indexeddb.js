@@ -1,8 +1,8 @@
-import {migrateAccess,projectState,mergeScope} from '../access-model.js?v=20261009-6';
-import {expireAccess,logAccess} from '../access-domain.js?v=20261009-6';
-import {suggestProfile} from '../permissions.js?v=20261009-6';
-import {STORES,normalizeHoldings,config,command,audit,ensureRemovable,activeLoan,activeReservation,expireReservations} from '../local-domain.js?v=20261009-6';
-import {requirePermission} from '../permissions.js?v=20261009-6';
+import {migrateAccess,projectState,mergeScope} from '../access-model.js?v=20261009-7';
+import {expireAccess,logAccess} from '../access-domain.js?v=20261009-7';
+import {suggestProfile} from '../permissions.js?v=20261009-7';
+import {STORES,normalizeHoldings,config,command,audit,ensureRemovable,activeLoan,activeReservation,expireReservations} from '../local-domain.js?v=20261009-7';
+import {requirePermission} from '../permissions.js?v=20261009-7';
 let institutionId='local-institution';try{institutionId=sessionStorage.getItem('ab-institution')||institutionId;}catch{}
 export const getInstitutionId=()=>institutionId;
 export function setInstitutionId(id){institutionId=id;try{sessionStorage.setItem('ab-institution',id);}catch{}}
