@@ -3,6 +3,8 @@ export const DEFAULT_LOAN_POLICY=Object.freeze({
   allowRenewals:true,
   allowStaffLoans:false,
   maxRenewals:1,
+  blockNewLoansIfOverdue:false,
+  overdueGraceDays:0,
   renewalRequestWindowDays:1,
   renewalExtensionDays:7,
   reservationPickupDays:2,
@@ -33,7 +35,9 @@ export function normalizeLoanPolicy(raw={}){
     allowReservations:raw.allowReservations!==false,
     allowRenewals:raw.allowRenewals!==false,
     allowStaffLoans:raw.allowStaffLoans===true,
-    maxRenewals:clamp(raw.maxRenewals,0,10,DEFAULT_LOAN_POLICY.maxRenewals),
+    blockNewLoansIfOverdue:raw.blockNewLoansIfOverdue===true,
+    overdueGraceDays:clamp(raw.overdueGraceDays,0,30,DEFAULT_LOAN_POLICY.overdueGraceDays),
+    maxRenewals:raw.allowRenewals===false?0:1,
     renewalRequestWindowDays:clamp(raw.renewalRequestWindowDays,1,14,DEFAULT_LOAN_POLICY.renewalRequestWindowDays),
     renewalExtensionDays:clamp(raw.renewalExtensionDays,1,90,DEFAULT_LOAN_POLICY.renewalExtensionDays),
     reservationPickupDays:clamp(raw.reservationPickupDays,1,30,DEFAULT_LOAN_POLICY.reservationPickupDays),
@@ -86,4 +90,9 @@ export function renewalDueDate(policy,loan){
   const p=normalizeLoanPolicy(policy),d=new Date(loan.dueAt);
   d.setDate(d.getDate()+p.renewalExtensionDays);
   return d;
+}
+
+export function overdueLoansForPatron(loans,patronId,policy,at=new Date()){
+  const p=normalizeLoanPolicy(policy),cutoff=+at-p.overdueGraceDays*86400000;
+  return activeLoansForPatron(loans,patronId).filter(l=>Date.parse(l.dueAt)<cutoff);
 }
