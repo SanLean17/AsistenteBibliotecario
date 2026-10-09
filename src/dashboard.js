@@ -2,6 +2,7 @@
 import {PROFILES,isEnabled} from './permissions.js?v=20261009-5';
 import {activeLoan,activeReservation,config} from './local-domain.js?v=20261009-5';
 import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261009-5';
+import {suggestedQueries} from './search-engine.js?v=20261009-6';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const action=(route,label,detail,icon)=>`<a class="dashboard-action" href="#${route}"><span class="action-symbol" aria-hidden="true">${icon}</span><span><strong>${label}</strong><small>${detail}</small></span><span aria-hidden="true">↗</span></a>`;
 const statistic=(label,n,route)=>`<a href="#${route}" class="dashboard-stat"><strong>${n}</strong><span>${label}</span></a>`;
@@ -9,7 +10,7 @@ const eventNames={'book.created':'Material incorporado','book.saved':'Material a
 export function renderDashboard(s,actor,c,can){
  const manager=['biblioteca','autoridad'].includes(actor.accessProfile),own=s.loans.filter(l=>l.patron.id===actor.id&&activeLoan(l)),res=s.reservations.filter(r=>r.patron.id===actor.id&&activeReservation(r)),policy=normalizeLoanPolicy(config(s).policy||{}),renewalPending=s.loans.filter(l=>activeLoan(l)&&l.renewalRequest?.status==='pending');
  const create=can('catalog.create'),extra=s.grants.find(g=>g.userId===actor.id&&g.permission==='catalog.create'&&isEnabled(g));
- const search=`<form id="home-search" class="home-search dashboard-search"><label for="home-query">Palabras, frases, temas o contenidos</label><div><input id="home-query" name="query" type="search" placeholder="Por ejemplo: Segunda Guerra Mundial"><button class="button primary">Buscar materiales</button></div></form>`;
+ const examples=suggestedQueries(s.books,4);const search=`<form id="home-search" class="home-search dashboard-search"><label for="home-query">Palabras, frases, temas o contenidos</label><div><input id="home-query" name="query" type="search" placeholder="Por ejemplo: cuento de monstruos para quinto"><button class="button primary">Buscar materiales</button></div></form>${examples.length?`<div class="query-examples"><span>Explorar por tema</span>${examples.map(q=>`<button type="button" data-query="${esc(q)}">${esc(q)} ↗</button>`).join('')}</div>`:''}`;
  let html=`<section class="dashboard" data-dashboard="${esc(actor.accessProfile)}"><p class="dashboard-identity">${esc(actor.name)} · ${esc(actor.cargo)} <span>${esc(PROFILES[actor.accessProfile]||'Sin perfil')}</span></p>`;
  if(c.onboardingStep&&actor.mainAdmin)html+=`<aside class="dashboard-onboarding"><span>Terminá de configurar tu institución</span><a class="button secondary" href="#bienvenida/${c.onboardingStep===1?'biblioteca':'equipo'}">Continuar configuración</a></aside>`;
  html+=`<div class="dashboard-heading"><span class="eyebrow">${esc(c.libraryName||'TU BIBLIOTECA')}</span><h2>${manager?'¿Qué necesitás hacer hoy?':'¿Qué necesitás encontrar hoy?'}</h2><p>${manager?'Organizá las tareas de la biblioteca desde un mismo lugar.':'Buscá en los títulos, temas y contenidos de tu colección.'}</p></div>`;
