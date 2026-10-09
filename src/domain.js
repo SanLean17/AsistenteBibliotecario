@@ -18,7 +18,10 @@ export function normalizeLocation(value={}){
  return {
   sector:String(value.sector||'').trim().slice(0,80),
   shelving:String(value.shelving||'').trim().slice(0,80),
-  shelf:String(value.shelf||'').trim().slice(0,80)
+  shelf:String(value.shelf||'').trim().slice(0,80),
+  sectorId:String(value.sectorId||'').trim().slice(0,160),
+  shelvingId:String(value.shelvingId||'').trim().slice(0,160),
+  shelfId:String(value.shelfId||'').trim().slice(0,160)
  };
 }
 export function displayLocation(value={}){
