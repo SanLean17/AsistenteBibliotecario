@@ -172,3 +172,42 @@ Los materiales admiten una regla de circulación propia:
 La ficha del ejemplar muestra su historial de movimientos a partir de la auditoría institucional: préstamos, devoluciones, solicitudes/aprobaciones de extensión, cambios y otros eventos asociados a su identificador físico. La portada personal muestra alertas de préstamos próximos a vencer y solicitudes pendientes; Biblioteca/Autoridad ve las solicitudes que requieren autorización.
 
 No se aplican sanciones automáticas por atraso en esta etapa. Una futura regla de bloqueo o tolerancia deberá ser configurable por institución y quedar registrada, en lugar de asumir una política disciplinaria única para todas las escuelas.
+
+
+## Modelo adaptable por tipo de material — 2026-10-09
+
+La incorporación mantiene una entrada única: reconocer primero y confirmar después. El tipo de material no se pregunta antes de escanear; se propone a partir del identificador cuando es posible y siempre puede corregirse en la revisión.
+
+La ficha común conserva título, responsables, temas/palabras clave, descripción, contenidos internos, ejemplares y regla de circulación. Los campos específicos se muestran según el tipo:
+
+- **Libro**: ISBN, editorial, año, edición, páginas, idioma, audiencia; contenidos internos como cuentos/capítulos/partes.
+- **Revista**: publicación, ISSN, fecha, volumen, número, editorial e idioma; artículos/notas/secciones como contenidos.
+- **Diario / periódico**: publicación, ISSN, fecha, edición/sección y número; titulares, artículos, suplementos y secciones como contenidos.
+- **Artículo**: publicación contenedora, DOI, URL, fecha, volumen, número, rango de páginas e idioma. Puede existir sin ejemplar físico.
+- **Documento**: organismo emisor, número de documento, fecha, URL e idioma.
+- **Producción escolar**: área/materia, curso/nivel, fecha, responsables e idioma.
+- **Recurso digital**: URL, DOI, formato digital, fecha e idioma. Por defecto se registra con cero ejemplares físicos.
+- **Otro material**: identificador, fecha, idioma y los campos comunes.
+
+Cambiar el tipo durante una incorporación nueva ajusta el valor sugerido de ejemplares físicos mientras la persona no lo haya editado manualmente: artículos y recursos digitales parten de 0; los demás perfiles parten de 1. Ningún tipo obliga a inventar ISBN, autor, editorial o páginas.
+
+contentEntries normaliza contenidos internos en una estructura compatible con futuras extracciones: título, responsable, página, tipo y procedencia. contents se mantiene como proyección de títulos para compatibilidad con respaldos y código anterior. El buscador indexa ambos y también los campos específicos de cada tipo. El catálogo permite filtrar por tipo de material.
+
+La proyección Obra/Edición conserva materialType y los metadatos específicos. MARC/ISO 2709 infiere un tipo amplio a partir del leader (monografía/seriadas/recurso digital) sin pretender distinguir automáticamente, por ejemplo, revista de diario cuando el registro no lo expresa con suficiente precisión.
+
+### Contrato futuro de asistencia por fotografía
+
+No se activa OCR ni IA en esta etapa. El modelo ya admite una sesión de asistencia con:
+
+- tipo de captura: tapa, índice, primera plana o documento;
+- referencia a la imagen de origen;
+- propuestas por campo;
+- valor propuesto;
+- confianza opcional;
+- procedencia;
+- estado: propuesto, aceptado, rechazado o editado;
+- confirmación humana final.
+
+El resultado de una foto nunca escribe directamente el catálogo. Para un diario podría proponer fecha, publicación, titulares, temas y resumen; para una antología podría proponer cuentos/capítulos desde el índice; para una portada podría proponer título, responsables y otros datos visibles. **La automatización propone. La persona confirma.**
+
+No se agregó ningún proveedor pago, cuenta externa ni servicio de OCR.
