@@ -1,7 +1,7 @@
-import {accessCommand,expireAccess} from './access-domain.js?v=20261009-11';
-import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261009-11';
-import {normalizeLoanPolicy,policyForPatron,activeLoansForPatron,overdueLoansForPatron,dueDateFromPolicy,reservationExpiryFromPolicy,renewalRequestStatus,renewalDueDate} from './loan-policy.js?v=20261009-11';
-import {normalizeLocation,displayLocation} from './domain.js?v=20261009-11';
+import {accessCommand,expireAccess} from './access-domain.js?v=20261009-12';
+import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261009-12';
+import {normalizeLoanPolicy,policyForPatron,activeLoansForPatron,overdueLoansForPatron,dueDateFromPolicy,reservationExpiryFromPolicy,renewalRequestStatus,renewalDueDate} from './loan-policy.js?v=20261009-12';
+import {normalizeLocation,displayLocation} from './domain.js?v=20261009-12';
 import {normalizeLibraryLocation,validateLocationHierarchy,locationLabelsFromNode,buildInventoryScope,expectedCopiesForScope,classifyInventoryScan,inventorySummary} from './inventory.js?v=20261009-12';
 export const STORES=['books','photos','loans','reservations','patrons','activity','grants','settings','institutions','libraries','collections','works','editions','people','memberships','invitations','saved','collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions'];
 export const activeLoan=l=>['loaned','overdue'].includes(l.status)&&!l.returnedAt;
