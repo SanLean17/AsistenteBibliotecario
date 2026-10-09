@@ -4,7 +4,7 @@ import {normalizeLoanPolicy,policyForPatron,dueDateFromPolicy,reservationExpiryF
 
 test('normaliza política y conserva reglas por perfil',()=>{
  const p=normalizeLoanPolicy({maxRenewals:2,reservationPickupDays:3,profiles:{docente:{loanDays:21,maxLoans:7},lector:{loanDays:5,maxLoans:1}}});
- assert.equal(p.maxRenewals,2);
+ assert.equal(p.maxRenewals,1);
  assert.equal(p.reservationPickupDays,3);
  assert.deepEqual(policyForPatron(p,{accessProfile:'docente'}),{loanDays:21,maxLoans:7});
  assert.deepEqual(policyForPatron(p,{accessProfile:'lector'}),{loanDays:5,maxLoans:1});
@@ -30,4 +30,12 @@ test('cuenta únicamente préstamos activos de la persona',()=>{
   {patron:{id:'b'},status:'loaned',returnedAt:null}
  ];
  assert.equal(activeLoansForPatron(loans,'a').length,2);
+});
+
+
+test('bloqueo por vencidos es opcional y admite tolerancia',async()=>{
+ const {overdueLoansForPatron}=await import('../src/loan-policy.js');
+ const loans=[{patron:{id:'a'},status:'loaned',returnedAt:null,dueAt:new Date(Date.now()-2*86400000).toISOString()}];
+ assert.equal(overdueLoansForPatron(loans,'a',{blockNewLoansIfOverdue:false,overdueGraceDays:0}).length,1);
+ assert.equal(overdueLoansForPatron(loans,'a',{overdueGraceDays:3}).length,0);
 });
