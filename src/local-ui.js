@@ -1,10 +1,10 @@
-import {updateInstitutionSelector} from './access-ui.js?v=20261009-5';
-import {readState,execute,getActorId,setActorId,expireDueReservations} from './storage.js?v=20261009-5';
-import {ROLES,PROFILES,LABELS,PERMISSIONS,hasPermission,isEnabled} from './permissions.js?v=20261009-5';
-import {effectiveState,activeLoan,activeReservation,findCopy,config} from './local-domain.js?v=20261009-5';
-import {drawLabel,internalDetector,internalFromPhoto} from './labels.js?v=20261009-5';
-import {scanISBN} from './scanner.js?v=20261009-5';
-import {normalizeLoanPolicy,renewalRequestStatus} from './loan-policy.js?v=20261009-5';
+import {updateInstitutionSelector} from './access-ui.js?v=20261009-6';
+import {readState,execute,getActorId,setActorId,expireDueReservations} from './storage.js?v=20261009-6';
+import {ROLES,PROFILES,LABELS,PERMISSIONS,hasPermission,isEnabled} from './permissions.js?v=20261009-6';
+import {effectiveState,activeLoan,activeReservation,findCopy,config} from './local-domain.js?v=20261009-6';
+import {drawLabel,internalDetector,internalFromPhoto} from './labels.js?v=20261009-6';
+import {scanISBN} from './scanner.js?v=20261009-6';
+import {normalizeLoanPolicy,renewalRequestStatus} from './loan-policy.js?v=20261009-6';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const STATE_NAMES={available:'Disponible',reserved:'Reservado',loaned:'Prestado',overdue:'Vencido',lost:'Extraviado',damaged:'Deteriorado',withdrawn:'Dado de baja',requested:'Solicitada',approved:'Aprobada',ready:'Lista para retirar',collected:'Retirada',cancelled:'Cancelada',expired:'Vencida'};
 let session,refresh,scanner;
