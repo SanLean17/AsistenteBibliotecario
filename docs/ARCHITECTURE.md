@@ -677,3 +677,36 @@ La vista reutiliza `deriveNotices` y el estado de circulación. No persiste cont
 - **Circulación**: vista detallada para revisar todos los préstamos, reservas, solicitudes de extensión y fechas.
 
 Ambas superficies llaman a los mismos comandos de dominio. El Mostrador no introduce una segunda implementación de préstamos o devoluciones.
+
+## Experiencia docente/lector y estabilización del piloto
+
+### Dos experiencias, un dominio
+
+Biblioteca y Autoridad conservan su dashboard operativo, Mostrador, circulación y herramientas autorizadas. Docente, Lector y Personal entran por la búsqueda; su navegación básica contiene Inicio, Catálogo, Mi biblioteca, Guardados y Avisos. Un permiso adicional vigente agrega únicamente las herramientas correspondientes. Se conserva el modelo de perfiles y permisos existente: Personal no recibe permiso de reserva por este cambio.
+
+`src/reader.js` deriva las vistas personales del estado institucional devuelto por `readState`; no agrega almacenes, contadores persistidos ni copias de préstamos/reservas. `src/reader-ui.js` conecta las acciones con `saved.toggle`, `reservation.create` y `loan.renew.request` y vuelve a comprobar las condiciones al actuar.
+
+- `#mi-biblioteca`: préstamos activos y vencidos, solicitudes de extensión y estado, reservas y plazo de retiro, guardados, recomendaciones, devoluciones e historial propio.
+- `#mis-prestamos` y `#mis-reservas`: vistas personales separadas de la gestión de circulación.
+- `#guardados`: solo materiales guardados por la persona actual que todavía existen; una referencia huérfana no genera un enlace roto.
+- La ficha ofrece guardar/quitar, reservar cuando corresponde y pedir extensión de un préstamo propio. Conserva visibles los materiales no disponibles; explica consulta en sala, ausencia de ejemplares, reservas deshabilitadas y préstamos sin renovación.
+- La elegibilidad de extensión reutiliza `renewalRequestStatus`: política institucional, ventana de solicitud, vencimiento, límite, reservas de otras personas y regla del material. Solicitar no aprueba automáticamente.
+- El buscador conserva el motor existente y su explicación de coincidencia. Agrega filtro de temas reales, entrada grande y alternativas del catálogo cuando no hay resultados; limpiar/quitar filtros no crea necesidades ni compras.
+
+### Visibilidad y privacidad
+
+Las listas personales se filtran por `patron.id`; el historial cruza eventos de circulación con los identificadores de esos préstamos y reservas. No se usa `actorId` como dueño del préstamo, porque Biblioteca puede haber registrado el movimiento. La proyección del historial contiene solo etiqueta, fecha y material: no incluye operadores, notas internas ni datos de terceras personas. Las rutas de configuración y la ficha operativa de ejemplar requieren permisos específicos; ocultar el menú no es la única comprobación. Las vistas de gestión conservan sus permisos existentes.
+
+Esto sigue siendo un prototipo local: el selector de persona simula identidades, no autentica usuarios frente a alguien con acceso al navegador o sus herramientas. No se agregan cuentas remotas, sincronización, backend, correo, push ni servicios pagos.
+
+### Datos reales y límites
+
+Las recomendaciones son registros activos creados por Biblioteca, con su motivo/contexto y un material existente. Las novedades se ordenan por fecha de incorporación. Los temas proceden del catálogo. No se generan rankings, recomendaciones pedagógicas ni inferencias de edad/grado. La autenticación y sincronización institucional siguen siendo futuras; no se presenta una simulación como servicio disponible.
+
+### Verificación autosuficiente
+
+`tests/repository-harness.cjs` sirve los archivos locales por interceptación del navegador. `setup` usa un contexto nuevo por test (IndexedDB y almacenamiento aislados), bloquea service workers y permite `TEST_BASE_URL` explícito para pruebas contra un servidor. Piloto, Avisos y Mostrador usan este mismo helper; no requieren levantar un servidor externo. Los tests esperan estados/elementos concretos y Avisos usa reloj controlado para los vencimientos.
+
+El fallo observado en Actions del commit `ec5a9ed` era `fill` sobre el selector Cargo de Mostrador. Al completar ese recorrido también se corrigieron el campo `id` que ocultaba `HTMLFormElement.id` en devolución y la doble actualización de ruta que podía borrar el mensaje de éxito. Se usa `matches` para reconocer formularios y una sola actualización al finalizar la operación.
+
+El workflow mantiene sintaxis, integridad, tests de dominio, Piloto, Avisos y Mostrador; añade Docente/Lector con navegación, grants temporales, privacidad, reserva, extensión, guardados, búsqueda y 320/390/768/1440 en claro/oscuro. La concurrencia cancela ejecuciones anteriores de la misma referencia sin ocultar errores ni usar `continue-on-error`.

@@ -1,10 +1,10 @@
-import {readState,execute,getActorId} from './storage.js?v=20261010-3';
-import {hasPermission,isEnabled,PROFILES} from './permissions.js?v=20261010-3';
-import {deskHoldingSnapshot,searchPeople,personOperations} from './daily-operations.js?v=20261010-3';
-import {normalizeLoanPolicy,dueDateFromPolicy} from './loan-policy.js?v=20261010-3';
-import {careLabel,PHYSICAL_CONDITIONS,CARE_LEVELS,nextWorseCondition} from './condition.js?v=20261010-3';
-import {scanISBN} from './scanner.js?v=20261010-3';
-import {internalDetector,internalFromPhoto} from './labels.js?v=20261010-3';
+import {readState,execute,getActorId} from './storage.js?v=20261010-4';
+import {hasPermission,isEnabled,PROFILES} from './permissions.js?v=20261010-4';
+import {deskHoldingSnapshot,searchPeople,personOperations} from './daily-operations.js?v=20261010-4';
+import {normalizeLoanPolicy,dueDateFromPolicy} from './loan-policy.js?v=20261010-4';
+import {careLabel,PHYSICAL_CONDITIONS,CARE_LEVELS,nextWorseCondition} from './condition.js?v=20261010-4';
+import {scanISBN} from './scanner.js?v=20261010-4';
+import {internalDetector,internalFromPhoto} from './labels.js?v=20261010-4';
 
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -69,9 +69,9 @@ export async function renderDesk(route){
 async function rerender(){await renderDesk(location.hash.slice(1)||'mostrador');refreshCallback?.();}
 export function initDeskUI(onRefresh){refreshCallback=onRefresh;
   document.addEventListener('submit',async e=>{
-    if(e.target.id==='desk-scan-form'){e.preventDefault();const code=new FormData(e.target).get('code');location.hash='#mostrador/'+encodeURIComponent(String(code||'').trim().toUpperCase());return;}
-    if(e.target.id==='desk-loan-form'){e.preventDefault();const d=Object.fromEntries(new FormData(e.target));if(!d.patronId)return;const b=e.target.querySelector('button');b.disabled=true;try{await execute('loan.create',d);location.hash='#mostrador';await rerender();$('#desk-feedback').textContent='Préstamo registrado. Escaneá el siguiente ejemplar.';}catch(err){$('#desk-feedback').textContent=err.message;b.disabled=false;}return;}
-    if(e.target.id==='desk-return-form'){e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const b=e.target.querySelector('button');b.disabled=true;try{await execute('loan.return',d);location.hash='#mostrador';await rerender();$('#desk-feedback').textContent='Devolución registrada. Escaneá el siguiente ejemplar.';}catch(err){$('#desk-feedback').textContent=err.message;b.disabled=false;}return;}
+    if(e.target.matches('#desk-scan-form')){e.preventDefault();const code=new FormData(e.target).get('code');location.hash='#mostrador/'+encodeURIComponent(String(code||'').trim().toUpperCase());return;}
+    if(e.target.matches('#desk-loan-form')){e.preventDefault();const d=Object.fromEntries(new FormData(e.target));if(!d.patronId)return;const b=e.target.querySelector('button');b.disabled=true;try{await execute('loan.create',d);history.replaceState(null,'','#mostrador');await rerender();$('#desk-feedback').textContent='Préstamo registrado. Escaneá el siguiente ejemplar.';}catch(err){$('#desk-feedback').textContent=err.message;b.disabled=false;}return;}
+    if(e.target.matches('#desk-return-form')){e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const b=e.target.querySelector('button');b.disabled=true;try{await execute('loan.return',d);history.replaceState(null,'','#mostrador');await rerender();$('#desk-feedback').textContent='Devolución registrada. Escaneá el siguiente ejemplar.';}catch(err){$('#desk-feedback').textContent=err.message;b.disabled=false;}return;}
   });
   document.addEventListener('input',e=>{if(e.target.id==='desk-person-query'){const host=$('#desk-person-results');if(host)host.innerHTML=searchPeople(currentState,e.target.value,{limit:10}).map(personResult).join('');}});
   document.addEventListener('change',async e=>{if(e.target.id==='desk-photo'&&e.target.files?.[0]){try{const value=await internalFromPhoto(e.target.files[0]);location.hash='#mostrador/'+encodeURIComponent(value);}catch(err){$('#desk-feedback').textContent=err.message;}finally{e.target.value='';}}});

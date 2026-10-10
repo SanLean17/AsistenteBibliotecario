@@ -31,7 +31,7 @@ on:
       - '.github/workflows/tests.yml'
 
 concurrency:
-  group: tests-main
+  group: tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -76,5 +76,17 @@ jobs:
           BROWSER_CHANNEL: chromium
       - name: Check daily circulation desk
         run: npm run test:desk-browser
+        env:
+          BROWSER_CHANNEL: chromium
+      - name: Check teacher and reader experience
+        run: npm run test:reader-browser
+        env:
+          BROWSER_CHANNEL: chromium
+      - name: Check collection, inventory, migration and copy identity
+        run: |
+          node tests/collection-planning-browser.cjs
+          node tests/inventory-dual-browser.cjs
+          node tests/migration-browser.cjs
+          node tests/holding-identity-browser.cjs
         env:
           BROWSER_CHANNEL: chromium

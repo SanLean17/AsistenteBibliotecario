@@ -10,12 +10,12 @@ const {setup,save,assert}=require('./ui-helpers.cjs');
   await page.locator('[name=copies]').fill('1');
   await save(page);
 
-  const state=()=>page.evaluate(async()=>await(await import('./src/storage.js?v=20261010-3')).readState());
+  const state=()=>page.evaluate(async()=>await(await import('./src/storage.js?v=20261010-4')).readState());
   let s=await state(),book=s.books.find(b=>b.title==='Libro no disponible'),copy=book.exemplars[0];
   const teacher=s.patrons.find(p=>p.accessProfile==='docente')||s.patrons[0];
 
   await page.evaluate(async({copyId,teacherId})=>{
-    const m=await import('./src/storage.js?v=20261010-3');
+    const m=await import('./src/storage.js?v=20261010-4');
     await m.execute('loan.create',{exemplarId:copyId,patronId:teacherId,dueAt:'2030-12-01'});
   },{copyId:copy.id,teacherId:teacher.id});
 

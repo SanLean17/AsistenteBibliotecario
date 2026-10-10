@@ -10,6 +10,7 @@
     "test:notices-browser": "node tests/notices-browser.cjs",
     "verify": "npm run check && npm test",
     "test:pilot-browser": "node tests/pilot-browser.cjs",
-    "test:desk-browser": "node tests/desk-browser.cjs"
+    "test:desk-browser": "node tests/desk-browser.cjs",
+    "test:reader-browser": "node tests/reader-browser.cjs"
   }
 }

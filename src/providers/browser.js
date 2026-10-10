@@ -1,4 +1,4 @@
-import { googleRecord, openLibraryRecord } from './records.js?v=20261010-3';
+import { googleRecord, openLibraryRecord } from './records.js?v=20261010-4';
 
 export function createBrowserProviders(){
  return [

@@ -1,5 +1,5 @@
-import {deriveNotices,filterNotices,NOTICE_AREAS,NOTICE_PRIORITIES} from './notices.js?v=20261010-3';
-import {hasPermission} from './permissions.js?v=20261010-3';
+import {deriveNotices,filterNotices,NOTICE_AREAS,NOTICE_PRIORITIES} from './notices.js?v=20261010-4';
+import {hasPermission} from './permissions.js?v=20261010-4';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const options=labels=>Object.entries(labels).map(([value,label])=>`<option value="${value}">${label}</option>`).join('');
 

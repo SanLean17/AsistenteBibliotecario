@@ -11,7 +11,7 @@ const {setup,assert,noOverflow}=require('./ui-helpers.cjs');
  // Add a sector after the quick draft already exists.
  await page.locator('#local-location [name=name]').first().fill('Sala principal');
  await page.locator('#local-location button').first().click();
- await page.getByText('Sala principal',{exact:true}).waitFor();
+ await page.locator('article strong').filter({hasText:'Sala principal'}).waitFor();
 
  // Draft survives navigation away and back.
  await go('biblioteca');

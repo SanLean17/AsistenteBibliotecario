@@ -127,3 +127,29 @@
 .dashboard-today{margin-top:28px;padding:22px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.dashboard-today .dashboard-stats{margin-top:14px}.today-activity{display:flex;align-items:baseline;gap:7px;margin-top:12px;color:var(--muted);font-size:11px}.today-activity strong{font:500 20px var(--display);color:var(--text)}
 @media(max-width:760px){.desk-scan form{grid-template-columns:1fr}.desk-scan .button-row{display:grid;grid-template-columns:1fr 1fr}.desk-scan .button{width:100%}.desk-holding{grid-template-columns:1fr;padding:17px}.desk-holding-main h2{font-size:25px}.desk-holding-actions{display:grid;grid-template-columns:1fr 1fr}.desk-action-panel{grid-template-columns:1fr;gap:12px;padding:17px}.desk-form-grid{grid-template-columns:1fr}.desk-person-card{grid-template-columns:1fr 1fr}.desk-person-card>div:first-child{grid-column:1/-1}.desk-reservation-row,.desk-queue article{align-items:flex-start;flex-direction:column}.desk-reservation-row .button,.desk-queue .button{width:100%}}
 @media(max-width:360px){.desk-holding-actions,.desk-scan .button-row{grid-template-columns:1fr}.desk-person-result{align-items:flex-start;flex-direction:column}}
+
+/* Personal reading space uses the existing Inter/Lora palette in both themes. */
+.reader-section{margin:24px 0;min-width:0}
+.reader-section h2{font-family:var(--display)}
+.reader-section .holding-row{align-items:flex-start;gap:16px;overflow-wrap:anywhere}
+.reader-section .holding-row>div{min-width:0;flex:1}
+.reader-section .holding-row strong a,.reader-material a{text-decoration:underline;text-underline-offset:3px}
+.reader-section [data-overdue=true]{border-inline-start:4px solid var(--danger);padding-inline-start:16px}
+.reader-section [data-overdue=true]>div>p>strong{color:var(--danger)}
+.reader-tabs{flex-wrap:wrap;margin-bottom:24px}
+.reader-material{margin:20px 0;padding:20px 0;border-block:1px solid var(--line)}
+.reader-material .button-row{flex-wrap:wrap}
+.reader-material p:last-child{margin-bottom:0}
+.reader-history{padding-inline-start:24px;overflow-wrap:anywhere}
+.reader-history li{padding:10px 0;border-bottom:1px solid var(--line)}
+.reader-history time{display:block;color:var(--muted);font-size:14px}
+.recommendation-grid article{padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--surface);min-width:0;overflow-wrap:anywhere}
+.catalog-tools .search-box{grid-column:1/-1;min-height:60px}
+.catalog-tools select{max-width:100%;min-width:0}
+@media(max-width:600px){.reader-section{padding:20px 16px}.reader-section .holding-row{flex-direction:column}.reader-tabs .button{flex:1 1 120px}.reader-material .button-row .button{width:100%}.catalog-tools .search-box{min-height:56px}}
+.catalog-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.catalog-tools .search-box input{height:60px;width:100%}
+.catalog-tools .search-box span{top:16px}
+.catalog-tools select{width:100%}
+@media(max-width:900px){.catalog-tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.catalog-tools{grid-template-columns:minmax(0,1fr)}}

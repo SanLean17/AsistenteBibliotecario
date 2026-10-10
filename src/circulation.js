@@ -1,4 +1,4 @@
-import { CIRCULATION_STATES, RESERVATION_STATES } from './domain.js?v=20261010-3';
+import { CIRCULATION_STATES, RESERVATION_STATES } from './domain.js?v=20261010-4';
 
 const nowISO=()=>new Date().toISOString();
 export function makePatron({id=crypto.randomUUID(),name='',role='docente',course='',institutionId='local-institution'}={}){

@@ -1,4 +1,4 @@
-import {shareableHolding,validateSharedHolding} from './holding-identity.js?v=20261010-3';
+import {shareableHolding,validateSharedHolding} from './holding-identity.js?v=20261010-4';
 const text=(value,max=500)=>String(value??'').trim().slice(0,max);
 
 export function shareableCatalogRecord(book,{institutionId='',institutionName='',libraryName='',availability=null,includeHoldings=false}={}){

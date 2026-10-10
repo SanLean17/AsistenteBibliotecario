@@ -1,13 +1,6 @@
 const {setup,save,assert,base,noOverflow}=require('./ui-helpers.cjs');
-const fs=require('node:fs/promises'),path=require('node:path');
 (async()=>{
  const {page,finish}=await setup({deviceScaleFactor:1});
- const root=path.resolve(__dirname,'..');
- await page.route('http://127.0.0.1:4173/**',async route=>{
-  const file=path.resolve(root,'.'+new URL(route.request().url()).pathname);
-  if(!file.startsWith(root+path.sep))return route.abort();
-  try{await route.fulfill({body:await fs.readFile(file),contentType:({'.js':'text/javascript','.html':'text/html','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.json':'application/json'})[path.extname(file)]||'application/octet-stream'});}catch{await route.fulfill({status:404,body:''});}
- });
  await page.goto(base+'app.html#agregar');
  await page.getByRole('button',{name:'No puedo usar la cámara'}).click();
  await page.getByRole('button',{name:'Incorporar manualmente'}).click();
@@ -18,12 +11,12 @@ const fs=require('node:fs/promises'),path=require('node:path');
  await page.goto(base+'app.html#usuarios');
  await page.getByRole('heading',{name:'Personas',exact:true}).waitFor();
  await page.locator('[data-access-form="person.save"] [name=name]').fill('Docente mostrador');
- await page.locator('[data-access-form="person.save"] [name=cargo]').fill('Docente');
+ await page.locator('[data-access-form="person.save"] [name=cargo]').selectOption('Docente');
  await page.locator('[data-access-form="person.save"] [name=course]').fill('6° A');
  await page.locator('[data-access-form="person.save"] button').click();
- await page.getByRole('link',{name:'Editar persona'}).last().waitFor();
+ await page.locator('.holding-row').filter({hasText:'Docente mostrador'}).getByRole('link',{name:'Editar persona',exact:true}).waitFor();
 
- const state=()=>page.evaluate(async()=>await(await import('./src/storage.js?v=20261010-3')).readState());
+ const state=()=>page.evaluate(async()=>await(await import('./src/storage.js?v=20261010-4')).readState());
  let s=await state(),copy=s.books.find(b=>b.title==='Libro del mostrador').exemplars[0];
 
  await page.goto(base+'app.html#mostrador/'+copy.internalCode);
