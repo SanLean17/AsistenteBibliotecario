@@ -1,6 +1,6 @@
-import {deriveReadiness,deriveDataQuality,pilotManager,SEVERITIES} from './pilot.js?v=20261010-6';
-import {readState,getActorId,execute} from './storage.js?v=20261010-6';
-import {hasPermission} from './permissions.js?v=20261010-6';
+import {deriveReadiness,deriveDataQuality,pilotManager,SEVERITIES} from './pilot.js?v=20261010-7';
+import {readState,getActorId,execute} from './storage.js?v=20261010-7';
+import {hasPermission} from './permissions.js?v=20261010-7';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const link=(route,label)=>`<a class="button secondary" href="#${esc(route)}">${label}</a>`;
 export function renderPilotSummary(s,actor){
@@ -10,7 +10,7 @@ export function renderPilotSummary(s,actor){
 }
 function checklist(s){
  const r=deriveReadiness(s);
- return `<h1>Puesta en marcha</h1><p class="notice" data-readiness>${r.label}</p><p>Esta guía no bloquea el uso. La preparación se calcula desde los datos de esta institución; las recomendaciones son opcionales.</p>${link('calidad','Revisar calidad de datos')}<div class="pilot-grid">${[...new Set(r.steps.map(x=>x.category))].map(category=>`<section class="panel settings-panel"><h2>${category}</h2><ul class="pilot-steps">${r.steps.filter(x=>x.category===category).sort((a,b)=>Number(b.required)-Number(a.required)||Number(a.done)-Number(b.done)).map(x=>`<li data-step="${x.id}"><strong>${x.done?'✓ Completado':x.required?'Pendiente':'Recomendado'} · ${x.label}</strong>${x.detail?`<p>${x.detail}</p>`:''}${link(x.route,'Revisar sección')}</li>`).join('')}</ul></section>`).join('')}</div>`;
+ return `<h1>Puesta en marcha</h1>${link('piloto','Abrir piloto escolar')}<p class="notice" data-readiness>${r.label}</p><p>Esta guía no bloquea el uso. La preparación se calcula desde los datos de esta institución; las recomendaciones son opcionales.</p>${link('calidad','Revisar calidad de datos')}<div class="pilot-grid">${[...new Set(r.steps.map(x=>x.category))].map(category=>`<section class="panel settings-panel"><h2>${category}</h2><ul class="pilot-steps">${r.steps.filter(x=>x.category===category).sort((a,b)=>Number(b.required)-Number(a.required)||Number(a.done)-Number(b.done)).map(x=>`<li data-step="${x.id}"><strong>${x.done?'✓ Completado':x.required?'Pendiente':'Recomendado'} · ${x.label}</strong>${x.detail?`<p>${x.detail}</p>`:''}${link(x.route,'Revisar sección')}</li>`).join('')}</ul></section>`).join('')}</div>`;
 }
 function issueList(issues,severity='',type=''){
  const visible=issues.filter(x=>(!severity||x.severity===severity)&&(!type||x.type===type));

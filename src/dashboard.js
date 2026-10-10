@@ -1,16 +1,16 @@
-import {canCatalog,catalogingSummary} from './cataloging.js?v=20261010-6';
+import {canCatalog,catalogingSummary} from './cataloging.js?v=20261010-7';
 function catalogingBanner(s,actor){if(!canCatalog(s,actor))return '';const j=s.catalogingSessions?.find(x=>x.status==='open');return `<section class="cataloging-banner"><div><strong>${j?'Jornada en curso':'Jornada de catalogación'}</strong><p>${j?catalogingSummary(j).pending+' pendientes':'Capturá, revisá e incorporá en lote.'}</p></div><a class="button secondary" href="#jornada-catalogacion${j?'/'+j.id:''}">${j?'Continuar jornada':'Abrir jornada'}</a></section>`;}
-import {renderRecommendations} from './reader.js?v=20261010-6';
-import {renderPilotSummary} from './pilot-ui.js?v=20261010-6';
-import {todayOperations} from './daily-operations.js?v=20261010-6';
-import {deriveNotices} from './notices.js?v=20261010-6';
-import {renderNoticeSummary} from './notices-ui.js?v=20261010-6';
+import {renderRecommendations} from './reader.js?v=20261010-7';
+import {renderPilotSummary} from './pilot-ui.js?v=20261010-7';
+import {todayOperations} from './daily-operations.js?v=20261010-7';
+import {deriveNotices} from './notices.js?v=20261010-7';
+import {renderNoticeSummary} from './notices-ui.js?v=20261010-7';
 // Presentation only. Read the institution-scoped state and existing permission checks.
-import {PROFILES,isEnabled} from './permissions.js?v=20261010-6';
-import {activeLoan,activeReservation,config} from './local-domain.js?v=20261010-6';
-import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261010-6';
-import {suggestedQueries} from './search-engine.js?v=20261010-6';
-import {libraryAnalytics} from './analytics.js?v=20261010-6';
+import {PROFILES,isEnabled} from './permissions.js?v=20261010-7';
+import {activeLoan,activeReservation,config} from './local-domain.js?v=20261010-7';
+import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261010-7';
+import {suggestedQueries} from './search-engine.js?v=20261010-7';
+import {libraryAnalytics} from './analytics.js?v=20261010-7';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const action=(route,label,detail,icon)=>`<a class="dashboard-action" href="#${route}"><span class="action-symbol" aria-hidden="true">${icon}</span><span><strong>${label}</strong><small>${detail}</small></span><span aria-hidden="true">↗</span></a>`;
 const statistic=(label,n,route)=>`<a href="#${route}" class="dashboard-stat"><strong>${n}</strong><span>${label}</span></a>`;

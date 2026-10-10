@@ -1,10 +1,10 @@
-import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261010-6';
-import {canCatalog,QUEUE_LABELS,SESSION_LABELS,classifyCapture,catalogingSummary,planCataloging} from './cataloging.js?v=20261010-6';
-import {previewMarc} from './cataloging-import.js?v=20261010-6';
-import {lookupISBN} from './metadata.js?v=20261010-6';
-import {scanISBN,scanMaterialFromFile,createMaterialDetector} from './scanner.js?v=20261010-6';
-import {drawLabel} from './labels.js?v=20261010-6';
-import {locationPath} from './inventory.js?v=20261010-6';
+import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261010-7';
+import {canCatalog,QUEUE_LABELS,SESSION_LABELS,classifyCapture,catalogingSummary,planCataloging} from './cataloging.js?v=20261010-7';
+import {previewMarc} from './cataloging-import.js?v=20261010-7';
+import {lookupISBN} from './metadata.js?v=20261010-7';
+import {scanISBN,scanMaterialFromFile,createMaterialDetector} from './scanner.js?v=20261010-7';
+import {drawLabel} from './labels.js?v=20261010-7';
+import {locationPath} from './inventory.js?v=20261010-7';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=s=>document.querySelector(s);
@@ -139,7 +139,7 @@ export function initCatalogingUI(refresh){
    if(action==='clear-selection'){selection.clear();await refreshQueue();}
    if(action==='preview'){stopCamera();await execute('cataloging.refresh',{sessionId});const fresh=await readState(),current=fresh.catalogingSessions.find(x=>x.id===sessionId);preview={sessionId,ids:selectedIds(current),plan:planCataloging(fresh,current,selectedIds(current)),batchId:crypto.randomUUID()};location.hash=href(j,'confirmar');}
    if(action==='commit'){if(!preview||preview.sessionId!==sessionId)throw new Error('Revisá la selección primero.');await execute('cataloging.incorporate',{sessionId,ids:preview.ids,signature:preview.plan.signature,batchId:preview.batchId});selection.clear();preview=null;location.hash=href(j,'etiquetas');await refreshApp();}
-   if(action==='cancel'||action==='complete'){stopCamera();if(confirm(action==='cancel'?'¿Cancelar la jornada? Se conserva la trazabilidad. Las incorporaciones ya realizadas permanecen en el catálogo.':'¿Finalizar la jornada? Los pendientes quedarán conservados sin incorporar.')){await execute('cataloging.'+action,{sessionId,confirmed:true});await redraw();}}
+   if(action==='cancel'||action==='complete'){stopCamera();if(confirm(action==='cancel'?'Exportá un respaldo antes de cancelar. ¿Cancelar la jornada? Se conserva la trazabilidad. Las incorporaciones ya realizadas permanecen en el catálogo.':'¿Finalizar la jornada? Los pendientes quedarán conservados sin incorporar.')){await execute('cataloging.'+action,{sessionId,confirmed:true});await redraw();}}
    if(action==='labels-all'||action==='labels-none'){for(const input of document.querySelectorAll('[data-label-select]')){input.checked=action==='labels-all';input.closest('.print-label').classList.toggle('print-excluded',!input.checked);}}
    if(action==='print'){if(!document.querySelector('[data-label-select]:checked'))throw new Error('Seleccioná al menos una etiqueta.');window.print();}
    if(action==='dismiss-marc'){marc=null;await redraw();}

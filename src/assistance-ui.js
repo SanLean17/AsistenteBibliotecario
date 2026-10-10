@@ -1,10 +1,10 @@
-import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261010-6';
-import {CAPTURE_KINDS,ASSIST_FIELDS} from './assistance.js?v=20261010-6';
-import {canAssist} from './assistance-domain.js?v=20261010-6';
-import {MATERIAL_TYPES} from './material-types.js?v=20261010-6';
-import {prepareAssistImage,transformAssistImage} from './assistance-image.js?v=20261010-6';
-import {lookupISBN} from './metadata.js?v=20261010-6';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-6';
+import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261010-7';
+import {CAPTURE_KINDS,ASSIST_FIELDS} from './assistance.js?v=20261010-7';
+import {canAssist} from './assistance-domain.js?v=20261010-7';
+import {MATERIAL_TYPES} from './material-types.js?v=20261010-7';
+import {prepareAssistImage,transformAssistImage} from './assistance-image.js?v=20261010-7';
+import {lookupISBN} from './metadata.js?v=20261010-7';
+import {detectCatalogMatches} from './duplicates.js?v=20261010-7';
 const assist=(type,data)=>execute(type,{...data,expectedActor:getActorId(),expectedInstitution:getInstitutionId()});
 const $=q=>document.querySelector(q),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const route=()=>location.hash.slice(1),path=a=>'#asistencia/sesion/'+a.id;
@@ -65,7 +65,7 @@ export function initAssistanceUI({refresh,onDraft}){
    if(action==='rotate'){stop();if(a.proposals.length&&!confirm('Rotar reinicia las propuestas. ¿Continuar?'))return;const image=await transformAssistImage(a.image,{rotation:90});if(current())await saveImage(a,image,a.imageName);}
    if(action==='recognize'){
     stop();const controller=new AbortController();job=controller;$('[data-assist=cancel]').hidden=false;status('Preparando imagen…');
-    try{const {ocrProvider}=await import('./ocr-provider.js?v=20261010-6');if(controller.signal.aborted)return;const result=await ocrProvider.recognize(a.image,{signal:controller.signal,onProgress:value=>{if(current()&&!controller.signal.aborted)status('Leyendo texto… '+Math.round((value.progress||0)*100)+'%');}});if(current()&&!controller.signal.aborted){status('Analizando datos…');await assist('assistance.recognized',{id:a.id,revision:a.revision,...result});job=null;await rerender();status('Propuestas listas. '+(await load()).message);}}
+    try{const {ocrProvider}=await import('./ocr-provider.js?v=20261010-7');if(controller.signal.aborted)return;const result=await ocrProvider.recognize(a.image,{signal:controller.signal,onProgress:value=>{if(current()&&!controller.signal.aborted)status('Leyendo texto… '+Math.round((value.progress||0)*100)+'%');}});if(current()&&!controller.signal.aborted){status('Analizando datos…');await assist('assistance.recognized',{id:a.id,revision:a.revision,...result});job=null;await rerender();status('Propuestas listas. '+(await load()).message);}}
     finally{if(job===controller)job=null;}
    }
    if(action==='accept'||action==='reject'){await assist('assistance.decide',{id:a.id,proposalId:button.dataset.id,status:action==='accept'?'accepted':'rejected'});if(current()){await rerender();document.querySelector('[data-proposal="'+button.dataset.id+'"] [data-assist="'+action+'"]')?.focus({preventScroll:true});}}

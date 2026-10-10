@@ -1,7 +1,7 @@
-import { validISBN } from './isbn.js?v=20261010-6';
+import { validISBN } from './isbn.js?v=20261010-7';
 
 async function createZXingReader(){
-  await import('../vendor/zxing-browser-0.2.1.min.js?v=20261010-6');
+  await import('../vendor/zxing-browser-0.2.1.min.js?v=20261010-7');
   return new globalThis.ZXingBrowser.BrowserMultiFormatOneDReader();
 }
 export async function createISBNDetector() {
@@ -23,6 +23,7 @@ async function requestRearCamera(){
     return await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});
   } catch(error) {
     if(['OverconstrainedError','NotFoundError'].includes(error.name)) return navigator.mediaDevices.getUserMedia({video:true,audio:false});
+    if(error.name==='NotAllowedError')throw new Error('Permiso de cámara denegado. Podés usar una foto, ingresar el código manualmente o conectar un lector USB.');
     throw error;
   }
 }
@@ -88,7 +89,7 @@ export async function scanISBNFromFile(file){
 
 // Multi-format acquisition: QR content and linear codes use the same review flow.
 export async function createMaterialDetector(){
- await import('../vendor/zxing-browser-0.2.1.min.js?v=20261010-6');
+ await import('../vendor/zxing-browser-0.2.1.min.js?v=20261010-7');
  const reader=new globalThis.ZXingBrowser.BrowserMultiFormatReader();
  return {async detect(source){try{return [{rawValue:reader.decode(source).getText()}];}catch(error){const kind=error.getKind?.()||error.name;if(['NotFoundException','ChecksumException','FormatException'].includes(kind))return [];throw error;}}};
 }

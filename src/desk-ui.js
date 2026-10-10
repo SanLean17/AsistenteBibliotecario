@@ -1,10 +1,11 @@
-import {readState,execute,getActorId} from './storage.js?v=20261010-6';
-import {hasPermission,isEnabled,PROFILES} from './permissions.js?v=20261010-6';
-import {deskHoldingSnapshot,searchPeople,personOperations} from './daily-operations.js?v=20261010-6';
-import {normalizeLoanPolicy,dueDateFromPolicy} from './loan-policy.js?v=20261010-6';
-import {careLabel,PHYSICAL_CONDITIONS,CARE_LEVELS,nextWorseCondition} from './condition.js?v=20261010-6';
-import {scanISBN} from './scanner.js?v=20261010-6';
-import {internalDetector,internalFromPhoto} from './labels.js?v=20261010-6';
+import {timed} from './recovery.js?v=20261010-7';
+import {readState,execute,getActorId} from './storage.js?v=20261010-7';
+import {hasPermission,isEnabled,PROFILES} from './permissions.js?v=20261010-7';
+import {deskHoldingSnapshot,searchPeople,personOperations} from './daily-operations.js?v=20261010-7';
+import {normalizeLoanPolicy,dueDateFromPolicy} from './loan-policy.js?v=20261010-7';
+import {careLabel,PHYSICAL_CONDITIONS,CARE_LEVELS,nextWorseCondition} from './condition.js?v=20261010-7';
+import {scanISBN} from './scanner.js?v=20261010-7';
+import {internalDetector,internalFromPhoto} from './labels.js?v=20261010-7';
 
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -55,7 +56,8 @@ function reservationQueue(state){
   return `<section class="desk-queue"><div class="section-heading"><div><span class="eyebrow">COLA OPERATIVA</span><h2>Reservas</h2></div><a class="button secondary" href="#reservas">Ver todas</a></div>${active.slice(0,12).map(r=>{const b=state.books.find(x=>x.id===r.bookId),copy=b?.exemplars?.find(e=>e.id===r.exemplarId);return `<article><div><strong>${esc(b?.title||r.title||'Material')}</strong><small>${esc(r.patron?.name||'Persona')} · ${esc(({requested:'Solicitada',approved:'Asignada',ready:'Lista para retirar'})[r.status]||r.status)}${r.expiresAt?' · hasta '+new Date(r.expiresAt).toLocaleDateString('es-AR'):''}</small></div>${copy?`<a class="button secondary" href="#mostrador/${esc(copy.internalCode)}">${r.status==='ready'?'Entregar':'Abrir ejemplar'}</a>`:''}</article>`;}).join('')}</section>`;
 }
 
-export async function renderDesk(route){
+export const renderDesk=route=>timed('desk',()=>renderDeskView(route));
+async function renderDeskView(route){
   const [base,code]=route.split('/');if(base!=='mostrador')return false;
   stopScanner();currentState=await readState();selectedPersonId='';const currentCode=decodeURIComponent(code||'').toUpperCase();
   const actor=currentState.patrons.find(p=>p.id===getActorId());

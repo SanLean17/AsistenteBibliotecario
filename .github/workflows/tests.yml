@@ -70,6 +70,10 @@ jobs:
         run: npm run test:pilot-browser
         env:
           BROWSER_CHANNEL: chromium
+      - name: Check school pilot, recovery and all-profile routes
+        run: npm run test:school-pilot-browser
+        env:
+          BROWSER_CHANNEL: chromium
       - name: Check notices interactions and responsive themes
         run: npm run test:notices-browser
         env:

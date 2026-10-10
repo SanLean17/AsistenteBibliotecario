@@ -61,3 +61,6 @@ input,select,textarea{background:var(--surface);border:1px solid var(--line);bor
 
 /* WebKit includes native option text in scroll overflow; retain room for focus rings. */
 .local-form label:has(select){overflow:clip;overflow-clip-margin:8px}
+
+/* Operational pilot: uses the existing palette and controls. */
+.school-pilot-banner{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between;margin:1rem;padding:1rem;border:2px solid currentColor;border-radius:1rem;overflow-wrap:anywhere}.school-pilot-banner[hidden]{display:none}.school-pilot-banner span{flex:1 1 180px}.pilot-dialog{width:min(540px,calc(100vw - 24px));max-height:85dvh;overflow:auto;border:2px solid currentColor;border-radius:1rem;padding:1.25rem;background:var(--paper,#fff);color:var(--ink,#18223a)}.pilot-dialog label,#main #pilot-start label{display:grid;gap:.35rem;margin:.65rem 0}.pilot-dialog input,.pilot-dialog select,.pilot-dialog textarea,#pilot-start input,#pilot-start textarea{width:100%;min-width:0;box-sizing:border-box}.pilot-dialog::backdrop{background:#09122a88}[data-theme=dark] .pilot-dialog{background:#111b37;color:#edf3ff}#pilot-feedback-list{overflow-wrap:anywhere}

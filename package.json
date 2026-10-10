@@ -14,6 +14,7 @@
     "test:reader-browser": "node tests/reader-browser.cjs",
     "test:cataloging-browser": "node tests/cataloging-browser.cjs",
     "test:assistance-browser": "node tests/assistance-browser.cjs",
-    "test:ocr-engine": "node tests/ocr-engine-browser.cjs"
+    "test:ocr-engine": "node tests/ocr-engine-browser.cjs",
+    "test:school-pilot-browser": "node tests/school-pilot-browser.cjs"
   }
 }

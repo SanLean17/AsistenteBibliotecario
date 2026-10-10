@@ -16,7 +16,7 @@ const {setup,save,assert,base,noOverflow}=require('./ui-helpers.cjs');
  await page.locator('[data-access-form="person.save"] button').click();
  await page.locator('.holding-row').filter({hasText:'Docente mostrador'}).getByRole('link',{name:'Editar persona',exact:true}).waitFor();
 
- const state=()=>page.evaluate(async()=>await(await import('./src/storage.js?v=20261010-6')).readState());
+ const state=()=>page.evaluate(async()=>await(await import('./src/storage.js?v=20261010-7')).readState());
  let s=await state(),copy=s.books.find(b=>b.title==='Libro del mostrador').exemplars[0];
 
  await page.goto(base+'app.html#mostrador/'+copy.internalCode);

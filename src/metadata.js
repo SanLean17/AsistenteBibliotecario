@@ -1,5 +1,5 @@
-import { localizeBook } from './subjects.js?v=20261010-6';
-import { cleanISBN, validISBN, canonicalISBN, isbnVariants } from './isbn.js?v=20261010-6';
+import { localizeBook } from './subjects.js?v=20261010-7';
+import { cleanISBN, validISBN, canonicalISBN, isbnVariants } from './isbn.js?v=20261010-7';
 
 export const OFFICIAL_CATALOGS = [
   {name:'Biblioteca Nacional Mariano Moreno',short:'BN Mariano Moreno',url:'https://catalogo.bn.gov.ar/',note:'Registros argentinos · Z39.50 requiere un servidor intermediario'},
@@ -7,8 +7,8 @@ export const OFFICIAL_CATALOGS = [
   {name:'Agencia Argentina de ISBN', short:'ISBN Argentina', url:'https://www.isbn.org.ar/web/busqueda-simple.php', note:'Registro nacional de ISBN'}
 ];
 
-export {safeCover,googleRecord,openLibraryRecord} from './providers/records.js?v=20261010-6';
-import {createBrowserProviders} from './providers/browser.js?v=20261010-6';
+export {safeCover,googleRecord,openLibraryRecord} from './providers/records.js?v=20261010-7';
+import {createBrowserProviders} from './providers/browser.js?v=20261010-7';
 export function mergeMetadata(records, isbn) {
   const book = { isbn:cleanISBN(isbn), sources:[], fieldSources:{}, conflicts:[] };
   for (const record of records.filter(Boolean)) {
@@ -34,6 +34,7 @@ async function fetchJSON(fetcher,url,signal,timeout){
   return response.json();
 }
 export async function lookupISBN(value, {signal, fetcher=fetch, timeout=10000, providers=createBrowserProviders()}={}) {
+  if(globalThis.navigator?.onLine===false)throw new Error('Sin conexión. Podés continuar con carga manual.');
   const isbn = cleanISBN(value);
   if (!validISBN(isbn)) throw new Error('Revisá el ISBN: ingresá los 10 o 13 dígitos del libro. Los guiones y espacios se eliminan automáticamente.');
   const variants=isbnVariants(isbn);
