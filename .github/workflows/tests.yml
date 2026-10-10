@@ -53,3 +53,20 @@ jobs:
         run: npm run check
       - name: Run logic tests
         run: npm test
+  notices-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install browser test runtime
+        run: npm install --no-save --package-lock=false playwright@1.62.1
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Check notices interactions and responsive themes
+        run: npm run test:notices-browser
+        env:
+          BROWSER_CHANNEL: chromium

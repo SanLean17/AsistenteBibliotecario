@@ -16,3 +16,10 @@
 Provider responses in browser tests use deterministic fixtures. No tests touch the user's browser profile or real catalog. Screenshots and generated test data are under ignored `qa/`. Use the commands and environment options in README.
 
 BN: connection to the documented TCP port succeeded. The optional Node/YAZ adapter and MARC mapper are fixture-tested; real Z39.50 authentication/record retrieval and a hosted HTTPS gateway remain unverified/unpublished. BNM and ISBN Argentina are external verification sources pending documented official integration. No paid infrastructure, scraping, CNAME or domain changes.
+
+## Avisos internos — 2026-10-10
+
+- `tests/notices.test.js`: ocho pruebas de derivación, ventanas/límites temporales, identidad estable, deduplicación, filtros, ausencia de mutación, reemplazo de permisos y visibilidad por persona/institución. La suite completa contiene 120 pruebas.
+- `tests/notices-browser.cjs`: Inicio → centro; filtros y vacío; inventario draft → asignación de zona; devolución real → desaparición del aviso; cambio de persona e institución; Autoridad consulta reservas sin controles de préstamo; reloj simulado para actualización a vencido/expiración; conservación de filtros; sin registros de avisos ni ruido en activity.
+- Edge, perfil aislado: 320, 390, 768 y 1440 px en claro/oscuro, sin desbordamiento horizontal; capturas revisadas bajo `qa/notices-*.png`. No equivale a una prueba en teléfonos físicos.
+- El workflow Tests incluye la suite unitaria y un job Chromium dedicado al centro, con Playwright 1.62.1. La prueba sirve los archivos del repo en el contexto de prueba y no requiere servidor ni catálogo real.

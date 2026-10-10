@@ -71,3 +71,15 @@ Elegí el **perfil local** desde el menú. El perfil inicial Responsable local p
 `src/recognition.js` clasifica identificadores sin abrir enlaces arbitrarios. Recuperación automática disponible por ISBN; DOI, ISSN y URL se conservan para completar la ficha, sin afirmar que existe un proveedor conectado. Fotografiar una tapa/primera plana para proponer contenidos es futuro y exige confirmación humana.
 
 `node tests/recognition-browser.cjs` verifica cámara primero, ISSN, diario con búsqueda temática, persistencia, QR real, recurso digital sin ejemplares y respaldos.
+
+### Avisos y pendientes internos
+
+Desde **Inicio → Avisos y pendientes**, o desde el menú, se abre `app.html#avisos`. El conteo corresponde a la institución y persona seleccionadas. Se puede filtrar por prioridad y área: préstamos, reservas, extensiones, permisos, estado físico e inventario.
+
+Biblioteca y Autoridad ven pendientes operativos e institucionales. Docente, Lector y Personal ven únicamente sus propios préstamos, reservas, solicitudes de extensión y permisos relevantes. Los botones respetan los permisos existentes; ver un aviso no habilita una operación. Autoridad puede consultar las reservas institucionales sin controles de gestión cuando no tiene ese permiso.
+
+Los avisos se calculan desde los datos actuales: no se guardan, no se marcan como leídos ni se agregan al historial. Cambian o desaparecen al devolver, resolver una solicitud, retirar/cancelar una reserva, revisar un ejemplar o cerrar un inventario. Se actualizan al navegar, cada 30 segundos mientras la pestaña está visible y al volver a ella. Los filtros se conservan durante la actualización automática.
+
+La ventana de anticipación reutiliza los días configurados para solicitar extensión (por defecto, 1 día). El vencimiento real de préstamos se informa aunque exista tolerancia para bloquear nuevos préstamos. Las reservas vencidas dejan de anunciarse como disponibles para retirar. Los permisos vencidos se distinguen de los revocados y dejan de avisarse si hay un permiso de reemplazo vigente.
+
+Todo es local a este navegador: sin backend, correos, push ni sincronización. `npm run test:notices-browser` prueba interacciones y las resoluciones 320/390/768/1440 en ambos temas, con un perfil aislado y archivos servidos dentro de la prueba. GitHub Actions ejecuta esta prueba en Chromium además de las pruebas unitarias.

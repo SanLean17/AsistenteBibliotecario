@@ -1,9 +1,11 @@
+import {deriveNotices} from './notices.js?v=20261010-2';
+import {renderNoticeSummary} from './notices-ui.js?v=20261010-2';
 // Presentation only. Read the institution-scoped state and existing permission checks.
-import {PROFILES,isEnabled} from './permissions.js?v=20261010-1';
-import {activeLoan,activeReservation,config} from './local-domain.js?v=20261010-1';
-import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261010-1';
-import {suggestedQueries} from './search-engine.js?v=20261010-1';
-import {libraryAnalytics} from './analytics.js?v=20261010-1';
+import {PROFILES,isEnabled} from './permissions.js?v=20261010-2';
+import {activeLoan,activeReservation,config} from './local-domain.js?v=20261010-2';
+import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261010-2';
+import {suggestedQueries} from './search-engine.js?v=20261010-2';
+import {libraryAnalytics} from './analytics.js?v=20261010-2';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const action=(route,label,detail,icon)=>`<a class="dashboard-action" href="#${route}"><span class="action-symbol" aria-hidden="true">${icon}</span><span><strong>${label}</strong><small>${detail}</small></span><span aria-hidden="true">↗</span></a>`;
 const statistic=(label,n,route)=>`<a href="#${route}" class="dashboard-stat"><strong>${n}</strong><span>${label}</span></a>`;
@@ -15,6 +17,7 @@ export function renderDashboard(s,actor,c,can){
  let html=`<section class="dashboard" data-dashboard="${esc(actor.accessProfile)}"><p class="dashboard-identity">${esc(actor.name)} · ${esc(actor.cargo)} <span>${esc(PROFILES[actor.accessProfile]||'Sin perfil')}</span></p>`;
  if(c.onboardingStep&&actor.mainAdmin)html+=`<aside class="dashboard-onboarding"><span>Terminá de configurar tu institución</span><a class="button secondary" href="#bienvenida/${c.onboardingStep===1?'biblioteca':'equipo'}">Continuar configuración</a></aside>`;
  html+=`<div class="dashboard-heading"><span class="eyebrow">${esc(c.libraryName||'TU BIBLIOTECA')}</span><h2>${manager?'¿Qué necesitás hacer hoy?':'¿Qué necesitás encontrar hoy?'}</h2><p>${manager?'Organizá las tareas de la biblioteca desde un mismo lugar.':'Buscá en los títulos, temas y contenidos de tu colección.'}</p></div>`;
+ html+=`<div data-notice-summary>${renderNoticeSummary(deriveNotices(s,actor))}</div>`;
  if(!manager)html+=search;
  html+='<nav class="dashboard-actions" aria-label="Accesos principales">';
  if(manager){if(create)html+=action('agregar','Agregar al catálogo','Reconocer, revisar y completar.','＋');if(can('collection.needs.manage')||can('recommendations.manage')||can('resource.sharing.manage'))html+=action('coleccion','Planificar colección',(plannedNeeds?plannedNeeds+' necesidades planificadas. ':'')+(sharingActive?sharingActive+' cooperaciones en seguimiento.':'Necesidades, adquisiciones y recomendaciones.'),'◇');if(can('circulation.loan')||can('circulation.return'))html+=action('circulacion','Prestar / devolver','Consultar la circulación.','⇄');if(can('reservations.manage'))html+=action('reservas','Reservas pendientes',s.reservations.filter(activeReservation).length+' solicitudes en curso.','◷');if(can('circulation.renew.approve')&&renewalPending.length)html+=action('circulacion','Extensiones pendientes',renewalPending.length+' por autorizar.','↻');html+=action('ejemplares','Buscar ejemplar','Ubicación y disponibilidad.','⌕');if(can('inventory.manage'))html+=action('inventario','Inventario físico','Recorrer una zona y detectar diferencias.','▤');if(can('holdings.edit')||can('inventory.manage'))html+=action('atencion','Estado físico',analytics.attention.length?analytics.attention.length+' ejemplares para revisar.':'Sin ejemplares pendientes.','!');if(!create)html+=action('biblioteca','Consultar catálogo','Materiales de la institución.','▥');if(!create&&(can('users.manage')||can('people.invite')))html+=action('usuarios','Personas y accesos','El equipo de tu institución.','◎');}
