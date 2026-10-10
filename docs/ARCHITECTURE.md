@@ -532,3 +532,20 @@ Los atajos de devolución no registran nada hasta confirmar **Registrar devoluci
 En cámara continua, estas acciones también aparecen para el último código leído sin detener la recorrida. “Está peor” genera una incidencia de estado físico pendiente de revisión. Las otras decisiones actualizan el nivel de cuidado de forma explícita.
 
 Ninguna acción asigna responsabilidad a la persona que tuvo el préstamo. El sistema registra una observación material y una decisión actual de Biblioteca.
+
+
+## Detección de duplicados y relación Obra / Edición — 2026-10-10
+
+La incorporación distingue tres situaciones antes de crear una ficha nueva:
+
+1. **Misma edición exacta**: identificadores fuertes coinciden. Se consideran ISBN-10/ISBN-13 equivalentes, DOI normalizado, URL idéntica para recursos digitales/artículos/documentos y, en seriadas, ISSN acompañado por número o fecha coincidente. En este caso se bloquea la creación de otra ficha y se ofrece agregar ejemplares al registro existente.
+
+2. **Posible misma obra, otra edición**: para libros, título y autoría principal coinciden pero el identificador de edición es diferente. Se propone compartir el identificador de obra manteniendo separados ISBN, editorial, año, idioma y ejemplares. La vinculación siempre es confirmada por la persona.
+
+3. **Registro parecido**: título con alta similitud y coincidencia adicional de autoría, editorial o año. Solo se muestra una advertencia para comparar. Nunca se fusiona ni se bloquea automáticamente.
+
+Escanear un ISBN ya registrado ofrece dos acciones: abrir la ficha existente o agregar otro ejemplar físico directamente, siempre sujeto al permiso para crear ejemplares.
+
+El formulario de incorporación recalcula las coincidencias mientras se edita. Elegir explícitamente una obra elimina la advertencia de “misma obra” para esa relación.
+
+No se deduplican obras por título solamente. Los identificadores de edición siguen perteneciendo a la edición y los códigos AB siguen perteneciendo a cada ejemplar físico.
