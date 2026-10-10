@@ -1,7 +1,7 @@
-import {isEnabled,PERMISSIONS} from './permissions.js?v=20261010-4';
-import {validISBN,canonicalISBN} from './isbn.js?v=20261010-4';
-import {validISSN,recognizeIdentifier} from './recognition.js?v=20261010-4';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-4';
+import {isEnabled,PERMISSIONS} from './permissions.js?v=20261010-5';
+import {validISBN,canonicalISBN} from './isbn.js?v=20261010-5';
+import {validISSN,recognizeIdentifier} from './recognition.js?v=20261010-5';
+import {detectCatalogMatches} from './duplicates.js?v=20261010-5';
 
 export const SEVERITIES={error:'Error',warning:'Advertencia',suggestion:'Sugerencia'};
 export const validAB=value=>/^AB-\d{6,}$/.test(value||'')&&Number.isSafeInteger(Number(value.slice(3)))&&Number(value.slice(3))>0;

@@ -1,7 +1,7 @@
-import { validISBN } from './isbn.js?v=20261010-4';
+import { validISBN } from './isbn.js?v=20261010-5';
 
 async function createZXingReader(){
-  await import('../vendor/zxing-browser-0.2.1.min.js?v=20261010-4');
+  await import('../vendor/zxing-browser-0.2.1.min.js?v=20261010-5');
   return new globalThis.ZXingBrowser.BrowserMultiFormatOneDReader();
 }
 export async function createISBNDetector() {
@@ -27,7 +27,7 @@ async function requestRearCamera(){
   }
 }
 // La cámara y la decodificación ocurren en el dispositivo; no se envían fotogramas.
-export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFactory=createISBNDetector,accept=validISBN,continuous=false,cooldown=900}) {
+export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFactory=createISBNDetector,accept=validISBN,continuous=false,cooldown=900,repeatAfterAbsence=false}) {
   if (!globalThis.isSecureContext || !navigator.mediaDevices?.getUserMedia) throw new Error('La cámara necesita una conexión HTTPS y permiso del navegador.');
   if (signal.aborted) return;
   const stream = await requestRearCamera();
@@ -49,7 +49,7 @@ export async function scanISBN(video, {signal,onISBN,onError,onReady,detectorFac
         if(found){
           if(!continuous){stop();onISBN(found.rawValue);return;}
           const now=Date.now();
-          if(found.rawValue===lastContinuousValue&&now-lastContinuousAt<2500){timer=setTimeout(read,180);return;}
+          if(found.rawValue===lastContinuousValue&&(repeatAfterAbsence||now-lastContinuousAt<2500)){if(repeatAfterAbsence)lastContinuousAt=now;timer=setTimeout(read,180);return;}
           lastContinuousValue=found.rawValue;lastContinuousAt=now;
           await onISBN(found.rawValue);
           if(stopped||signal.aborted)return;
@@ -88,7 +88,7 @@ export async function scanISBNFromFile(file){
 
 // Multi-format acquisition: QR content and linear codes use the same review flow.
 export async function createMaterialDetector(){
- await import('../vendor/zxing-browser-0.2.1.min.js?v=20261010-4');
+ await import('../vendor/zxing-browser-0.2.1.min.js?v=20261010-5');
  const reader=new globalThis.ZXingBrowser.BrowserMultiFormatReader();
  return {async detect(source){try{return [{rawValue:reader.decode(source).getText()}];}catch(error){const kind=error.getKind?.()||error.name;if(['NotFoundException','ChecksumException','FormatException'].includes(kind))return [];throw error;}}};
 }

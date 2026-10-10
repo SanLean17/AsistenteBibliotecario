@@ -1,14 +1,16 @@
-import {renderRecommendations} from './reader.js?v=20261010-4';
-import {renderPilotSummary} from './pilot-ui.js?v=20261010-4';
-import {todayOperations} from './daily-operations.js?v=20261010-4';
-import {deriveNotices} from './notices.js?v=20261010-4';
-import {renderNoticeSummary} from './notices-ui.js?v=20261010-4';
+import {canCatalog,catalogingSummary} from './cataloging.js?v=20261010-5';
+function catalogingBanner(s,actor){if(!canCatalog(s,actor))return '';const j=s.catalogingSessions?.find(x=>x.status==='open');return `<section class="cataloging-banner"><div><strong>${j?'Jornada en curso':'Jornada de catalogación'}</strong><p>${j?catalogingSummary(j).pending+' pendientes':'Capturá, revisá e incorporá en lote.'}</p></div><a class="button secondary" href="#jornada-catalogacion${j?'/'+j.id:''}">${j?'Continuar jornada':'Abrir jornada'}</a></section>`;}
+import {renderRecommendations} from './reader.js?v=20261010-5';
+import {renderPilotSummary} from './pilot-ui.js?v=20261010-5';
+import {todayOperations} from './daily-operations.js?v=20261010-5';
+import {deriveNotices} from './notices.js?v=20261010-5';
+import {renderNoticeSummary} from './notices-ui.js?v=20261010-5';
 // Presentation only. Read the institution-scoped state and existing permission checks.
-import {PROFILES,isEnabled} from './permissions.js?v=20261010-4';
-import {activeLoan,activeReservation,config} from './local-domain.js?v=20261010-4';
-import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261010-4';
-import {suggestedQueries} from './search-engine.js?v=20261010-4';
-import {libraryAnalytics} from './analytics.js?v=20261010-4';
+import {PROFILES,isEnabled} from './permissions.js?v=20261010-5';
+import {activeLoan,activeReservation,config} from './local-domain.js?v=20261010-5';
+import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261010-5';
+import {suggestedQueries} from './search-engine.js?v=20261010-5';
+import {libraryAnalytics} from './analytics.js?v=20261010-5';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const action=(route,label,detail,icon)=>`<a class="dashboard-action" href="#${route}"><span class="action-symbol" aria-hidden="true">${icon}</span><span><strong>${label}</strong><small>${detail}</small></span><span aria-hidden="true">↗</span></a>`;
 const statistic=(label,n,route)=>`<a href="#${route}" class="dashboard-stat"><strong>${n}</strong><span>${label}</span></a>`;
@@ -18,6 +20,7 @@ export function renderDashboard(s,actor,c,can){
  const today=todayOperations(s,actor),create=can('catalog.create'),extra=s.grants.find(g=>g.userId===actor.id&&g.permission==='catalog.create'&&isEnabled(g));
  const examples=suggestedQueries(s.books,4);const search=`<form id="home-search" class="home-search dashboard-search"><label for="home-query">Palabras, frases, temas o contenidos</label><div><input id="home-query" name="query" type="search" placeholder="Título, autor o tema"><button class="button primary">Buscar materiales</button></div></form>${examples.length?`<div class="query-examples"><span>Explorar por tema</span>${examples.map(q=>`<button type="button" data-query="${esc(q)}">${esc(q)} ↗</button>`).join('')}</div>`:''}`;
  let html=`<section class="dashboard" data-dashboard="${esc(actor.accessProfile)}"><p class="dashboard-identity">${esc(actor.name)} · ${esc(actor.cargo)} <span>${esc(PROFILES[actor.accessProfile]||'Sin perfil')}</span></p>`;
+ html+=catalogingBanner(s,actor);
  if(c.onboardingStep&&actor.mainAdmin)html+=`<aside class="dashboard-onboarding"><span>Terminá de configurar tu institución</span><a class="button secondary" href="#bienvenida/${c.onboardingStep===1?'biblioteca':'equipo'}">Continuar configuración</a></aside>`;
  html+=`<div class="dashboard-heading"><span class="eyebrow">${esc(c.libraryName||'TU BIBLIOTECA')}</span><h2>${manager?'¿Qué necesitás hacer hoy?':'¿Qué necesitás encontrar hoy?'}</h2><p>${manager?'Organizá las tareas de la biblioteca desde un mismo lugar.':'Buscá en los títulos, temas y contenidos de tu colección.'}</p></div>`;
  if(!manager)html+=search;

@@ -1,6 +1,6 @@
-import {readState,getActorId,getInstitutionId,execute} from './storage.js?v=20261010-4';
-import {hasPermission} from './permissions.js?v=20261010-4';
-import {operationalProfile,renderPersonalLibrary,materialActions} from './reader.js?v=20261010-4';
+import {readState,getActorId,getInstitutionId,execute} from './storage.js?v=20261010-5';
+import {hasPermission} from './permissions.js?v=20261010-5';
+import {operationalProfile,renderPersonalLibrary,materialActions} from './reader.js?v=20261010-5';
 
 export async function renderReader(route){
  const [base]=route.split('/');

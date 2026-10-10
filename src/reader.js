@@ -1,6 +1,6 @@
-import {hasPermission} from './permissions.js?v=20261010-4';
-import {activeLoan,activeReservation,config} from './local-domain.js?v=20261010-4';
-import {renewalRequestStatus} from './loan-policy.js?v=20261010-4';
+import {hasPermission} from './permissions.js?v=20261010-5';
+import {activeLoan,activeReservation,config} from './local-domain.js?v=20261010-5';
+import {renewalRequestStatus} from './loan-policy.js?v=20261010-5';
 
 export const operationalProfile=actor=>Boolean(actor?.mainAdmin||['biblioteca','autoridad'].includes(actor?.accessProfile));
 export const reservationLabels={requested:'Solicitada',approved:'Aprobada',ready:'Lista para retirar',expired:'Vencida',cancelled:'Cancelada',collected:'Retirada'};
@@ -41,7 +41,7 @@ export function materialActions(state,actor,book){
 export function readerNavigation(route,actor,can){
  if(operationalProfile(actor))return true;
  if(['inicio','biblioteca','mi-biblioteca','guardados','avisos'].includes(route))return true;
- const grants={agregar:['catalog.create'],ejemplares:['holdings.create','holdings.edit','inventory.manage'],mostrador:['circulation.loan','circulation.return','reservations.manage','holdings.edit'],circulacion:['circulation.loan','circulation.return','circulation.renew.approve'],reservas:['reservations.manage'],usuarios:['users.manage','people.invite','people.validate','profiles.manage'],organizacion:['institution.edit','library.configure','policy.configure'],coleccion:['collection.needs.manage','recommendations.manage','resource.sharing.manage'],interoperabilidad:['catalog.create'],inventario:['inventory.manage','holdings.create','holdings.edit'],atencion:['holdings.edit','inventory.manage'],etiquetas:['inventory.manage'],actividad:['reports.view','institution.stats'],configuracion:['library.configure','sensitive.export','catalog.clear']};
+ const grants={'jornada-catalogacion':['catalog.create','holdings.create'],agregar:['catalog.create'],ejemplares:['holdings.create','holdings.edit','inventory.manage'],mostrador:['circulation.loan','circulation.return','reservations.manage','holdings.edit'],circulacion:['circulation.loan','circulation.return','circulation.renew.approve'],reservas:['reservations.manage'],usuarios:['users.manage','people.invite','people.validate','profiles.manage'],organizacion:['institution.edit','library.configure','policy.configure'],coleccion:['collection.needs.manage','recommendations.manage','resource.sharing.manage'],interoperabilidad:['catalog.create'],inventario:['inventory.manage','holdings.create','holdings.edit'],atencion:['holdings.edit','inventory.manage'],etiquetas:['inventory.manage'],actividad:['reports.view','institution.stats'],configuracion:['library.configure','sensitive.export','catalog.clear']};
  return (grants[route]||[]).some(can);
 }
 

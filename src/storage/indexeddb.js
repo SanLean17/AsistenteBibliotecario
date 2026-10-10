@@ -1,15 +1,15 @@
-import {migrateAccess,projectState,mergeScope} from '../access-model.js?v=20261010-4';
-import {expireAccess,logAccess} from '../access-domain.js?v=20261010-4';
-import {suggestProfile} from '../permissions.js?v=20261010-4';
-import {STORES,normalizeHoldings,config,command,audit,ensureRemovable,activeLoan,activeReservation,expireReservations} from '../local-domain.js?v=20261010-4';
-import {requirePermission} from '../permissions.js?v=20261010-4';
+import {migrateAccess,projectState,mergeScope} from '../access-model.js?v=20261010-5';
+import {expireAccess,logAccess} from '../access-domain.js?v=20261010-5';
+import {suggestProfile} from '../permissions.js?v=20261010-5';
+import {STORES,normalizeHoldings,config,command,audit,ensureRemovable,activeLoan,activeReservation,expireReservations} from '../local-domain.js?v=20261010-5';
+import {requirePermission} from '../permissions.js?v=20261010-5';
 let institutionId='local-institution';try{institutionId=sessionStorage.getItem('ab-institution')||institutionId;}catch{}
 export const getInstitutionId=()=>institutionId;
 export function setInstitutionId(id){institutionId=id;try{sessionStorage.setItem('ab-institution',id);}catch{}}
 let database,actorId='local-admin';try{actorId=sessionStorage.getItem('ab-actor')||actorId;}catch{}
 export const getActorId=()=>actorId;
 export function setActorId(id){actorId=id;try{sessionStorage.setItem('ab-actor',id);}catch{}}
-export function openDatabase(){return new Promise((resolve,reject)=>{const request=indexedDB.open('asistente-bibliotecario',8);request.onupgradeneeded=()=>{const db=request.result;for(const name of STORES)if(!db.objectStoreNames.contains(name)){const st=db.createObjectStore(name,{keyPath:'id'});if(name==='photos')st.createIndex('bookId','bookId');}};request.onerror=()=>reject(request.error);request.onblocked=()=>reject(new Error('Cerrá otras pestañas de la biblioteca y volvé a intentar.'));request.onsuccess=async()=>{database=request.result;database.onversionchange=()=>database.close();try{await mutate(s=>{expireAccess(s);expireReservations(s,actorId);});resolve();}catch(error){reject(error);}};});}
+export function openDatabase(){return new Promise((resolve,reject)=>{const request=indexedDB.open('asistente-bibliotecario',9);request.onupgradeneeded=()=>{const db=request.result;for(const name of STORES)if(!db.objectStoreNames.contains(name)){const st=db.createObjectStore(name,{keyPath:'id'});if(name==='photos')st.createIndex('bookId','bookId');}};request.onerror=()=>reject(request.error);request.onblocked=()=>reject(new Error('Cerrá otras pestañas de la biblioteca y volvé a intentar.'));request.onsuccess=async()=>{database=request.result;database.onversionchange=()=>database.close();try{await mutate(s=>{expireAccess(s);expireReservations(s,actorId);});resolve();}catch(error){reject(error);}};});}
 // All related reads and writes share one readwrite transaction; concurrent tabs serialize.
 export function rawMutate(reducer){return new Promise((resolve,reject)=>{const tx=database.transaction(STORES,'readwrite'),s={};let pending=STORES.length,result,failure;tx.oncomplete=()=>resolve(result);tx.onabort=()=>reject(failure||tx.error||new Error('No se pudo guardar la operación.'));tx.onerror=()=>{};for(const name of STORES){const r=tx.objectStore(name).getAll();r.onsuccess=()=>{s[name]=r.result;if(--pending)return;try{result=reducer(s);for(const name of STORES){const st=tx.objectStore(name);st.clear();for(const record of s[name])st.put(record);}}catch(error){failure=error;tx.abort();}};}});}
 export function readAll(){return new Promise((resolve,reject)=>{const tx=database.transaction(STORES,'readonly'),s={};for(const name of STORES){const r=tx.objectStore(name).getAll();r.onsuccess=()=>s[name]=r.result;}tx.oncomplete=()=>resolve(s);tx.onabort=()=>reject(tx.error);tx.onerror=()=>reject(tx.error);});}

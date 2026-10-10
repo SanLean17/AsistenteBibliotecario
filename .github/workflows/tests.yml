@@ -82,6 +82,10 @@ jobs:
         run: npm run test:reader-browser
         env:
           BROWSER_CHANNEL: chromium
+      - name: Check cataloging sessions and batch labels
+        run: npm run test:cataloging-browser
+        env:
+          BROWSER_CHANNEL: chromium
       - name: Check collection, inventory, migration and copy identity
         run: |
           node tests/collection-planning-browser.cjs

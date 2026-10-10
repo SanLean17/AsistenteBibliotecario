@@ -41,3 +41,7 @@ test('parsea ISO 2709 MARC y conserva inventario Aguapey',()=>{
  assert.equal(book.exemplars[0].location,'LIJ');
  assert.equal(book.sourceRecords[0].institution.name,'Escuela de prueba');
 });
+
+import {previewMarc} from '../src/cataloging-import.js';
+import {validateBook} from '../src/catalog.js';
+test('cataloging MARC preview groups repeats, keeps raw sources and counts only new origin copies',()=>{const bytes=new TextEncoder().encode(isoRecord()+isoRecord()),p=previewMarc(bytes,[]);assert.equal(p.summary.records,2);assert.equal(p.summary.repeated,1);assert.equal(p.entries.length,1);assert.equal(p.entries[0].draft.sourceRecords.length,2);const book=validateBook(p.entries[0].draft),again=previewMarc(bytes,[book]);assert.equal(again.summary.exactMatches,1);assert.equal(again.summary.existingISBN,1);assert.equal(again.summary.newCopies,0);});

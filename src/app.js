@@ -1,25 +1,26 @@
-import {renderReader,initReaderUI} from './reader-ui.js?v=20261010-4';
-import {renderMaterialActions} from './reader.js?v=20261010-4';
-import {renderPilot} from './pilot-ui.js?v=20261010-4';
-import {renderDesk,initDeskUI} from './desk-ui.js?v=20261010-4';
-import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-4';
-import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-4';
-import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-4';
-import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-4';
-import {execute,exportArchive,restoreArchive,readState,getActorId,getInstitutionId} from './storage.js?v=20261010-4';
-import {JsonBackupProvider,AguapeyMarcProvider} from './imports.js?v=20261010-4';
-import { mobileNavigation } from './navigation.js?v=20261010-4';
-import { localizeBook } from './subjects.js?v=20261010-4';
-import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-4';
-import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-4';
-import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-4';
-import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-4';
-import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-4';
-import {searchSummary,suggestedQueries} from './search-engine.js?v=20261010-4';
-import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-4';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-4';
-import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-4';
-import { assignMissingInventoryCodes } from './domain.js?v=20261010-4';
+import {renderCataloging,initCatalogingUI,openMarcCataloging} from './cataloging-ui.js?v=20261010-5';
+import {renderReader,initReaderUI} from './reader-ui.js?v=20261010-5';
+import {renderMaterialActions} from './reader.js?v=20261010-5';
+import {renderPilot} from './pilot-ui.js?v=20261010-5';
+import {renderDesk,initDeskUI} from './desk-ui.js?v=20261010-5';
+import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-5';
+import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-5';
+import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-5';
+import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-5';
+import {execute,exportArchive,restoreArchive,readState,getActorId,getInstitutionId} from './storage.js?v=20261010-5';
+import {JsonBackupProvider} from './imports.js?v=20261010-5';
+import { mobileNavigation } from './navigation.js?v=20261010-5';
+import { localizeBook } from './subjects.js?v=20261010-5';
+import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-5';
+import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-5';
+import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-5';
+import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-5';
+import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-5';
+import {searchSummary,suggestedQueries} from './search-engine.js?v=20261010-5';
+import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-5';
+import {detectCatalogMatches} from './duplicates.js?v=20261010-5';
+import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-5';
+import { assignMissingInventoryCodes } from './domain.js?v=20261010-5';
 
 const $=s=>document.querySelector(s);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -84,6 +85,7 @@ async function render(){
   if(!accessForRoute(current)){$('#main').innerHTML='<section class="notice"><h1>Acceso no habilitado</h1><p>El perfil seleccionado no tiene permiso vigente. Elegí un perfil local habilitado en el menú.</p></section>';return;}
   if(await renderPilot(current))return;
   if(await renderDesk(current))return;
+  if(await renderCataloging(current))return;
   if(await renderReader(current))return;
   if(await renderAccess(current))return;
   if(await renderLocal(current))return;
@@ -98,7 +100,7 @@ async function render(){
 }
 function renderInteroperability(){
  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">INTEROPERABILIDAD</span><h1>Importar y exportar</h1><p class="muted">Evitá volver a catalogar una biblioteca que ya tiene registros en otro sistema.</p></div></div>
- <section class="panel settings-panel"><span class="eyebrow">AGUAPEY</span><h2>Importar MARC / ISO 2709</h2><p>Aguapey puede exportar su base bibliográfica en formato MARC como archivo ISO 2709. Este prototipo ya puede leer ese archivo y recuperar título, autores, editorial, temas, contenidos y datos locales de inventario cuando están presentes.</p><button class="button primary" data-action="import-aguapey">Elegir archivo .ISO</button><p class="muted">Los campos locales 852 y 859 se conservan cuando aparecen. Antes de confirmar la importación se muestra la cantidad de registros detectados.</p></section>
+ <section class="panel settings-panel"><span class="eyebrow">AGUAPEY</span><h2>Importar MARC / ISO 2709</h2><p>Aguapey puede exportar su base bibliográfica en formato MARC como archivo ISO 2709. Este prototipo ya puede leer ese archivo y recuperar título, autores, editorial, temas, contenidos y datos locales de inventario cuando están presentes.</p><button class="button primary" data-action="import-aguapey">Elegir archivo .ISO</button><p class="muted">Los campos locales 852 y 859 se conservan cuando aparecen. La vista previa distingue fichas nuevas, coincidencias y conflictos. El archivo pasa a una cola de revisión antes de incorporar.</p></section>
  <section class="panel settings-panel"><span class="eyebrow">RESPALDO PROPIO</span><h2>Asistente Bibliotecario</h2><p>El respaldo JSON conserva información que MARC no representa directamente en este prototipo, como fotografías, personas, permisos, préstamos y reservas locales.</p><div class="button-row"><button class="button secondary" data-action="export">Exportar respaldo JSON</button><button class="button secondary" data-action="import">Importar respaldo JSON</button></div></section>
  <section class="notice"><strong>Próximo paso</strong><p>La exportación MARC/ISO hacia Aguapey se habilitará cuando validemos el mapeo con archivos reales de escuelas para no generar registros incompatibles.</p></section>`;
 }
@@ -306,7 +308,7 @@ document.addEventListener('submit',async event=>{
 document.addEventListener('input',event=>{event.target.removeAttribute('aria-invalid');if(event.target.name==='copies')event.target.dataset.userEdited='true';if(event.target.form?.matches('#book-form'))updateDuplicateWarning(event.target.form);if(event.target.id==='search'){query=event.target.value;const start=event.target.selectionStart,end=event.target.selectionEnd;renderLibrary();const input=$('#search');input.focus();input.setSelectionRange(start,end);}});
 document.addEventListener('change',event=>{if(event.target.id==='topic-filter'){topicFilter=event.target.value;renderLibrary();}if(event.target.id==='category'){category=event.target.value;renderLibrary();}if(event.target.id==='material-filter'){materialFilter=event.target.value;renderLibrary();}if(event.target.id==='availability-filter'){availabilityFilter=event.target.value;renderLibrary();}if(event.target.id==='photo-copy')renderSelectedPhoto();if(event.target.name==='materialType')updateMaterialSpecificFields(event.target.form||document);if(event.target.form?.matches('#book-form'))updateDuplicateWarning(event.target.form);});
 $('#barcode-photo').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;const status=$('#lookup-status');status.textContent='Analizando la fotografía del código…';try{const isbn=await scanMaterialFromFile(file);if(route()!=='agregar')return;$('#isbn-query').value=isbn;await runLookup(isbn);}catch(error){showRecognitionFallback(error.message);}});
-$('#aguapey-file').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;try{if(file.size>25*1024*1024)throw new Error('El archivo ISO supera 25 MB.');const parsed=AguapeyMarcProvider.parse(await file.arrayBuffer());if(!parsed.books.length)throw new Error('No encontramos registros MARC válidos en el archivo.');if(!await confirmAction('Importar desde Aguapey',`Se detectaron ${parsed.records} registros y ${parsed.books.length} fichas utilizables. Se incorporarán al catálogo local; revisá luego inventarios y ubicaciones.`,'Importar registros'))return;const prepared=parsed.books.map(validateBook);await mergeBooks(prepared,[],'aguapey.imported');books=await readBooks();renderInteroperability();notify(`Importación completa: ${prepared.length} registros.`);}catch(error){notify(error.message||'No se pudo importar el archivo de Aguapey.');}});
+$('#aguapey-file').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;try{await openMarcCataloging(file);}catch(error){notify(error.message);}});
 $('#import-file').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;try{if(file.size>50*1024*1024)throw new Error('El archivo supera 50 MB.');const archive=JsonBackupProvider.parse(await file.text());if(!await confirmAction('Importar respaldo','Se incorporarán '+archive.books.length+' registros. Un respaldo completo reemplaza su institución (incluye personas y circulación). Si todavía no existe en este navegador, se recupera como otro espacio; los respaldos antiguos combinan catálogo y fotos. Exportá el catálogo actual antes de continuar.','Importar y reemplazar coincidencias'))return;if(archive.version>=4)await restoreArchive(archive);else await mergeBooks(archive.books.map(localizeBook),archive.photos);books=await readBooks();render();notify('Respaldo importado.');}catch(error){notify(error.message||'No se pudo importar.');}});
 for(const input of [$('#physical-photo'),$('#physical-camera')])input.addEventListener('change',async event=>{const file=event.target.files[0],target=photoTarget;event.target.value='';if(!file||!target)return;try{const dataUrl=await preparePhoto(file);if(detailPhotos.some(p=>p.id===target.id)&&!await confirmAction('Reemplazar fotografía','La foto anterior de este ejemplar será reemplazada por la nueva.','Reemplazar fotografía'))return;await savePhoto({...target,dataUrl,takenAt:new Date().toISOString()});detailPhotos=await getPhotos(target.bookId);renderSelectedPhoto();notify('Foto del ejemplar guardada localmente.');}catch(error){notify(error.message||'No se pudo guardar la foto.');}});
 $('#large-image').addEventListener('error',()=>$('#image-status').textContent='No se pudo cargar la imagen.');
@@ -317,6 +319,7 @@ window.addEventListener('pagehide',cancelLookup);
 document.addEventListener('error',event=>{if(event.target.matches?.('.real-cover img')){event.target.hidden=true;event.target.nextElementSibling.hidden=false;}},true);
 
 initDeskUI();
+initCatalogingUI(async()=>{books=await readBooks();await render();});
 initReaderUI(async()=>{books=await readBooks();await render();});
 initAccessUI(async context=>{if(context){query='';category='';materialFilter='';availabilityFilter='';topicFilter='';draft=null;detailPhotos=[];cancelLookup();}books=await readBooks();await render();});
 initLocalUI(async context=>{if(context){query='';category='';draft=null;detailPhotos=[];cancelLookup();}books=await readBooks();await render();});
