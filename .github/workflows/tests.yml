@@ -86,6 +86,10 @@ jobs:
         run: npm run test:cataloging-browser
         env:
           BROWSER_CHANNEL: chromium
+      - name: Check photo assistance and human confirmation
+        run: npm run test:assistance-browser
+        env:
+          BROWSER_CHANNEL: chromium
       - name: Check collection, inventory, migration and copy identity
         run: |
           node tests/collection-planning-browser.cjs

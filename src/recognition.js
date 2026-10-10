@@ -1,5 +1,5 @@
-import {cleanISBN,validISBN} from './isbn.js?v=20261010-5';
-import {MATERIAL_TYPES,profileForMaterial} from './material-types.js?v=20261010-5';
+import {cleanISBN,validISBN} from './isbn.js?v=20261010-6';
+import {MATERIAL_TYPES,profileForMaterial} from './material-types.js?v=20261010-6';
 export {MATERIAL_TYPES};
 export function validISSN(value){const s=String(value||'').replace(/^ISSN\s*:?[ ]*/i,'').replace(/[ -]/g,'').toUpperCase();return /^\d{7}[\dX]$/.test(s)&&([...s.slice(0,7)].reduce((sum,n,i)=>sum+Number(n)*(8-i),0)+(s[7]==='X'?10:Number(s[7])))%11===0;}
 // A QR is a carrier, not a material type. Classify its contents without opening links.

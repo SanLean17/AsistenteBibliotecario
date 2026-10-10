@@ -1,6 +1,6 @@
-import {deriveReadiness,deriveDataQuality,pilotManager,SEVERITIES} from './pilot.js?v=20261010-5';
-import {readState,getActorId,execute} from './storage.js?v=20261010-5';
-import {hasPermission} from './permissions.js?v=20261010-5';
+import {deriveReadiness,deriveDataQuality,pilotManager,SEVERITIES} from './pilot.js?v=20261010-6';
+import {readState,getActorId,execute} from './storage.js?v=20261010-6';
+import {hasPermission} from './permissions.js?v=20261010-6';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const link=(route,label)=>`<a class="button secondary" href="#${esc(route)}">${label}</a>`;
 export function renderPilotSummary(s,actor){
@@ -25,6 +25,7 @@ export async function renderPilot(route){
  if(route==='puesta-en-marcha'){main.innerHTML=checklist(s);return true;}
  const issues=deriveDataQuality(s),canFix=hasPermission(actor,'holdings.edit',s.grants),copies=s.books.flatMap(b=>b.exemplars||[]);
  main.innerHTML=`<h1>Calidad de datos</h1><p>Diagnóstico local de esta institución. Las sugerencias enriquecen la búsqueda; no son requisitos. Los duplicados requieren revisión humana: nunca se fusionan automáticamente.</p>${link('puesta-en-marcha','Ver preparación para piloto')}<p>${Object.entries(SEVERITIES).map(([key,label])=>`${label}: ${issues.filter(x=>x.severity===key).length}`).join(' · ')}</p><div class="notice-filters"><label>Severidad<select id="quality-severity"><option value="">Todas</option>${Object.entries(SEVERITIES).map(([key,label])=>`<option value="${key}">${label}</option>`).join('')}</select></label><label>Tipo de incidencia<select id="quality-type"><option value="">Todos</option>${[...new Map(issues.map(x=>[x.type,x.title])).entries()].map(([key,label])=>`<option value="${key}">${esc(label)}</option>`).join('')}</select></label></div>${canFix?`<section class="panel settings-panel"><h2>Correcciones seguras</h2><p>Exportá un respaldo antes de corregir. Cada lote pide confirmación y queda en el historial. Los códigos existentes se conservan. Los permisos vencidos se cierran mediante la conciliación habitual del sistema.</p><div class="button-row"><button class="button secondary" data-pilot-action="pilot.codes" ${copies.some(e=>!e.internalCode)?'':'disabled'}>Asignar códigos faltantes</button><button class="button secondary" data-pilot-action="pilot.care" ${issues.some(x=>x.type==='care')?'':'disabled'}>Aplicar No prestar</button></div></section>`:''}<p id="pilot-feedback" role="status"></p><div id="quality-results">${issueList(issues)}</div>`;
+ if(hasPermission(actor,'catalog.edit',s.grants)||hasPermission(actor,'contents.manage',s.grants)||hasPermission(actor,'topics.manage',s.grants)){const optional=s.books.filter(b=>!b.subjects?.length||!b.contentEntries?.length||!b.description||!b.isbn);main.insertAdjacentHTML('beforeend',`<section class="panel settings-panel"><h2>Enriquecimiento opcional con foto</h2><p>Ayuda para sumar temas, contenidos o identificadores. No son campos obligatorios.</p>${optional.slice(0,30).map(b=>`<p>${esc(b.title)} ${link('asistencia/material/'+b.id,'Asistir con foto')}</p>`).join('')}</section>`);}
  const update=()=>{document.querySelector('#quality-results').innerHTML=issueList(issues,document.querySelector('#quality-severity').value,document.querySelector('#quality-type').value);};
  for(const id of ['quality-severity','quality-type'])document.getElementById(id).onchange=update;
  for(const button of main.querySelectorAll('[data-pilot-action]'))button.onclick=async()=>{

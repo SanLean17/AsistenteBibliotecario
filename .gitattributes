@@ -1,0 +1,2 @@
+# Preserve exact upstream OCR bytes so checksums match on Windows and Linux.
+vendor/ocr-6.0.1/** -text

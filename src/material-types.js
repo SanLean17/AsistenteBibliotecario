@@ -103,7 +103,7 @@ export function createAssistanceDraft({materialId='',captureKind='cover',imageRe
     version:1,
     status:'not-requested',
     materialId,
-    captureKind:['cover','index','front-page','document'].includes(captureKind)?captureKind:'cover',
+    captureKind:['cover','title-page','copyright-page','index','newspaper-front','magazine-cover','document','other'].includes(captureKind)?captureKind:'cover',
     imageRef:text(imageRef,200),
     createdAt:new Date().toISOString(),
     proposals:[],

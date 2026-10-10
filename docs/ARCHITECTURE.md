@@ -72,7 +72,7 @@ Los identificadores `local-*` describen el ámbito del prototipo y no son identi
 | Préstamos | Usuario, ejemplar, salida, vencimiento y devolución | Renovaciones y políticas institucionales |
 | Usuarios / institución | Perfiles locales y permisos temporales sin contraseña | Autenticación y autorización en servidor |
 | Estadísticas | Contadores locales del catálogo | Estadísticas de uso y circulación, privacidad y exportación |
-| Índices | Datos externos y carga manual opcional | Foto → OCR/IA → propuestas → confirmación humana |
+| Índices | Datos externos, carga manual y foto → OCR local → revisión humana | Asistencia semántica futura, sin activar |
 | Red escolar | Sin sincronización | Catálogo de ediciones compartido y préstamos entre escuelas con permisos |
 
 `Deteriorado` es condición física, no un estado de préstamo. Una copia puede estar deteriorada y prestada a la vez. `overdue` se calcula por fecha de vencimiento y ausencia de devolución; no se necesita un cambio manual diario. Las operaciones de circulación son transaccionales, con un préstamo activo máximo por copia y reserva sujeta a la política de la institución.
@@ -81,7 +81,7 @@ La búsqueda actual no promete comprensión semántica: ignora palabras funciona
 
 ## Límites de esta etapa
 
-Sin Supabase, login real, contratación ni infraestructura paga. No hay servidor en GitHub Pages. Préstamos y reservas funcionan localmente. OCR e IA no están activos. El respaldo JSON sigue siendo la vía de traslado entre navegadores. La estructura permite agregar un repositorio remoto sin acoplarlo a la presentación, pero su autorización y sincronización deben implementarse antes de ofrecer múltiples instituciones.
+Sin Supabase, login real, contratación ni infraestructura paga. No hay servidor en GitHub Pages. Préstamos y reservas funcionan localmente. OCR local está disponible bajo confirmación humana; no hay IA semántica externa. El respaldo JSON sigue siendo la vía de traslado entre navegadores. La estructura permite agregar un repositorio remoto sin acoplarlo a la presentación, pero su autorización y sincronización deben implementarse antes de ofrecer múltiples instituciones.
 
 ## Descubrimiento docente en la escuela registrada
 
@@ -228,9 +228,9 @@ contentEntries normaliza contenidos internos en una estructura compatible con fu
 
 La proyección Obra/Edición conserva materialType y los metadatos específicos. MARC/ISO 2709 infiere un tipo amplio a partir del leader (monografía/seriadas/recurso digital) sin pretender distinguir automáticamente, por ejemplo, revista de diario cuando el registro no lo expresa con suficiente precisión.
 
-### Contrato futuro de asistencia por fotografía
+### Contrato de asistencia por fotografía
 
-No se activa OCR ni IA en esta etapa. El modelo ya admite una sesión de asistencia con:
+El contrato inicial se implementa ahora mediante OCR local y propuestas revisables (ver sección de asistencia por fotografía al final). El modelo admite:
 
 - tipo de captura: tapa, índice, primera plana o documento;
 - referencia a la imagen de origen;
@@ -727,6 +727,46 @@ Después de incorporar, las etiquetas se derivan de los UUID de ejemplares realm
 
 La vista previa Aguapey/MARC es de solo lectura: informa registros, fichas propuestas, ISBN existentes, coincidencias, ejemplares nuevos, conflictos y pendientes. Agrupa registros repetidos por ISBN/MARC001 y conserva registros fuente; conflictos entre fuentes quedan para revisión. Importar el archivo solo agrega a la cola. Inventarios de origen ya presentes no se crean otra vez al reimportar. No existe exportación MARC validada todavía.
 
-El respaldo completo versión 5 incluye las jornadas; los respaldos anteriores sin esa store se aceptan como una lista vacía. Exportar y restaurar el archivo permite trasladar la jornada a otra computadora, con los permisos de respaldo existentes. No hay sincronización, backend, envío de imágenes, OCR, IA, correo ni servicios nuevos. La impresión física y la cámara de cada teléfono dependen del equipo: las pruebas automatizadas verifican detección simulada y la vista de impresión, no calibración de una impresora ni una cámara real.
+El respaldo completo versión 5 incluye las jornadas; los respaldos anteriores sin esa store se aceptan como una lista vacía. Exportar y restaurar el archivo permite trasladar la jornada a otra computadora, con los permisos de respaldo existentes. No hay sincronización, backend, envío de imágenes, IA externa, correo ni servicios nuevos. La jornada incorpora ahora la asistencia OCR local descrita abajo. La impresión física y la cámara de cada teléfono dependen del equipo: las pruebas automatizadas verifican detección simulada y la vista de impresión, no calibración de una impresora ni una cámara real.
 
 Pruebas: clasificación, equivalencia de ISBN, permisos, rollback, doble incorporación, códigos crecientes, origen MARC y respaldo; flujo de navegador autosuficiente con IndexedDB aislado, navegación/recarga, filtros, datos comunes, etiquetas y vistas 320/390/768/1440 en claro/oscuro. El workflow conserva sintaxis, integridad, todas las pruebas de lógica y las regresiones de Mostrador, Piloto, Avisos, Docente/Lector, colección, inventario, migración e identidad.
+
+## Asistencia por fotografía y OCR local
+
+**La foto propone. La persona confirma.** `#asistencia` permite retomar asistencias; `#asistencia/nueva` prepara una ficha sin incorporarla. Se entra desde “Usar una foto” en carga individual, “Asistir con foto” en una ficha/Calidad de datos o “Resolver con foto” en pendientes de Jornada. No reemplaza el escáner ISBN, la fotografía de códigos, la carga manual ni las fotos físicas de ejemplares. Las faltas de descripción, temas o contenidos siguen siendo sugerencias opcionales.
+
+### Motor, imágenes y rendimiento
+
+`ocrProvider.recognize(image, {signal,onProgress})` es la frontera reemplazable; dominio y revisión no dependen de Tesseract. El proveedor actual ejecuta **Tesseract.js 6.0.1**, core **6.0.0**, con español de **tessdata_fast 4.1.0**, íntegramente en workers del navegador. `vendor/ocr-6.0.1/manifest.json` fija orígenes, versiones, bytes y SHA-256. El control de integridad verifica cada bundle. Se incluyen licencias Apache-2.0 y avisos de terceros; documentación del motor: [instalación local](https://github.com/naptha/tesseract.js/blob/master/docs/local-installation.md) y [API](https://github.com/naptha/tesseract.js/blob/master/docs/api.md).
+
+Los assets vendorizados ocupan **19.879.304 bytes** (cuatro variantes de core para compatibilidad); una ejecución típica descarga **6.423.125 bytes** de motor, worker, variante SIMD-LSTM y español, antes de compresión HTTP/caché del navegador. Se cargan solo al pedir lectura OCR, nunca al abrir la app o la pantalla de captura. No se usa CDN ni una API OCR remota. Un worker contenedor permite cancelar también los workers descendientes durante la inicialización o el reconocimiento; se terminan al finalizar, cancelar, navegar o cambiar de perfil/institución. Las consultas de ISBN tienen cancelación propia.
+
+La captura usa cámara nativa del teléfono o archivo. La imagen se decodifica con orientación del navegador, se vuelve a codificar sin EXIF, limita el lado mayor a 2000 px y el data URL JPEG a 1.600.000 caracteres. Admite rotaciones de 90°, reemplazo y recorte opcional por porcentajes con vista previa. La imagen OCR se guarda separada de portada bibliográfica y foto física del ejemplar; nunca se convierte automáticamente en ninguna de ellas. La UI muestra preparación, lectura con progreso, análisis y propuestas. Poca confianza o poco texto no equivalen a identificación de un libro; se solicita revisión o una foto mejor.
+
+### Extracción determinística y revisión
+
+Tipos: portada, portadilla, página legal, índice, primera plana, tapa/sumario de revista, documento y otra captura. `assistance.js` valida checksum de ISBN/ISSN y formato seguro de DOI/URL. No sustituye O por 0 ni otros caracteres dudosos. ISBN equivalentes se canonicalizan; varios ISBN se presentan separadamente y la persona elige. Solo el botón explícito de consulta envía ese ISBN a Open Library/Google Books; no envía foto, texto OCR ni otros datos del documento. La respuesta agrega propuestas bibliográficas, conservando fuentes, sin aceptar campos automáticamente.
+
+Las reglas proponen la primera línea como posible título/publicación, autoría/editorial/organismo únicamente con etiquetas explícitas, fechas visibles y números de edición/volumen/documento cuando aparecen. No infieren editoriales, adecuación pedagógica ni contexto histórico. El porcentaje del motor se conserva como confianza OCR, no como certeza bibliográfica.
+
+Índices se separan en filas con título, autoría visible, página/rango, `kind` (tipo) y origen. Se reutiliza `normalizeContentEntries`; cada fila puede editarse, quitarse, agregarse o aceptarse por separado, además de aceptar las filas pendientes en conjunto. Los contenidos permanecen en el material contenedor y se incorporan a la búsqueda actual. Diarios/revistas proponen líneas como titulares para revisar, no jerarquía visual ni interpretación semántica. Palabras clave son términos literales significativos sin stopwords o coincidencias literales con temas conocidos; no se deduce “Segunda Guerra Mundial” desde un titular sobre tropas. Producciones escolares excluyen propuestas automáticas de autoría, autoría de filas y keywords arbitrarias: responsables requieren una entrada y confirmación institucional explícitas.
+
+Cada propuesta muestra campo, valor, origen, evidencia, confianza cuando existe y estado `proposed/accepted/rejected/edited`. Guardar una edición la marca como editada y aceptada; elegir otra alternativa escalar descarta la anterior. Ninguna decisión por campo toca la ficha: **Aplicar datos confirmados** vuelve a validar permisos, identificadores y que el destino no haya cambiado. Temas/contenidos se agregan sin borrar los anteriores. Un destino cambiado o desaparecido exige iniciar una asistencia actualizada; no se aplican respuestas tardías a otra institución. Una confirmación repetida es idempotente.
+
+En carga nueva se entrega un borrador al editor existente, cuyo guardado sigue siendo la confirmación de alta; al guardarlo, la asistencia se vincula a la ficha y ya no ofrece duplicar el borrador. En una ficha existente se aplican solo campos seleccionados. Los campos de obra compartidos se propagan a sus ediciones como en el modelo existente, con aviso en la revisión y procedencia actualizada. Los ejemplares, fotos, códigos AB y circulación no cambian. Permisos: `catalog.create` para borrador/ítem de jornada, `catalog.edit` para bibliografía existente, `contents.manage` para contenidos y `topics.manage` para temas; los grants temporales se verifican al aplicar.
+
+En Jornada, las propuestas permanecen vinculadas por `sessionId/itemId`. Tras confirmar se reclasifica el mismo ítem, sin crear una ficha paralela. Un material sin ISBN puede pasar a revisión manual confirmada y quedar listo; las coincidencias de obra o similitudes conservan la revisión de duplicados de Jornada. Un ítem incorporado o jornada cerrada no admite cambios por asistencia.
+
+### Persistencia, privacidad y respaldo
+
+IndexedDB **v10** agrega `assistanceSessions` sin reemplazar stores anteriores. Se admite un máximo de diez asistencias activas por institución. Mientras están activas se conservan imagen reducida, texto OCR (máximo 40.000 caracteres), propuestas y revisión. Aplicar elimina imagen, texto completo, candidatos no confirmados y snapshot de comparación; mantiene solo decisiones confirmadas y su procedencia. Descartar elimina también las propuestas. El borrador confirmado de alta nueva permanece recuperable hasta guardarse.
+
+`enrichment.history` conserva los últimos veinte grupos de decisiones confirmadas con origen OCR, tipo de captura, persona y fecha. OCR no se incorpora a la lista de fuentes bibliográficas oficiales. `fieldSources` solo conserva una fuente bibliográfica cuando ese dato fue elegido de dicha fuente; una edición humana/OCR no hereda falsamente su atribución anterior. El historial se puede consultar desde la ficha. Los datos ya existentes no se convierten en datos públicos remotos.
+
+Respaldo versión **5** incluye la store opcional. Respaldos previos sin ella se interpretan como lista vacía. Se valida estructura, estados e imágenes y se conserva el aislamiento institucional. La imagen pendiente puede aumentar el respaldo hasta aproximadamente 1,6 MB por asistencia: aplicar o descartar elimina ese peso. El traslado sigue siendo exportación/importación manual, sin sincronización. Una ficha alterada durante traslado/restauración puede requerir reiniciar la revisión para impedir sobrescrituras.
+
+### Verificación y límites
+
+Pruebas unitarias: identificadores, errores OCR, fechas, índices, palabras literales, aceptación/edición/rechazo, ausencia de escrituras anticipadas, permisos, destinos desactualizados, reclasificación de jornada y limpieza. El browser test de CI sustituye **solo** `ocr-provider.js` con resultados deterministas; ejercita imagen real, rotación, propuestas, índices, diarios, fuentes, Jornada, cancelación, respaldo y 320/390/768/1440 claro/oscuro. `npm run test:ocr-engine` es una comprobación focalizada con motor real y servidor efímero propio (los workers anidados necesitan una entrega HTTP real); no depende de un servidor externo ni hace OCR pesado en cada regresión. Se comprobó lectura real en español y cancelación durante inicialización.
+
+OCR reconoce caracteres; las reglas posteriores son transparentes y conservadoras. No es un identificador visual infalible ni IA semántica. Manuscritos, columnas, pliegues, baja luz, textos muy pequeños y tipografías complejas requieren corrección humana. No hay reconocimiento facial, extracción de nombres de estudiantes como función, servicios pagos ni subida de imágenes. Las cámaras físicas e impresoras de cada institución requieren su comprobación en el dispositivo real.

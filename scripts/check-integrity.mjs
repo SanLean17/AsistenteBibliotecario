@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -45,6 +46,10 @@ for(const file of codeFiles){
     if(spec.startsWith('.')&&!resolveLocal(file,spec))issues.push(rel(file)+': referencia local inexistente '+spec);
   }
 }
+
+const ocrDir=path.join(root,'vendor/ocr-6.0.1');
+const ocrManifest=JSON.parse(fs.readFileSync(path.join(ocrDir,'manifest.json'),'utf8'));
+for(const asset of ocrManifest.assets){const file=path.join(ocrDir,asset.file);if(!exists(file)){issues.push('OCR: falta '+asset.file);continue;}const bytes=fs.readFileSync(file);if(bytes.length!==asset.bytes||crypto.createHash('sha256').update(bytes).digest('hex')!==asset.sha256)issues.push('OCR: checksum incorrecto '+asset.file);}
 
 const appHtml=fs.readFileSync(path.join(root,'app.html'),'utf8');
 const appVersion=appHtml.match(/src\/app\.js\?v=([^"'&]+)/)?.[1];

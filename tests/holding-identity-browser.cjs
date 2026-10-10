@@ -12,20 +12,20 @@ const {setup,assert}=require('./ui-helpers.cjs');
  });
  await go('inicio');
  const copy=await page.evaluate(async()=>{
-  const st=await import('./src/storage.js?v=20261010-5');const {validateBook}=await import('./src/catalog.js?v=20261010-5');
+  const st=await import('./src/storage.js?v=20261010-6');const {validateBook}=await import('./src/catalog.js?v=20261010-6');
   await st.saveBook(validateBook({title:'Atlas intercambio',copies:1}));const s=await st.readState();return s.books[0].exemplars[0];
  });
  await go('coleccion');const form=page.locator('[data-access-form="resource.share.create"]');
  await form.locator('[name=title]').fill('Atlas intercambio');await form.locator('[name=targetInstitution]').fill('Escuela vecina');
  await form.locator('[name=exemplarId]').selectOption(copy.id);await form.locator('button').click();
  await page.getByText(/Institución propietaria:/).waitFor();
- const saved=await page.evaluate(async()=>{const st=await import('./src/storage.js?v=20261010-5');return (await st.readState()).resourceSharingRequests[0];});
+ const saved=await page.evaluate(async()=>{const st=await import('./src/storage.js?v=20261010-6');return (await st.readState()).resourceSharingRequests[0];});
  assert.equal(saved.holding.exemplarId,copy.id);assert.equal(saved.holding.internalCode,copy.internalCode);
  for(const width of [320,390,740,1440]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width);}
  await page.reload();await page.getByText(/Referencia global:/).waitFor();
  assert.ok((await page.getByText(/Referencia global:/).textContent()).includes(saved.holding.globalHoldingRef));
  const restored=await page.evaluate(async()=>{
-  const st=await import('./src/storage.js?v=20261010-5');const archive=await st.exportArchive();
+  const st=await import('./src/storage.js?v=20261010-6');const archive=await st.exportArchive();
   const identity=archive.settings.find(c=>c.id==='local').federationInstitutionId;
   await st.restoreArchive(archive);
   const current=(await st.readState()).settings.find(c=>c.id==='local').federationInstitutionId;

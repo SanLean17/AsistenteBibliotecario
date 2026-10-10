@@ -4,7 +4,7 @@ const {setup,assert,noOverflow,base}=require('./ui-helpers.cjs');
  const go=async hash=>{await page.goto('about:blank');await page.goto(base+'app.html#'+hash);await page.locator('main h1').waitFor();};
  await go('inicio');
  const ids=await page.evaluate(async()=>{
-  const st=await import('./src/storage.js?v=20261010-5'),{validateBook}=await import('./src/catalog.js?v=20261010-5');
+  const st=await import('./src/storage.js?v=20261010-6'),{validateBook}=await import('./src/catalog.js?v=20261010-6');
   const ids={admin:st.getActorId()};
   for(const [profile,cargo] of [['docente','Docente'],['lector','Estudiante'],['personal','Preceptor/a'],['biblioteca','Bibliotecario/a'],['autoridad','Director/a']])ids[profile]=(await st.execute('person.save',{name:profile,cargo,accessProfile:profile,status:'active'})).id;
   for(const [key,title,policy] of [['free','Atlas de mares','standard'],['own','Mi préstamo cercano','standard'],['late','Mi préstamo vencido','standard'],['foreign','PRIVATE MATERIAL','standard'],['room','Consulta en sala','room-only'],['fixed','Sin renovación','non-renewable']]){
@@ -44,17 +44,17 @@ const {setup,assert,noOverflow,base}=require('./ui-helpers.cjs');
  await page.locator('#search').fill('zzzinexistente');await page.getByText('No encontramos materiales con esa búsqueda',{exact:true}).waitFor();await page.getByRole('button',{name:'Océanos',exact:true}).click();await page.locator('.book-card').first().waitFor();
  await page.locator('#topic-filter').selectOption('Océanos');await page.locator('#availability-filter').selectOption('available');assert.ok(await page.locator('.book-card').count()>0);
  for(const profile of ['docente','lector','personal']){
-  await page.evaluate(async id=>{(await import('./src/storage.js?v=20261010-5')).setActorId(id);},ids[profile]);
+  await page.evaluate(async id=>{(await import('./src/storage.js?v=20261010-6')).setActorId(id);},ids[profile]);
   await go('inicio');assert.deepEqual(await navRoutes(),['#inicio','#avisos','#biblioteca','#mi-biblioteca','#guardados']);
   await go('mi-biblioteca');assert.equal(await page.locator('[data-personal-loan]').count(),profile==='docente'?3:profile==='lector'?1:0);
   if(profile==='lector')assert.ok(!(await page.locator('main').innerText()).includes('Mi préstamo cercano'));
  }
  // Temporary grant opens only catalog creation and expires without changing profile.
- await page.evaluate(async ids=>{const st=await import('./src/storage.js?v=20261010-5');st.setActorId(ids.admin);await st.execute('grant.add',{userId:ids.lector,permission:'catalog.create',expiresAt:new Date(Date.now()+3600000).toISOString()});st.setActorId(ids.lector);},ids);
+ await page.evaluate(async ids=>{const st=await import('./src/storage.js?v=20261010-6');st.setActorId(ids.admin);await st.execute('grant.add',{userId:ids.lector,permission:'catalog.create',expiresAt:new Date(Date.now()+3600000).toISOString()});st.setActorId(ids.lector);},ids);
  await go('inicio');assert.ok((await navRoutes()).includes('#agregar'));assert.ok(!(await navRoutes()).includes('#usuarios'));assert.ok(!(await navRoutes()).includes('#inventario'));
- await page.evaluate(async()=>{const st=await import('./src/storage.js?v=20261010-5');await st.mutate(s=>s.grants.forEach(g=>g.expiresAt='2000-01-01'));});await go('agregar');await page.getByRole('heading',{name:'Acceso no habilitado',exact:true}).waitFor();
+ await page.evaluate(async()=>{const st=await import('./src/storage.js?v=20261010-6');await st.mutate(s=>s.grants.forEach(g=>g.expiresAt='2000-01-01'));});await go('agregar');await page.getByRole('heading',{name:'Acceso no habilitado',exact:true}).waitFor();
  for(const profile of ['docente','lector']){
-  await page.evaluate(async id=>{(await import('./src/storage.js?v=20261010-5')).setActorId(id);},ids[profile]);
+  await page.evaluate(async id=>{(await import('./src/storage.js?v=20261010-6')).setActorId(id);},ids[profile]);
   for(const route of ['inicio','biblioteca','mi-biblioteca','ficha/'+ids.free])for(const theme of ['light','dark'])for(const width of [320,390,768,1440]){
    await go(route);await page.setViewportSize({width,height:900});await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);await noOverflow(page,`${profile} ${route} ${theme} ${width}`);
    if(route==='biblioteca'){const box=await page.locator('#search').boundingBox(),tools=await page.locator('.catalog-tools').boundingBox();assert.ok(box.width>=tools.width*.9,'Search spans the filter row');}
@@ -62,9 +62,9 @@ const {setup,assert,noOverflow,base}=require('./ui-helpers.cjs');
    if(profile==='docente'&&['inicio','biblioteca','mi-biblioteca'].includes(route))await page.screenshot({path:`qa/reader-${route}-${theme}-${width}.png`,fullPage:true});
   }
  }
- for(const profile of ['biblioteca','autoridad']){await page.evaluate(async id=>{(await import('./src/storage.js?v=20261010-5')).setActorId(id);},ids[profile]);await go('inicio');await page.getByRole('heading',{name:'¿Qué necesitás hacer hoy?',exact:true}).waitFor();}
+ for(const profile of ['biblioteca','autoridad']){await page.evaluate(async id=>{(await import('./src/storage.js?v=20261010-6')).setActorId(id);},ids[profile]);await go('inicio');await page.getByRole('heading',{name:'¿Qué necesitás hacer hoy?',exact:true}).waitFor();}
  // No orphan saved links after deletion and no cross-institution personal history.
- await page.evaluate(async ids=>{const st=await import('./src/storage.js?v=20261010-5');st.setActorId(ids.docente);await st.execute('saved.toggle',{bookId:ids.free});await st.mutate(s=>s.books=s.books.filter(b=>b.id!==ids.free));},ids);await go('guardados');assert.equal(await page.locator('main a[href="#ficha/'+ids.free+'"]').count(),0);
- await page.evaluate(async()=>{const st=await import('./src/storage.js?v=20261010-5');await st.createInstitution({institutionName:'Nueva escuela',name:'Docente',cargo:'Docente',personId:st.getActorId()});});await go('mi-biblioteca');assert.equal(await page.locator('[data-personal-loan]').count(),0);assert.equal(await page.locator('.reader-history li').count(),0);
+ await page.evaluate(async ids=>{const st=await import('./src/storage.js?v=20261010-6');st.setActorId(ids.docente);await st.execute('saved.toggle',{bookId:ids.free});await st.mutate(s=>s.books=s.books.filter(b=>b.id!==ids.free));},ids);await go('guardados');assert.equal(await page.locator('main a[href="#ficha/'+ids.free+'"]').count(),0);
+ await page.evaluate(async()=>{const st=await import('./src/storage.js?v=20261010-6');await st.createInstitution({institutionName:'Nueva escuela',name:'Docente',cargo:'Docente',personId:st.getActorId()});});await go('mi-biblioteca');assert.equal(await page.locator('[data-personal-loan]').count(),0);assert.equal(await page.locator('.reader-history li').count(),0);
  await finish();console.log('PASS reader: roles, grants, privacy, real discovery, own renewal/reservations/saved, search and 320/390/768/1440 light/dark');
 })().catch(e=>{console.error(e);process.exit(1);});

@@ -1,13 +1,14 @@
-import {catalogingCommand} from './cataloging.js?v=20261010-5';
-import {pilotAction} from './pilot-actions.js?v=20261010-5';
-import {shareableHolding} from './holding-identity.js?v=20261010-5';
-import {accessCommand,expireAccess} from './access-domain.js?v=20261010-5';
-import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261010-5';
-import {normalizeLoanPolicy,policyForPatron,activeLoansForPatron,overdueLoansForPatron,dueDateFromPolicy,reservationExpiryFromPolicy,renewalRequestStatus,renewalDueDate} from './loan-policy.js?v=20261010-5';
-import {normalizeLocation,displayLocation} from './domain.js?v=20261010-5';
-import {normalizePhysicalCondition,normalizeCareLevel,conditionWorsened,nextWorseCondition} from './condition.js?v=20261010-5';
-import {normalizeLibraryLocation,validateLocationHierarchy,locationLabelsFromNode,buildInventoryScope,expectedCopiesForScope,classifyInventoryScan,inventorySummary,reclassifyInventoryFindings} from './inventory.js?v=20261010-5';
-export const STORES=['books','photos','loans','reservations','patrons','activity','grants','settings','institutions','libraries','collections','works','editions','people','memberships','invitations','saved','collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions','catalogingSessions'];
+import {assistanceCommand} from './assistance-domain.js?v=20261010-6';
+import {catalogingCommand} from './cataloging.js?v=20261010-6';
+import {pilotAction} from './pilot-actions.js?v=20261010-6';
+import {shareableHolding} from './holding-identity.js?v=20261010-6';
+import {accessCommand,expireAccess} from './access-domain.js?v=20261010-6';
+import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261010-6';
+import {normalizeLoanPolicy,policyForPatron,activeLoansForPatron,overdueLoansForPatron,dueDateFromPolicy,reservationExpiryFromPolicy,renewalRequestStatus,renewalDueDate} from './loan-policy.js?v=20261010-6';
+import {normalizeLocation,displayLocation} from './domain.js?v=20261010-6';
+import {normalizePhysicalCondition,normalizeCareLevel,conditionWorsened,nextWorseCondition} from './condition.js?v=20261010-6';
+import {normalizeLibraryLocation,validateLocationHierarchy,locationLabelsFromNode,buildInventoryScope,expectedCopiesForScope,classifyInventoryScan,inventorySummary,reclassifyInventoryFindings} from './inventory.js?v=20261010-6';
+export const STORES=['books','photos','loans','reservations','patrons','activity','grants','settings','institutions','libraries','collections','works','editions','people','memberships','invitations','saved','collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions','catalogingSessions','assistanceSessions'];
 export const activeLoan=l=>['loaned','overdue'].includes(l.status)&&!l.returnedAt;
 export const activeReservation=r=>['requested','approved','ready'].includes(r.status);
 export const dateEnd=value=>/^\d{4}-\d{2}-\d{2}$/.test(value)?new Date(value+'T23:59:59.999').toISOString():new Date(value).toISOString();
@@ -25,6 +26,7 @@ export function findCopy(s,id){for(const book of s.books){const copy=book.exempl
 export function expireReservations(s,actorId){const at=Date.now();for(const r of s.reservations)if(activeReservation(r)&&r.expiresAt&&Date.parse(r.expiresAt)<=at){r.status='expired';r.updatedAt=new Date().toISOString();audit(s,'reservation.expired',actorId,{reservationId:r.id});}}
 export function ensureRemovable(s,ids){if(s.loans.some(l=>ids.includes(l.exemplarId)&&activeLoan(l)))throw new Error('Registrá la devolución antes de eliminar un ejemplar con préstamo activo.');if(s.reservations.some(r=>ids.includes(r.exemplarId)&&activeReservation(r)))throw new Error('Cancelá la reserva asignada antes de eliminar el ejemplar.');}
 export function command(s,actorId,type,data={}){
+ if(type.startsWith('assistance.'))return assistanceCommand(s,actorId,type.slice(11),data,{audit});
  if(type.startsWith('cataloging.'))return catalogingCommand(s,actorId,type.slice(11),data,{audit,normalizeHoldings});
  if(type.startsWith('pilot.'))return pilotAction(s,actorId,type,data,{audit,normalizeHoldings});
  if(s.memberships?.length){expireAccess(s);if(['copy.add','person.validate','profile.save','user.save','person.save','person.invite','grant.add','grant.revoke','settings.save','institution.transfer','institution.disable','onboarding.library','onboarding.finish','material.topics','material.contents','saved.toggle'].includes(type))return accessCommand(s,actorId,type,data);}

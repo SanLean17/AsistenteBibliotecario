@@ -1,11 +1,11 @@
-import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261010-5';
-import {searchBooks as rankedSearchBooks,searchCatalog} from './search-engine.js?v=20261010-5';
-import {normalizeContentEntries,contentSearchText,createAssistanceDraft} from './material-types.js?v=20261010-5';
-import { validPhotoURL } from './photos.js?v=20261010-5';
-import { cleanISBN, validISBN } from './isbn.js?v=20261010-5';
-import { safeCover } from './metadata.js?v=20261010-5';
-import { SOURCE_NAMES } from './providers/registry.js?v=20261010-5';
-import { LOCAL_SCOPE, CIRCULATION_STATES } from './domain.js?v=20261010-5';
+import {MATERIAL_TYPES,validISSN} from './recognition.js?v=20261010-6';
+import {searchBooks as rankedSearchBooks,searchCatalog} from './search-engine.js?v=20261010-6';
+import {normalizeContentEntries,contentSearchText,createAssistanceDraft} from './material-types.js?v=20261010-6';
+import { validPhotoURL } from './photos.js?v=20261010-6';
+import { cleanISBN, validISBN } from './isbn.js?v=20261010-6';
+import { safeCover } from './metadata.js?v=20261010-6';
+import { SOURCE_NAMES } from './providers/registry.js?v=20261010-6';
+import { LOCAL_SCOPE, CIRCULATION_STATES } from './domain.js?v=20261010-6';
 export const categories = ['Cuentos', 'Novela', 'Poesía', 'Informativo', 'Otros'];
 export const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 export {searchCatalog};
@@ -40,8 +40,8 @@ export function validateBook(raw) {
     edition:text('edition',300),publishedDate:text('publishedDate',100),description:text('description',20000),audience:text('audience',500),classification:list(raw.classification),identifiers:raw.identifiers&&typeof raw.identifiers==='object'?JSON.parse(JSON.stringify(raw.identifiers)): {},sourceRecords:Array.isArray(raw.sourceRecords)?raw.sourceRecords.slice(0,10):[],
     ...LOCAL_SCOPE,importedFrom:raw.importedFrom||null,
     exemplars:Array.from({length:copies},(_,i)=>{const old=raw.exemplars?.[i];return {...old,...LOCAL_SCOPE,id:typeof old?.id==='string'?old.id:crypto.randomUUID(),location:old?.location??location,condition:old?.condition??condition,status:CIRCULATION_STATES.includes(old?.status)?old.status:'untracked',inventoryCode:String(old?.inventoryCode||'').slice(0,100)};}),
-    // Future photo/OCR jobs store images separately. Nothing is uploaded or inferred now.
-    enrichment:raw.enrichment&&typeof raw.enrichment==='object'?{...createAssistanceDraft({materialId:id}),...structuredClone(raw.enrichment)}:createAssistanceDraft({materialId:id})
+    // Confirmed assistance provenance is separate from covers and copy photographs.
+    enrichment:raw.enrichment&&typeof raw.enrichment==='object'?{...createAssistanceDraft({materialId:id}),...structuredClone(raw.enrichment),materialId:id}:createAssistanceDraft({materialId:id})
   };
 }
 export function parseBackup(text) {

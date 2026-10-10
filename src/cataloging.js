@@ -1,8 +1,8 @@
-import {canonicalISBN} from './isbn.js?v=20261010-5';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-5';
-import {validateBook} from './catalog.js?v=20261010-5';
-import {hasPermission,requirePermission} from './permissions.js?v=20261010-5';
-import {locationLabelsFromNode} from './inventory.js?v=20261010-5';
+import {canonicalISBN} from './isbn.js?v=20261010-6';
+import {detectCatalogMatches} from './duplicates.js?v=20261010-6';
+import {validateBook} from './catalog.js?v=20261010-6';
+import {hasPermission,requirePermission} from './permissions.js?v=20261010-6';
+import {locationLabelsFromNode} from './inventory.js?v=20261010-6';
 
 export const QUEUE_LABELS={pending:'Buscando metadatos','ready-new':'Listo para incorporar','existing-edition':'Edición existente','same-work':'Posible otra edición',similar:'Registro parecido','metadata-missing':'Sin metadatos',invalid:'Código inválido / ilegible','needs-review':'Requiere revisión',incorporated:'Incorporado'};
 export const SESSION_LABELS={open:'Jornada en curso',completed:'Jornada finalizada',cancelled:'Jornada cancelada'};
@@ -16,7 +16,7 @@ function quantity(v){const n=Number(v);if(!Number.isInteger(n)||n<0||n>9999)thro
 export function classifyCapture(books,item){
  if(item.status==='incorporated')return {status:'incorporated',matches:[]};
  const draft=item.draft||{},isbn=canonicalISBN(item.isbn||draft.isbn);
- if(item.source!=='marc'&&!isbn)return {status:'invalid',matches:[]};
+ if(item.source!=='marc'&&!isbn&&!(item.manualReviewed&&!draft.isbn))return {status:'invalid',matches:[]};
  if(item.source==='marc'&&draft.isbn&&!canonicalISBN(draft.isbn))return {status:'needs-review',matches:[],reason:'ISBN MARC inválido: corregilo o dejalo vacío.'};
  const matches=detectCatalogMatches(books,{...draft,isbn:isbn||'',workId:''});
  const marc=clean(draft.identifiers?.marc001);

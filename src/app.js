@@ -1,26 +1,27 @@
-import {renderCataloging,initCatalogingUI,openMarcCataloging} from './cataloging-ui.js?v=20261010-5';
-import {renderReader,initReaderUI} from './reader-ui.js?v=20261010-5';
-import {renderMaterialActions} from './reader.js?v=20261010-5';
-import {renderPilot} from './pilot-ui.js?v=20261010-5';
-import {renderDesk,initDeskUI} from './desk-ui.js?v=20261010-5';
-import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-5';
-import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-5';
-import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-5';
-import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-5';
-import {execute,exportArchive,restoreArchive,readState,getActorId,getInstitutionId} from './storage.js?v=20261010-5';
-import {JsonBackupProvider} from './imports.js?v=20261010-5';
-import { mobileNavigation } from './navigation.js?v=20261010-5';
-import { localizeBook } from './subjects.js?v=20261010-5';
-import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-5';
-import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-5';
-import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-5';
-import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-5';
-import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-5';
-import {searchSummary,suggestedQueries} from './search-engine.js?v=20261010-5';
-import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-5';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-5';
-import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-5';
-import { assignMissingInventoryCodes } from './domain.js?v=20261010-5';
+import {renderAssistance,initAssistanceUI} from './assistance-ui.js?v=20261010-6';
+import {renderCataloging,initCatalogingUI,openMarcCataloging} from './cataloging-ui.js?v=20261010-6';
+import {renderReader,initReaderUI} from './reader-ui.js?v=20261010-6';
+import {renderMaterialActions} from './reader.js?v=20261010-6';
+import {renderPilot} from './pilot-ui.js?v=20261010-6';
+import {renderDesk,initDeskUI} from './desk-ui.js?v=20261010-6';
+import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-6';
+import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-6';
+import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-6';
+import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-6';
+import {execute,exportArchive,restoreArchive,readState,getActorId,getInstitutionId} from './storage.js?v=20261010-6';
+import {JsonBackupProvider} from './imports.js?v=20261010-6';
+import { mobileNavigation } from './navigation.js?v=20261010-6';
+import { localizeBook } from './subjects.js?v=20261010-6';
+import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-6';
+import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-6';
+import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-6';
+import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-6';
+import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-6';
+import {searchSummary,suggestedQueries} from './search-engine.js?v=20261010-6';
+import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-6';
+import {detectCatalogMatches} from './duplicates.js?v=20261010-6';
+import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-6';
+import { assignMissingInventoryCodes } from './domain.js?v=20261010-6';
 
 const $=s=>document.querySelector(s);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -85,6 +86,7 @@ async function render(){
   if(!accessForRoute(current)){$('#main').innerHTML='<section class="notice"><h1>Acceso no habilitado</h1><p>El perfil seleccionado no tiene permiso vigente. Elegí un perfil local habilitado en el menú.</p></section>';return;}
   if(await renderPilot(current))return;
   if(await renderDesk(current))return;
+  if(await renderAssistance(current))return;
   if(await renderCataloging(current))return;
   if(await renderReader(current))return;
   if(await renderAccess(current))return;
@@ -138,12 +140,12 @@ function renderAdd(){
  cancelLookup();
 $('#main').innerHTML=`<div class="flow-header"><a href="#biblioteca" class="button secondary back-link">← Catálogo</a><span class="step">INCORPORACIÓN · PASO 1 DE 2</span></div>
  <div class="page-heading"><div><h1>Reconocer material</h1><p class="muted">Primero intentamos reconocer. Después preguntamos. No necesitás elegir el tipo de material ni de código.</p></div></div>
- <div class="flow-layout"><section class="panel acquisition-panel"><button id="scan-start" class="button primary">Abrir cámara</button><p>Encuadrá el código del material. Intentaremos reconocerlo y recuperar la información disponible para que la revises.</p><button class="button secondary" data-action="camera-unavailable">No puedo usar la cámara</button>
+ <div class="button-row"><a class="button primary" href="#asistencia/nueva">Usar una foto</a><a class="button secondary" href="#asistencia">Retomar asistencia</a><button class="button secondary" data-action="manual">Cargar manualmente</button></div><div class="flow-layout"><section class="panel acquisition-panel"><button id="scan-start" class="button primary">Abrir cámara</button><p>Encuadrá el código del material. Intentaremos reconocerlo y recuperar la información disponible para que la revises.</p><button class="button secondary" data-action="camera-unavailable">No puedo usar la cámara</button>
  <div id="camera-panel" class="camera-panel" hidden><video id="scanner-video" muted playsinline autoplay></video><div class="scan-frame"></div><p>Encuadrá el código completo, evitá reflejos y mantené el dispositivo estable.</p><button id="scan-stop" class="button secondary">No logra reconocerlo / cerrar cámara</button></div>
  <p id="lookup-status" class="lookup-status" role="status" aria-live="polite"></p><div id="lookup-result"></div>
  <div id="recognition-fallback" hidden><div class="button-row"><button class="button secondary" data-action="retry-recognition">Intentar nuevamente</button><button class="button secondary" data-action="enter-code">Ingresar un código</button><button class="button secondary" data-action="manual">Incorporar manualmente</button></div>
  <form id="isbn-form" hidden><label>Código o enlace<div class="isbn-row"><input id="isbn-query" maxlength="2000" placeholder="Pegá o escribí el código o enlace" autocomplete="off" required><button id="isbn-search" class="button primary">Reconocer</button></div></label></form><button id="scan-photo" class="button secondary">Leer código desde una fotografía</button></div></section>
- <aside class="panel source-panel"><h3>La persona confirma</h3><p>Libros, revistas, diarios, artículos, documentos, producciones escolares, recursos digitales y otros materiales. Todos pueden tener temas, palabras clave y un resumen, con o sin identificador.</p><p>La recuperación bibliográfica automática actual consulta libros por ISBN. Para otros identificadores reconocidos, se conserva el dato y se completa la ficha sin inventar información.</p><small>Leer un código en una foto no es analizar la tapa o la primera plana: esa asistencia queda para una etapa futura.</small><details><summary>Ver fuentes bibliográficas</summary>${officialLinks()}</details></aside></div>`;
+ <aside class="panel source-panel"><h3>La persona confirma</h3><p>Libros, revistas, diarios, artículos, documentos, producciones escolares, recursos digitales y otros materiales. Todos pueden tener temas, palabras clave y un resumen, con o sin identificador.</p><p>La recuperación bibliográfica automática actual consulta libros por ISBN. Para otros identificadores reconocidos, se conserva el dato y se completa la ficha sin inventar información.</p><small>Usar una foto permite leer tapa, página legal, índice o primera plana con OCR local y revisión humana.</small><details><summary>Ver fuentes bibliográficas</summary>${officialLinks()}</details></aside></div>`;
 }
 async function runLookup(value){
   cancelLookup(false);const version=++lookupVersion;lookupController=new AbortController();
@@ -238,7 +240,7 @@ async function renderDetail(id,copyId){
   const selected=b.exemplars?.find(e=>e.id===copyId)||b.exemplars?.[0];
   const photo=detailPhotos.find(p=>p.id===selected?.id);
   $('#main').innerHTML=`<div class="flow-header"><a href="#biblioteca" class="button secondary back-link">← Catálogo</a><span class="step">REGISTRO BIBLIOGRÁFICO</span></div>
-  <article class="record-page"><section class="record-main"><div class="record-cover">${safeCover(b.cover)?`<button data-cover="${escape(b.id)}" class="cover-zoom" aria-label="Ampliar portada bibliográfica">${cover(b)}</button>`:cover(b)}<small>Portada bibliográfica${safeCover(b.cover)?' · Tocá para ampliar':''}</small></div><div class="record-info"><div class="record-title-row"><div><span class="eyebrow">${escape(MATERIAL_TYPES[b.materialType]||b.category||'Material')}</span><h1>${escape(b.title)}</h1><p class="record-author">${escape(b.author||b.publication||'Responsable no informado')}</p></div><a class="button secondary" href="#editar/${escape(b.id)}">Editar registro</a></div>${subjectChips(b)}${(()=>{const a=availabilityFor(b);return `<section class="material-availability" data-status="${escape(a.status)}"><strong>${escape(a.label)}</strong>${a.estimatedAt?`<span>Disponibilidad estimada desde ${escape(a.estimatedAt.toLocaleDateString('es-AR'))}</span>`:''}<small>${escape(a.note||'')}</small></section>`;})()}${renderMaterialActions(personalState,personalState.patrons.find(p=>p.id===getActorId()),b)}${b.description?`<section class="record-description"><h2>Descripción</h2><p>${escape(b.description)}</p></section>`:''}<div class="availability"><strong>${b.copies} ${b.copies===1?'ejemplar registrado':'ejemplares registrados'}</strong><span>${escape([...new Set((b.exemplars||[]).map(e=>e.location).filter(Boolean))].join(' · ')||b.location||'Ubicación pendiente')}</span><span>${escape([...new Set((b.exemplars||[]).map(holdingState))].join(' · ')||'Sin ejemplares')}</span><span>Estado: ${escape([...new Set((b.exemplars||[]).map(e=>e.condition).filter(Boolean))].join(' · ')||b.condition||'Bueno')}</span></div><details><summary>Información general</summary><dl class="detail-data"><div><dt>Tipo de material</dt><dd>${escape(MATERIAL_TYPES[b.materialType]||'Material')}</dd></div><div><dt>Regla de circulación</dt><dd>${escape(({standard:'Préstamo normal','non-renewable':'Préstamo sin renovación','room-only':'Solo consulta en sala'})[b.circulationPolicy||'standard'])}</dd></div><div><dt>Fuentes</dt><dd>${escape((b.sources||[]).join(' · ')||'Carga institucional')}</dd></div></dl></details>${materialDetailsHTML(b)}${(b.sourceSubjects||[]).length?`<details><summary>Más temas e información de origen</summary><p class="detail-text">${(b.sourceSubjects||[]).map(escape).join(' · ')}</p></details>`:''}${(b.contentEntries?.length||b.contents?.length)?(()=>{const entries=normalizeContentEntries(b.contentEntries?.length?b.contentEntries:b.contents);return `<details><summary>${escape(profileForMaterial(b.materialType).contentsLabel)} (${entries.length})</summary><ul class="detail-text">${entries.map(item=>`<li><strong>${escape(item.title)}</strong>${item.author?' · '+escape(item.author):''}${item.page?' · p. '+escape(item.page):''}</li>`).join('')}</ul></details>`;})():''}</div></section>
+  <article class="record-page"><section class="record-main"><div class="record-cover">${safeCover(b.cover)?`<button data-cover="${escape(b.id)}" class="cover-zoom" aria-label="Ampliar portada bibliográfica">${cover(b)}</button>`:cover(b)}<small>Portada bibliográfica${safeCover(b.cover)?' · Tocá para ampliar':''}</small></div><div class="record-info"><div class="record-title-row"><div><span class="eyebrow">${escape(MATERIAL_TYPES[b.materialType]||b.category||'Material')}</span><h1>${escape(b.title)}</h1><p class="record-author">${escape(b.author||b.publication||'Responsable no informado')}</p></div><a class="button secondary" href="#editar/${escape(b.id)}">Editar registro</a></div>${can('catalog.edit')||can('contents.manage')||can('topics.manage')?`<a class="button secondary" href="#asistencia/material/${escape(b.id)}">Asistir con foto</a>`:''}${subjectChips(b)}${(()=>{const a=availabilityFor(b);return `<section class="material-availability" data-status="${escape(a.status)}"><strong>${escape(a.label)}</strong>${a.estimatedAt?`<span>Disponibilidad estimada desde ${escape(a.estimatedAt.toLocaleDateString('es-AR'))}</span>`:''}<small>${escape(a.note||'')}</small></section>`;})()}${renderMaterialActions(personalState,personalState.patrons.find(p=>p.id===getActorId()),b)}${b.description?`<section class="record-description"><h2>Descripción</h2><p>${escape(b.description)}</p></section>`:''}<div class="availability"><strong>${b.copies} ${b.copies===1?'ejemplar registrado':'ejemplares registrados'}</strong><span>${escape([...new Set((b.exemplars||[]).map(e=>e.location).filter(Boolean))].join(' · ')||b.location||'Ubicación pendiente')}</span><span>${escape([...new Set((b.exemplars||[]).map(holdingState))].join(' · ')||'Sin ejemplares')}</span><span>Estado: ${escape([...new Set((b.exemplars||[]).map(e=>e.condition).filter(Boolean))].join(' · ')||b.condition||'Bueno')}</span></div><details><summary>Información general</summary><dl class="detail-data"><div><dt>Tipo de material</dt><dd>${escape(MATERIAL_TYPES[b.materialType]||'Material')}</dd></div><div><dt>Regla de circulación</dt><dd>${escape(({standard:'Préstamo normal','non-renewable':'Préstamo sin renovación','room-only':'Solo consulta en sala'})[b.circulationPolicy||'standard'])}</dd></div><div><dt>Fuentes</dt><dd>${escape((b.sources||[]).join(' · ')||'Carga institucional')}</dd></div></dl></details>${materialDetailsHTML(b)}${Array.isArray(b.enrichment?.history)&&b.enrichment.history.length?`<details><summary>Procedencia de asistencia confirmada</summary>${b.enrichment.history.filter(h=>h&&Array.isArray(h.proposals)).map(h=>`<p>${new Date(h.confirmedAt).toLocaleDateString('es-AR')} · ${h.proposals.map(p=>escape(p.field)+': '+escape(p.source)).join(' · ')}</p>`).join('')}</details>`:''}${(b.sourceSubjects||[]).length?`<details><summary>Más temas e información de origen</summary><p class="detail-text">${(b.sourceSubjects||[]).map(escape).join(' · ')}</p></details>`:''}${(b.contentEntries?.length||b.contents?.length)?(()=>{const entries=normalizeContentEntries(b.contentEntries?.length?b.contentEntries:b.contents);return `<details><summary>${escape(profileForMaterial(b.materialType).contentsLabel)} (${entries.length})</summary><ul class="detail-text">${entries.map(item=>`<li><strong>${escape(item.title)}</strong>${item.author?' · '+escape(item.author):''}${item.page?' · p. '+escape(item.page):''}</li>`).join('')}</ul></details>`;})():''}</div></section>
   <aside class="record-side panel"><h2>Ejemplar físico</h2><p class="muted">La portada editorial y la foto del ejemplar se mantienen separadas.</p><label>Ejemplar<select id="photo-copy">${(b.exemplars||[]).map((e,i)=>`<option value="${escape(e.id)}" ${e.id===selected?.id?'selected':''}>Ejemplar ${i+1}${e.inventoryCode?' · '+escape(e.inventoryCode):''}</option>`).join('')}</select></label><div id="photo-preview">${photo&&validPhotoURL(photo.dataUrl)?`<button class="photo-thumbnail" data-view-photo="${escape(photo.id)}"><img src="${photo.dataUrl}" alt="Foto del ejemplar físico"></button>`:'<div class="photo-empty">Sin fotografía del ejemplar</div>'}</div><div class="photo-actions"><button class="button secondary" data-photo="camera">Sacar foto</button><button class="button secondary" data-photo="file">Elegir archivo</button></div><div id="copy-details"></div></aside></article>${dangerZone('Eliminar este registro','Se perderán la ficha, todos sus ejemplares y sus fotografías. Esta acción no se puede deshacer.',`<button class="button danger" data-delete="${escape(b.id)}">Eliminar registro</button>`)}`;
   renderSelectedPhoto();
 }
@@ -319,6 +321,7 @@ window.addEventListener('pagehide',cancelLookup);
 document.addEventListener('error',event=>{if(event.target.matches?.('.real-cover img')){event.target.hidden=true;event.target.nextElementSibling.hidden=false;}},true);
 
 initDeskUI();
+initAssistanceUI({refresh:async()=>{books=await readBooks();await render();},onDraft:value=>{draft={...value,copies:can('holdings.create')?1:0,exemplars:[]};location.hash='#editar/nuevo';}});
 initCatalogingUI(async()=>{books=await readBooks();await render();});
 initReaderUI(async()=>{books=await readBooks();await render();});
 initAccessUI(async context=>{if(context){query='';category='';materialFilter='';availabilityFilter='';topicFilter='';draft=null;detailPhotos=[];cancelLookup();}books=await readBooks();await render();});

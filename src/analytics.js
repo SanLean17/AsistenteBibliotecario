@@ -1,4 +1,4 @@
-import {conditionAttentionItems} from './condition.js?v=20261010-5';
+import {conditionAttentionItems} from './condition.js?v=20261010-6';
 
 const activeLoan=l=>['loaned','overdue'].includes(l.status)&&!l.returnedAt;
 
