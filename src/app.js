@@ -1,4 +1,5 @@
 import {renderPilot} from './pilot-ui.js?v=20261010-3';
+import {renderDesk,initDeskUI} from './desk-ui.js?v=20261010-3';
 import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-3';
 import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-3';
 import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-3';
@@ -80,6 +81,7 @@ async function render(){
   if(current.startsWith('registro')){await renderAccess(current);return;}
   if(!accessForRoute(current)){$('#main').innerHTML='<section class="notice"><h1>Acceso no habilitado</h1><p>El perfil seleccionado no tiene permiso vigente. Elegí un perfil local habilitado en el menú.</p></section>';return;}
   if(await renderPilot(current))return;
+  if(await renderDesk(current))return;
   if(await renderAccess(current))return;
   if(await renderLocal(current))return;
   if(current==='biblioteca')return renderLibrary();
@@ -311,6 +313,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)stopScan();
 window.addEventListener('pagehide',cancelLookup);
 document.addEventListener('error',event=>{if(event.target.matches?.('.real-cover img')){event.target.hidden=true;event.target.nextElementSibling.hidden=false;}},true);
 
+initDeskUI();
 initAccessUI(async context=>{if(context){query='';category='';draft=null;detailPhotos=[];cancelLookup();}books=await readBooks();await render();});
 initLocalUI(async context=>{if(context){query='';category='';draft=null;detailPhotos=[];cancelLookup();}books=await readBooks();await render();});
 $('#main').innerHTML='<p class="muted">Abriendo catálogo institucional…</p>';

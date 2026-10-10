@@ -74,3 +74,7 @@ jobs:
         run: npm run test:notices-browser
         env:
           BROWSER_CHANNEL: chromium
+      - name: Check daily circulation desk
+        run: npm run test:desk-browser
+        env:
+          BROWSER_CHANNEL: chromium

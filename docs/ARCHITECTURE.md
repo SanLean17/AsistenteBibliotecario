@@ -616,3 +616,64 @@ Reglas:
 Biblioteca/Autoridad reciben todas estas áreas. Docente/Lector/Personal solo reciben sus préstamos, reservas, extensiones y permisos; ni `mainAdmin` ni un permiso operativo delegado amplían esa visibilidad. La UI comprueba además los permisos del destino y ofrece texto informativo cuando no puede habilitar una acción (por ejemplo, inventario para Autoridad sin permiso operativo).
 
 `src/notices-ui.js` presenta el resumen de Inicio y `#avisos`, escapa los datos y actualiza únicamente los resultados/conteo. La actualización visible usa el ciclo local de 30 segundos y el regreso a la pestaña; conserva filtros, posición y foco cuando es posible, y descarta cambios de contexto durante una lectura. No agrega stores, campos de respaldo, eventos `activity`, servicios ni peticiones de red. Los eventos de vencimiento y operaciones del dominio preexistentes conservan su comportamiento.
+
+
+## Operación diaria y Mostrador — 2026-10-10
+
+La ruta `#mostrador` concentra las tareas rápidas de circulación sin reemplazar la vista detallada de `#circulacion`.
+
+El flujo operativo esperado es:
+
+**Escanear AB → ver estado → prestar / devolver / entregar reserva / marcar condición → escanear siguiente.**
+
+La misma entrada acepta:
+- cámara del celular;
+- fotografía del código;
+- lector USB/teclado;
+- ingreso manual del código AB.
+
+Un código inexistente no crea un ejemplar ni intenta corregirlo automáticamente.
+
+### Préstamo rápido
+
+Cuando el ejemplar está disponible, el Mostrador permite buscar personas activas por nombre, cargo, curso o perfil. La selección muestra préstamos activos y vencidos antes de confirmar. La operación final reutiliza `loan.create`, por lo que continúan vigentes los máximos por perfil, bloqueos por vencimientos, reglas del material y permisos institucionales.
+
+Si el ejemplar corresponde a una reserva en estado `ready`, la persona y la reserva quedan preseleccionadas; confirmar registra el préstamo y la reserva pasa a retirada mediante la lógica existente.
+
+### Devolución rápida
+
+Si el ejemplar tiene un préstamo activo, se muestra directamente:
+- persona;
+- vencimiento;
+- condición física registrada al salir;
+- si está vencido.
+
+Los atajos **Sin cambios**, **Volvió peor**, **Usar con cuidado** y **No prestar** preparan el mismo formulario de devolución existente. La confirmación usa `loan.return`; no atribuye responsabilidad por el deterioro.
+
+### Reservas operativas
+
+El Mostrador muestra una cola compacta de reservas activas. Una solicitud puede asociarse a un ejemplar disponible, una reserva asignada puede marcarse lista para retirar y una reserva lista abre directamente el ejemplar que debe entregarse.
+
+No se infiere un orden de prioridad distinto del estado registrado ni se inventan fechas de disponibilidad.
+
+### Búsqueda de personas
+
+`src/daily-operations.js` expone una búsqueda local sobre las personas activas de la institución proyectada. Usa nombre, cargo, curso y perfil, y no consulta ni expone personas externas a ese estado institucional.
+
+### Hoy en la biblioteca
+
+El dashboard de Biblioteca/Autoridad deriva una vista compacta con:
+- devoluciones esperadas hoy;
+- préstamos vencidos;
+- reservas listas para retirar;
+- cantidad de avisos operativos;
+- movimientos registrados en el día.
+
+La vista reutiliza `deriveNotices` y el estado de circulación. No persiste contadores paralelos.
+
+### Mostrador vs. Circulación
+
+- **Mostrador**: flujo breve, pensado para cámara/lector y operación cotidiana.
+- **Circulación**: vista detallada para revisar todos los préstamos, reservas, solicitudes de extensión y fechas.
+
+Ambas superficies llaman a los mismos comandos de dominio. El Mostrador no introduce una segunda implementación de préstamos o devoluciones.
