@@ -1,36 +1,40 @@
-import {initSchoolPilotUI,renderSchoolPilot,updatePilotChrome,showRecovery} from './school-pilot-ui.js?v=20261010-rc1';
-import {backupPreview,timed,recordTiming} from './recovery.js?v=20261010-rc1';
-import {markExportInitiated} from './storage.js?v=20261010-rc1';
-import {renderAssistance,initAssistanceUI} from './assistance-ui.js?v=20261010-rc1';
-import {renderCataloging,initCatalogingUI,openMarcCataloging} from './cataloging-ui.js?v=20261010-rc1';
-import {renderReader,initReaderUI} from './reader-ui.js?v=20261010-rc1';
-import {renderMaterialActions} from './reader.js?v=20261010-rc1';
-import {renderPilot} from './pilot-ui.js?v=20261010-rc1';
-import {renderDesk,initDeskUI} from './desk-ui.js?v=20261010-rc1';
-import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-rc1';
-import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-rc1';
-import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-rc1';
-import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-rc1';
-import {execute,exportArchive,restoreArchive,readState,getActorId,getInstitutionId} from './storage.js?v=20261010-rc1';
-import {JsonBackupProvider} from './imports.js?v=20261010-rc1';
-import { mobileNavigation } from './navigation.js?v=20261010-rc1';
-import { localizeBook } from './subjects.js?v=20261010-rc1';
-import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-rc1';
-import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-rc1';
-import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-rc1';
-import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-rc1';
-import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-rc1';
-import {searchSummary,suggestedQueries} from './search-engine.js?v=20261010-rc1';
-import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-rc1';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-rc1';
-import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-rc1';
-import { assignMissingInventoryCodes } from './domain.js?v=20261010-rc1';
+import {initSchoolPilotUI,renderSchoolPilot,updatePilotChrome,showRecovery} from './school-pilot-ui.js?v=20261010-field1';
+import {backupPreview,timed,recordTiming,diagnosticSummary} from './recovery.js?v=20261010-field1';
+import {markExportInitiated} from './storage.js?v=20261010-field1';
+import {renderAssistance,initAssistanceUI} from './assistance-ui.js?v=20261010-field1';
+import {renderCataloging,initCatalogingUI,openMarcCataloging} from './cataloging-ui.js?v=20261010-field1';
+import {renderReader,initReaderUI} from './reader-ui.js?v=20261010-field1';
+import {renderMaterialActions} from './reader.js?v=20261010-field1';
+import {renderPilot} from './pilot-ui.js?v=20261010-field1';
+import {renderDesk,initDeskUI} from './desk-ui.js?v=20261010-field1';
+import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-field1';
+import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-field1';
+import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-field1';
+import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-field1';
+import {execute,exportArchive,restoreArchive,readState,getActorId,getInstitutionId} from './storage.js?v=20261010-field1';
+import {JsonBackupProvider} from './imports.js?v=20261010-field1';
+import { mobileNavigation } from './navigation.js?v=20261010-field1';
+import { localizeBook } from './subjects.js?v=20261010-field1';
+import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-field1';
+import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-field1';
+import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-field1';
+import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-field1';
+import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-field1';
+import {searchSummary,suggestedQueries,createSearchIndex} from './search-engine.js?v=20261010-field1';
+import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-field1';
+import {detectCatalogMatches} from './duplicates.js?v=20261010-field1';
+import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-field1';
+import { assignMissingInventoryCodes } from './domain.js?v=20261010-field1';
 
+import {initOffline,FIELD_VERSION} from './offline.js?v=20261010-field1';
 const $=s=>document.querySelector(s);
+let indexedBooks,searchIndex,libraryPage=0,librarySignature='',libraryScroll=0,previousRoute='',searchTimer;
+const PAGE_SIZE=48;
+let circulationByBook=new Map();
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let books=[],loansSnapshot=[],reservationsSnapshot=[],ready=false,query='',category='',materialFilter='',availabilityFilter='',topicFilter='',lookupController,scanController,lookupVersion=0,draft=null,detailPhotos=[],photoTarget=null,toastTimer;
 const readBooks=async()=>timed('catalog',async()=> (await getBooks()).map(localizeBook));
-const refreshCirculationSnapshot=async()=>{const s=await readState();loansSnapshot=s.loans;reservationsSnapshot=s.reservations;};
+const refreshCirculationSnapshot=async()=>{const s=await readState();loansSnapshot=s.loans;reservationsSnapshot=s.reservations;circulationByBook=new Map();for(const [key,rows] of [['loans',s.loans],['reservations',s.reservations]])for(const r of rows){if(!circulationByBook.has(r.bookId))circulationByBook.set(r.bookId,{loans:[],reservations:[]});circulationByBook.get(r.bookId)[key].push(r);}};
 const route=()=>location.hash.slice(1)||'inicio';
 const routeBase=()=>route().split('/')[0];
 
@@ -47,7 +51,7 @@ function confirmAction(title,message,label='Eliminar definitivamente'){
 }
 function dangerZone(title,message,button){return `<section class="danger-zone"><h2>Zona de peligro</h2><div class="danger-row"><div><h3>${title}</h3><p>${message}</p></div>${button}</div></section>`;}
 function renderSettings(){
-  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">TU ESPACIO DE TRABAJO</span><h1>Configuración</h1><p class="muted">Cuidá el catálogo de tu biblioteca y elegí cómo trabajar.</p></div></div><section class="panel settings-panel"><h2>Una copia, mucha tranquilidad.</h2><p>Los registros y las fotos se guardan solo en este navegador y dispositivo. No hay sincronización ni respaldo automático. Para cambiar de dispositivo, exportá un archivo y luego importalo allí. Comprobá que el archivo se descargó y guardalo en un lugar seguro. No podemos verificar que conservaste el archivo, por eso no mostramos una fecha de último respaldo. Exportá antes de importar, corregir en lote o borrar datos.</p><div class="button-row"><button class="button primary" data-action="export">Exportar respaldo</button><button class="button secondary" data-action="import">Importar respaldo</button><button class="button secondary" data-action="theme">Cambiar tema claro / oscuro</button></div></section>${dangerZone('Vaciar el catálogo de esta institución','Se eliminarán los registros, ejemplares y fotografías de la institución actual. Esta acción no se puede deshacer. Exportá primero un respaldo.',`<button class="button danger" data-action="clear-catalog" ${books.length?'':'disabled'}>Vaciar catálogo</button>`)}`;
+  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">TU ESPACIO DE TRABAJO</span><h1>Configuración</h1><p class="muted">Cuidá el catálogo de tu biblioteca y elegí cómo trabajar.</p></div></div><section class="panel settings-panel"><h2>Una copia, mucha tranquilidad.</h2><p>Versión ${FIELD_VERSION} · Piloto local</p><p>Los registros y las fotos se guardan solo en este navegador y dispositivo. No hay sincronización ni respaldo automático. Para cambiar de dispositivo, exportá un archivo y luego importalo allí. Comprobá que el archivo se descargó y guardalo en un lugar seguro. No podemos verificar que conservaste el archivo, por eso no mostramos una fecha de último respaldo. Exportá antes de importar, corregir en lote o borrar datos.</p><div class="button-row"><button class="button primary" data-action="export">Exportar respaldo</button><button class="button secondary" data-action="import">Importar respaldo</button><button class="button secondary" data-action="theme">Cambiar tema claro / oscuro</button><button class="button secondary" data-action="diagnostic">Exportar diagnóstico sin datos personales</button></div></section>${dangerZone('Vaciar el catálogo de esta institución','Se eliminarán los registros, ejemplares y fotografías de la institución actual. Esta acción no se puede deshacer. Exportá primero un respaldo.',`<button class="button danger" data-action="clear-catalog" ${books.length?'':'disabled'}>Vaciar catálogo</button>`)}`;
 }
 function setTheme(theme){document.documentElement.dataset.theme=theme;try{localStorage.setItem('ab-theme',theme);}catch{}document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='dark'?'#0A112F':'#EBF3FF');}
 let savedTheme;try{savedTheme=localStorage.getItem('ab-theme');}catch{}
@@ -64,7 +68,7 @@ function subjectChips(book,limit=5){
   if(!topics.length)return '';
   return `<div class="subject-chips">${topics.slice(0,limit).map(t=>`<span>${escape(t)}</span>`).join('')}${topics.length>limit?`<span class="more-chip">+${topics.length-limit}</span>`:''}</div>`;
 }
-function availabilityFor(book){return materialAvailability(book,{loans:loansSnapshot,reservations:reservationsSnapshot});}
+function availabilityFor(book){return materialAvailability(book,circulationByBook.get(book.id)||{});}
 function isBookAvailable(book){const a=availabilityFor(book);return a.status==='available'||a.status==='online';}
 function cards(list){
   return `<div class="book-grid">${list.map(item=>{const result=item?.book?item:null,b=result?.book||item,a=availabilityFor(b);return `<a class="book-card" href="#ficha/${escape(b.id)}">${cover(b)}<h3>${escape(b.title)}</h3><p>${escape(b.author||b.publication||'Responsable no informado')}</p>${result&&query?`<small class="search-match">${escape(searchSummary(result))}</small>`:''}<div class="availability-pill" data-status="${escape(a.status)}">${escape(a.label)}</div>${a.status==='unavailable'&&a.estimatedAt?`<small class="availability-estimate">Estimado: ${escape(a.estimatedAt.toLocaleDateString('es-AR'))}</small>`:''}<div class="book-meta"><span>${escape(MATERIAL_TYPES[b.materialType]||b.category||'Material')}</span><span>${b.copies?b.copies+' ej.':(b.resourceUrl||b.doi?'Recurso en línea':'Sin ejemplar físico')}</span></div></a>`;}).join('')}</div>`;
@@ -85,6 +89,9 @@ async function renderRoute(){
   closeWorkspaceMenu();
   updateNav();
   if(!ready)return;
+  if(previousRoute==='biblioteca')libraryScroll=window.scrollY;
+  previousRoute=route();
+  clearTimeout(searchTimer);
   window.scrollTo(0,0);
   cancelLookup();
   const current=route();
@@ -99,7 +106,7 @@ async function renderRoute(){
   if(await renderReader(current))return;
   if(await renderAccess(current))return;
   if(await renderLocal(current))return;
-  if(current==='biblioteca')return renderLibrary();
+  if(current==='biblioteca'){renderLibrary();window.scrollTo(0,libraryScroll);return;}
   if(current==='agregar')return renderAdd();
   if(current==='configuracion')return renderSettings();
   if(current==='ejemplares')return renderExemplars();
@@ -129,15 +136,19 @@ function renderExemplars(){
 }
 function renderLibrary(){
   const started=performance.now();
-  const results=searchCatalog(books,query,{category,materialType:materialFilter,availability:availabilityFilter,isAvailable:isBookAvailable});recordTiming('search',performance.now()-started);
+  const signature=JSON.stringify([query,category,materialFilter,availabilityFilter,topicFilter]);if(signature!==librarySignature){libraryPage=0;libraryScroll=0;librarySignature=signature;}
+  if(indexedBooks!==books){searchIndex=createSearchIndex(books);indexedBooks=books;}
+  const results=searchCatalog(books,query,{category,materialType:materialFilter,availability:availabilityFilter,isAvailable:isBookAvailable,index:searchIndex});recordTiming('search',performance.now()-started);
   const list=topicFilter?results.filter(({book})=>(book.subjects||[]).includes(topicFilter)):results;
+  libraryPage=Math.min(libraryPage,Math.max(0,Math.ceil(list.length/PAGE_SIZE)-1));
   const suggestions=suggestedQueries(books,5);
   $('#main').innerHTML=`
     <div class="page-heading"><div><span class="eyebrow">CATÁLOGO INSTITUCIONAL</span><h1>Fondo bibliográfico</h1><p class="muted">Buscá por título, autor, tema, contenido interno, curso, publicación o identificador. Los resultados más relevantes aparecen primero.</p></div><a class="button primary" href="#agregar">＋ Agregar al catálogo</a></div>
     <div class="catalog-tools"><div class="search-box"><span>⌕</span><input id="search" type="search" placeholder="Ej.: cuento de monstruos para quinto" value="${escape(query)}" aria-label="Buscar en el catálogo"></div><select id="material-filter" aria-label="Filtrar por tipo de material"><option value="">Todos los materiales</option>${Object.entries(MATERIAL_TYPES).map(([id,label])=>`<option value="${id}" ${id===materialFilter?'selected':''}>${label}</option>`).join('')}</select><select id="availability-filter" aria-label="Filtrar por disponibilidad"><option value="">Cualquier disponibilidad</option><option value="available" ${availabilityFilter==='available'?'selected':''}>Disponibles ahora</option></select><select id="topic-filter" aria-label="Filtrar por tema"><option value="">Todos los temas</option>${suggestedQueries(books,Number.MAX_SAFE_INTEGER).map(t=>`<option value="${escape(t)}" ${t===topicFilter?'selected':''}>${escape(t)}</option>`).join('')}</select><select id="category" aria-label="Filtrar por categoría"><option value="">Todas las categorías</option>${categories.map(c=>`<option ${c===category?'selected':''}>${c}</option>`).join('')}</select></div>
     ${suggestions.length&&!query?`<div class="query-examples"><span>Explorar por tema</span>${suggestions.map(q=>`<button data-query="${escape(q)}">${escape(q)} ↗</button>`).join('')}</div>`:''}
     <p class="catalog-summary" role="status">${list.length} ${list.length===1?'resultado':'resultados'}${query||category||materialFilter||availabilityFilter||topicFilter?' encontrados':' en el catálogo'}</p>
-    ${list.length?cards(list):`<div class="empty"><div class="empty-symbol">⌕</div><h3>No encontramos materiales con esa búsqueda</h3><p>Probá quitando algún filtro o usando palabras más generales. El sistema solo usa información registrada; no inventa grado, edad ni contenido.</p><button class="button secondary" data-action="clear-search">Limpiar búsqueda</button>${suggestions.length?`<div class="query-examples"><span>Temas del catálogo</span>${suggestions.map(q=>`<button data-query="${escape(q)}">${escape(q)}</button>`).join('')}</div>`:''}</div>`}
+    ${list.length?cards(list.slice(libraryPage*PAGE_SIZE,(libraryPage+1)*PAGE_SIZE)):`<div class="empty"><div class="empty-symbol">⌕</div><h3>No encontramos materiales con esa búsqueda</h3><p>Probá quitando algún filtro o usando palabras más generales. El sistema solo usa información registrada; no inventa grado, edad ni contenido.</p><button class="button secondary" data-action="clear-search">Limpiar búsqueda</button>${suggestions.length?`<div class="query-examples"><span>Temas del catálogo</span>${suggestions.map(q=>`<button data-query="${escape(q)}">${escape(q)}</button>`).join('')}</div>`:''}</div>`}
+    ${list.length>PAGE_SIZE?`<nav class="button-row catalog-pages" aria-label="Páginas del catálogo"><button class="button secondary" data-catalog-page="-1" ${libraryPage===0?'disabled':''}>Página anterior</button><span role="status">Página ${libraryPage+1} de ${Math.ceil(list.length/PAGE_SIZE)}</span><button class="button secondary" data-catalog-page="1" ${(libraryPage+1)*PAGE_SIZE>=list.length?'disabled':''}>Página siguiente</button></nav>`:''}
     <div class="backup-bar"><div><strong>Respaldo institucional local</strong><p>Durante el prototipo, el catálogo se conserva en este navegador.</p></div><div><button class="button secondary" data-action="export">↓ Exportar</button><button class="button secondary" data-action="import">↑ Importar</button></div></div>`;
 }
 function officialLinks(){
@@ -273,13 +284,15 @@ function cancelLookup(increment=true){if(increment)lookupVersion++;lookupControl
 
 document.addEventListener('click',async event=>{
  const button=event.target.closest('button');if(!button)return;
+ if(button.dataset.catalogPage){libraryPage+=Number(button.dataset.catalogPage);renderLibrary();window.scrollTo(0,0);const heading=$('#main h1');heading.tabIndex=-1;heading.focus();return;}
  if(button.dataset.close)document.getElementById(button.dataset.close)?.close();
  if(button.dataset.query){query=button.dataset.query;category='';materialFilter='';availabilityFilter='';topicFilter='';if(route()==='biblioteca')renderLibrary();else location.hash='#biblioteca';return;}
  if(button.dataset.action==='clear-search'){query='';category='';materialFilter='';availabilityFilter='';topicFilter='';renderLibrary();return;}
  if(button.dataset.action==='theme')setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
  if(button.dataset.action==='help')$('#help').showModal();
  if(button.dataset.action==='manual'){draft=identifierDraft($('#isbn-query')?.value||'');location.hash='#editar/nuevo';}
- if(button.dataset.action==='export'){try{const exportInstitution=getInstitutionId(),exportActor=getActorId();const blob=new Blob([JSON.stringify(await exportArchive(),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='biblioteca-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);await markExportInitiated(exportInstitution,exportActor);notify('Exportación iniciada. Comprobá que conservaste el archivo.');}catch{notify('No se pudo exportar el respaldo.');}}
+ if(button.dataset.action==='export'){if(button.disabled)return;button.disabled=true;button.setAttribute('aria-busy','true');notify('Preparando respaldo… Esperá a que comience la descarga.');await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));try{const exportInstitution=getInstitutionId(),exportActor=getActorId();const blob=new Blob([JSON.stringify(await exportArchive())],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='biblioteca-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);await markExportInitiated(exportInstitution,exportActor);notify('Exportación iniciada. Comprobá que conservaste el archivo.');}catch{notify('No se pudo exportar el respaldo. Conservá los datos y volvé a intentar.');}finally{button.disabled=false;button.removeAttribute('aria-busy');}}
+ if(button.dataset.action==='diagnostic'){try{const s=await readState();const {requirePermission}=await import('./permissions.js?v=20261010-field1');requirePermission(s,getActorId(),'sensitive.export');const ua=navigator.userAgent,browser=/Edg/.test(ua)?'Edge':/Firefox/.test(ua)?'Firefox':/Chrome/.test(ua)?'Chromium':/Safari/.test(ua)?'Safari':'Otro';const data=diagnosticSummary(s,{appVersion:FIELD_VERSION,dbVersion:11,browser,viewport:{width:innerWidth,height:innerHeight}}),url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='diagnostico-biblioteca.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Diagnóstico preparado: versión, cantidades y resultado de integridad. Sin nombres ni catálogo.');}catch{notify('No se pudo preparar el diagnóstico. Revisá los permisos del perfil.');}return;}
  if(button.dataset.action==='import')$('#import-file').click();
  if(button.dataset.action==='import-aguapey')$('#aguapey-file').click();
  if(button.dataset.action==='camera-unavailable')showRecognitionFallback('Si no podés usar la cámara, ingresá el código, usá una fotografía o incorporá el material manualmente.');
@@ -316,11 +329,11 @@ document.addEventListener('submit',async event=>{
    try{const raw=Object.fromEntries(new FormData(form)),existing=books.find(b=>b.id===raw.id);const book=assignMissingInventoryCodes(validateBook({...existing,...(!existing?draft:null),...raw,...(existing?{exemplars:existing.exemplars.map(e=>({...e,...(raw.location!==existing.location?{location:raw.location}:{}),...(raw.condition!==existing.condition?{condition:raw.condition}:{})}))}:{})}),books.filter(b=>b.id!==existing?.id));const exact=detectCatalogMatches(books,book,{excludeId:book.id}).find(m=>m.kind==='exact-edition');if(exact)throw new Error('Esta edición ya está registrada en “'+exact.book.title+'”. Usá la opción para agregar ejemplares al registro existente.');if(existing&&book.copies<existing.copies&&!await confirmAction('Reducir ejemplares',`Se quitarán ${existing.copies-book.copies} ejemplares del final de la lista y sus fotografías. Exportá un respaldo antes de continuar.`,'Reducir ejemplares'))return;await saveBook(book);books=await readBooks();draft=null;notify(existing?'Registro actualizado.':'Material incorporado al catálogo.');location.hash='#ficha/'+book.id;}catch(error){feedback.textContent=storageMessage(error);feedback.focus();}finally{submit.disabled=false;submit.textContent='Guardar en el catálogo';form.removeAttribute('aria-busy');}
  }
 });
-document.addEventListener('input',event=>{event.target.removeAttribute('aria-invalid');if(event.target.name==='copies')event.target.dataset.userEdited='true';if(event.target.form?.matches('#book-form'))updateDuplicateWarning(event.target.form);if(event.target.id==='search'){query=event.target.value;const start=event.target.selectionStart,end=event.target.selectionEnd;renderLibrary();const input=$('#search');input.focus();input.setSelectionRange(start,end);}});
+document.addEventListener('input',event=>{event.target.removeAttribute('aria-invalid');if(event.target.name==='copies')event.target.dataset.userEdited='true';if(event.target.form?.matches('#book-form'))updateDuplicateWarning(event.target.form);if(event.target.id==='search'){query=event.target.value;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{if(route()!=='biblioteca')return;const start=$('#search')?.selectionStart,end=$('#search')?.selectionEnd,focused=document.activeElement?.id==='search';renderLibrary();if(focused){const input=$('#search');input.focus();if(start!==null)input.setSelectionRange(start,end);}},120);}});
 document.addEventListener('change',event=>{if(event.target.id==='topic-filter'){topicFilter=event.target.value;renderLibrary();}if(event.target.id==='category'){category=event.target.value;renderLibrary();}if(event.target.id==='material-filter'){materialFilter=event.target.value;renderLibrary();}if(event.target.id==='availability-filter'){availabilityFilter=event.target.value;renderLibrary();}if(event.target.id==='photo-copy')renderSelectedPhoto();if(event.target.name==='materialType')updateMaterialSpecificFields(event.target.form||document);if(event.target.form?.matches('#book-form'))updateDuplicateWarning(event.target.form);});
 $('#barcode-photo').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;const status=$('#lookup-status');status.textContent='Analizando la fotografía del código…';try{const isbn=await scanMaterialFromFile(file);if(route()!=='agregar')return;$('#isbn-query').value=isbn;await runLookup(isbn);}catch(error){showRecognitionFallback(error.message);}});
 $('#aguapey-file').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;try{await openMarcCataloging(file);}catch(error){notify(error.message);}});
-$('#import-file').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;try{if(file.size>50*1024*1024)throw new Error('El archivo supera 50 MB.');const expectedInstitution=getInstitutionId(),expectedActor=getActorId(),archive=JsonBackupProvider.parse(await file.text()),preview=backupPreview(archive);if(!await confirmAction('Archivo verificado · vista previa',`${preview.institution} · Exportado: ${preview.exportedAt||'sin fecha'}. Materiales: ${preview.materials}; ejemplares: ${preview.copies}; personas: ${preview.people}; préstamos activos: ${preview.activeLoans}; reservas: ${preview.reservations}; jornadas: ${preview.catalogingSessions}; inventarios: ${preview.inventories}. Todavía no se escribió nada. Cancelá si solo querías verificar. Un respaldo completo reemplaza su institución; si no existe, crea su espacio. Los archivos antiguos combinan catálogo. Exportá el estado actual antes de continuar.`, 'Restaurar archivo verificado'))return;if(expectedInstitution!==getInstitutionId()||expectedActor!==getActorId())throw new Error('Cambió el contexto. Volvé a verificar el archivo.');let result;if(archive.version>=4)result=await restoreArchive(archive);else await mergeBooks(archive.books.map(localizeBook),archive.photos);books=await readBooks();await render();notify(result?.warnings?.length?'Restaurado con '+result.warnings.length+' advertencias. Revisá Calidad de datos y referencias históricas.':'Respaldo restaurado.');}catch(error){notify(error.message||'No se pudo importar.');}});
+$('#import-file').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;notify('Verificando estructura y relaciones del respaldo…');await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));try{if(file.size>50*1024*1024)throw new Error('El archivo supera 50 MB.');const expectedInstitution=getInstitutionId(),expectedActor=getActorId(),archive=JsonBackupProvider.parse(await file.text()),preview=backupPreview(archive);if(!await confirmAction('Archivo verificado · vista previa',`${preview.institution} · Exportado: ${preview.exportedAt||'sin fecha'}. Materiales: ${preview.materials}; ejemplares: ${preview.copies}; personas: ${preview.people}; préstamos activos: ${preview.activeLoans}; reservas: ${preview.reservations}; jornadas: ${preview.catalogingSessions}; inventarios: ${preview.inventories}; observaciones del piloto: ${preview.pilotFeedback}; asistencias: ${preview.assistance}; ubicaciones: ${preview.locations}; cooperación: ${preview.cooperation}. Todavía no se escribió nada. Cancelá si solo querías verificar. Un respaldo completo reemplaza su institución; si no existe, crea su espacio. Los archivos antiguos combinan catálogo. Exportá el estado actual antes de continuar.`, 'Restaurar archivo verificado'))return;if(expectedInstitution!==getInstitutionId()||expectedActor!==getActorId())throw new Error('Cambió el contexto. Volvé a verificar el archivo.');let result;if(archive.version>=4)result=await restoreArchive(archive);else await mergeBooks(archive.books.map(localizeBook),archive.photos);books=await readBooks();await render();notify(result?.warnings?.length?'Restaurado con '+result.warnings.length+' advertencias. Revisá Calidad de datos y referencias históricas.':'Respaldo restaurado.');}catch(error){notify(error.message||'No se pudo importar.');}});
 for(const input of [$('#physical-photo'),$('#physical-camera')])input.addEventListener('change',async event=>{const file=event.target.files[0],target=photoTarget;event.target.value='';if(!file||!target)return;try{const dataUrl=await preparePhoto(file);if(detailPhotos.some(p=>p.id===target.id)&&!await confirmAction('Reemplazar fotografía','La foto anterior de este ejemplar será reemplazada por la nueva.','Reemplazar fotografía'))return;await savePhoto({...target,dataUrl,takenAt:new Date().toISOString()});detailPhotos=await getPhotos(target.bookId);renderSelectedPhoto();notify('Foto del ejemplar guardada localmente.');}catch(error){notify(error.message||'No se pudo guardar la foto.');}});
 $('#large-image').addEventListener('error',()=>$('#image-status').textContent='No se pudo cargar la imagen.');
 $('#image-viewer').addEventListener('close',()=>$('#large-image').removeAttribute('src'));
@@ -329,6 +342,8 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)stopScan();
 window.addEventListener('pagehide',cancelLookup);
 document.addEventListener('error',event=>{if(event.target.matches?.('.real-cover img')){event.target.hidden=true;event.target.nextElementSibling.hidden=false;}},true);
 
+initOffline();
+for(const node of document.querySelectorAll('[data-field-version]'))node.textContent='Versión '+FIELD_VERSION+' · Piloto local';
 initSchoolPilotUI(async()=>{books=await readBooks();await render();});
 window.addEventListener('unhandledrejection',event=>showRecovery(event.reason));
 window.addEventListener('error',event=>{if(event.error)showRecovery(event.error);});

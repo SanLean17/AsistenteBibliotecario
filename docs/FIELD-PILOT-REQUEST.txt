@@ -1,0 +1,860 @@
+En el repo SanLean17/AsistenteBibliotecario, implementar un BLOQUE MUY GRANDE llamado:
+
+FIELD PILOT V1 — OFFLINE-FIRST + ESCALA + RECUPERACIÓN + MANUALES + SIMULACIÓN REAL
+
+Objetivo: transformar la RC1 actual en una versión de campo preparada para una prueba escolar prolongada de varios días/semanas, sin backend, sin Supabase/Firebase y sin servicios pagos. La prioridad no es agregar muchas funciones nuevas, sino hacer que el producto sea resistente, entendible, portable, recuperable y usable bajo condiciones reales de escuela.
+
+ANTES DE EMPEZAR
+1) Verificar el commit final de RC1.
+2) Revisar GitHub Actions y confirmar qué está verde/fallando/flaky.
+3) No ocultar errores con continue-on-error.
+4) No desactivar tests importantes.
+5) Mantener muy pocos commits coherentes; idealmente un commit final grande o una pequeña serie bien definida.
+6) No considerar terminado hasta que el commit final tenga CI completamente verde.
+
+==================================================
+FASE 1 — BASELINE Y MATRIZ DE FUNCIONES
+==================================================
+
+Crear una matriz real del producto actual que liste módulos/rutas/capacidades y estado:
+- estable;
+- experimental;
+- limitado por modo local;
+- requiere Internet;
+- funciona offline;
+- no disponible todavía.
+
+Incluir al menos:
+- catálogo;
+- agregar material;
+- jornada de catalogación;
+- OCR/foto;
+- Mostrador;
+- circulación;
+- reservas;
+- Mi biblioteca;
+- búsquedas;
+- guardados;
+- recomendaciones;
+- inventario;
+- estado físico;
+- etiquetas;
+- avisos;
+- calidad;
+- piloto;
+- backup/restore;
+- Aguapey/MARC;
+- cooperación;
+- roles/permisos.
+
+No presentar como estable algo que no lo sea.
+
+Guardar esta matriz en documentación legible, por ejemplo docs/FIELD-PILOT.md.
+
+==================================================
+FASE 2 — OFFLINE-FIRST REALISTA
+==================================================
+
+El objetivo es que operaciones LOCALES sigan funcionando sin conexión una vez cargada la app.
+
+Evaluar si es seguro implementar una PWA/service worker.
+
+Si la arquitectura lo permite sin introducir riesgo:
+- crear manifest web app;
+- service worker simple y auditable;
+- cachear solamente assets locales versionados;
+- NO cachear respuestas bibliográficas externas como fuente autoritativa silenciosa;
+- usar estrategia clara para HTML/CSS/JS;
+- evitar quedarse pegado a versiones antiguas después de deploy;
+- integrar con el versionado de caché existente.
+
+Si una PWA completa introduce demasiado riesgo, implementar solamente una estrategia offline segura y documentada.
+
+Objetivo mínimo offline:
+- abrir catálogo local;
+- buscar localmente;
+- ver fichas;
+- Mostrador;
+- préstamo;
+- devolución;
+- reservas ya almacenadas;
+- inventario;
+- estado físico;
+- jornada local;
+- etiquetas si assets están disponibles;
+- Mi biblioteca.
+
+Operaciones que requieren red deben degradar bien:
+- Open Library;
+- Google Books;
+- cualquier consulta bibliográfica externa.
+
+Mensaje esperado:
+“Sin conexión. Podés seguir trabajando con los datos locales y completar esta ficha manualmente.”
+
+Nunca mostrar error técnico genérico si se conoce que es falta de conexión.
+
+==================================================
+FASE 3 — ACTUALIZACIONES SIN ROMPER DATOS
+==================================================
+
+Si se incorpora service worker/offline cache:
+- detectar nueva versión disponible;
+- evitar actualización silenciosa durante una operación crítica;
+- ofrecer algo como “Hay una actualización disponible · aplicar al terminar”;
+- nunca borrar IndexedDB al actualizar;
+- documentar cómo se actualiza.
+
+Probar:
+- versión A con datos;
+- deploy versión B;
+- recargar;
+- datos siguen intactos.
+
+==================================================
+FASE 4 — SIMULACIÓN DE ESCALA
+==================================================
+
+Crear fixtures/synthetic datasets locales para pruebas, NO para producción.
+
+Escenarios sugeridos:
+
+A) pequeña biblioteca
+- 100 materiales
+- 150 ejemplares
+- 20 personas
+
+B) biblioteca media
+- 2.000 materiales
+- 3.000 ejemplares
+- 200 personas
+- 500 préstamos históricos
+
+C) biblioteca grande simulada
+- 10.000 materiales
+- 15.000–20.000 ejemplares
+- 1.000 personas
+- miles de operaciones históricas
+
+No cargar estos datos automáticamente en usuarios reales.
+
+Crear scripts/fixtures de benchmark solamente para QA.
+
+Medir:
+- apertura inicial;
+- búsqueda;
+- Mostrador;
+- render de catálogo;
+- Mi biblioteca;
+- avisos;
+- inventario;
+- calidad de datos;
+- backup;
+- restore.
+
+Identificar cuellos de botella reales.
+
+Optimizar solo donde haya evidencia.
+
+==================================================
+FASE 5 — ÍNDICES Y BÚSQUEDA A ESCALA
+==================================================
+
+Revisar el motor de búsqueda con miles de registros.
+
+Evitar recalcular todo innecesariamente en cada tecla si el catálogo crece mucho.
+
+Evaluar:
+- índices precalculados locales;
+- memoización invalidable;
+- debounce razonable;
+- paginación/virtualización si hace falta.
+
+No cambiar semántica del buscador.
+
+Debe seguir siendo:
+- determinístico;
+- explicable;
+- sin IA inventada.
+
+Mantener coincidencias por:
+- título;
+- autor;
+- temas;
+- contenidos;
+- audiencia documentada;
+- publicación;
+- identificadores.
+
+==================================================
+FASE 6 — CATÁLOGO GRANDE Y RENDERING
+==================================================
+
+Con miles de materiales:
+- no renderizar 10.000 cards de golpe si eso degrada la app;
+- implementar paginación o “mostrar más” o virtualización simple y accesible si es necesario;
+- mantener posición al volver desde ficha;
+- mantener filtros y búsqueda al navegar ida/vuelta.
+
+No introducir un framework pesado solo por esto.
+
+==================================================
+FASE 7 — PEOPLE SEARCH A ESCALA
+==================================================
+
+Probar búsqueda de personas con 500–1.000 registros.
+
+Mostrador debe seguir permitiendo:
+Ejemplar → buscar persona → prestar
+sin listas gigantes.
+
+Optimizar búsqueda por:
+- nombre;
+- cargo;
+- curso;
+- perfil.
+
+Evitar renderizar 1.000 opciones en un select.
+
+==================================================
+FASE 8 — SESIONES LARGAS DE MOSTRADOR
+==================================================
+
+Simular 100–300 operaciones consecutivas:
+- préstamo;
+- devolución;
+- reserva lista;
+- ejemplar restringido;
+- código inexistente;
+- escaneo repetido.
+
+Buscar:
+- memory leaks;
+- listeners duplicados;
+- UI que se vuelve más lenta;
+- estados antiguos que quedan pegados;
+- cámara que no libera recursos;
+- dobles submits.
+
+Mostrador debe mantener velocidad estable durante una jornada larga.
+
+==================================================
+FASE 9 — SESIONES LARGAS DE CATALOGACIÓN
+==================================================
+
+Probar Jornada con:
+- 100 ISBN;
+- 300 ISBN;
+- repetidos;
+- sin metadatos;
+- mismos trabajos/diferentes ediciones;
+- offline parcial.
+
+Confirmar:
+- cola persiste;
+- filtros rápidos;
+- selección múltiple estable;
+- incorporación no duplica;
+- reanudar no pierde nada;
+- cerrar/reabrir conserva estado.
+
+==================================================
+FASE 10 — OCR BAJO CONDICIONES REALES
+==================================================
+
+Probar OCR con fixtures simulados para:
+- imagen clara;
+- imagen borrosa;
+- rotada;
+- poco contraste;
+- múltiples ISBN;
+- índice largo;
+- primera plana.
+
+Asegurar:
+- cancelación;
+- lazy loading;
+- liberación de worker;
+- no bloquear UI;
+- no aplicar propuestas sin confirmación.
+
+No depender de resultados OCR variables para browser CI general.
+
+==================================================
+FASE 11 — BACKUP GRANDE
+==================================================
+
+Probar export con datasets grandes.
+
+Medir:
+- tamaño JSON;
+- tiempo de exportación;
+- tiempo de importación;
+- memoria usada.
+
+Evitar congelamiento de UI si es viable.
+
+Si backup grande puede tardar:
+mostrar progreso/estado claro.
+
+No afirmar “completado” antes de terminar realmente.
+
+==================================================
+FASE 12 — VALIDACIÓN DE BACKUP ANTES DE RESTAURAR
+==================================================
+
+Crear validación en dos etapas:
+1) parse/estructura;
+2) integridad relacional.
+
+Antes de escribir mostrar preview:
+- institución;
+- exportado en;
+- materiales;
+- ejemplares;
+- personas;
+- préstamos activos;
+- reservas;
+- inventarios;
+- jornadas;
+- feedback piloto.
+
+Backup inválido:
+- no tocar datos existentes.
+
+==================================================
+FASE 13 — RECOVERY LAB
+==================================================
+
+Crear tests automatizados de recuperación para escenarios:
+- cierre del navegador durante jornada;
+- cierre durante inventario;
+- navegación durante préstamo;
+- refresh justo después de operación;
+- import inválido;
+- upgrade DB interrumpido simulado donde sea viable.
+
+No intentar simular corrupción imposible de forma artificial si no aporta valor.
+
+Objetivo: garantizar que las operaciones atómicas reales no dejen medias escrituras.
+
+==================================================
+FASE 14 — DATA INTEGRITY TOOL
+==================================================
+
+Fortalecer el diagnóstico interno.
+
+Debe poder comprobar localmente:
+- ejemplar duplicado por UUID;
+- AB duplicado dentro de institución;
+- secuencia inferior al máximo AB;
+- préstamo con ejemplar inexistente;
+- reserva con libro/ejemplar inexistente;
+- foto huérfana;
+- ubicación inexistente;
+- jornada con item inválido;
+- inventario con referencias rotas;
+- work/edition rotos;
+- grants incoherentes;
+- resource sharing con holding inexistente.
+
+Solo corregir automáticamente casos deterministas y explícitamente confirmados.
+
+==================================================
+FASE 15 — IMPORT LEGACY
+==================================================
+
+Probar respaldos de varias versiones anteriores soportadas.
+
+Crear fixtures representativos.
+
+Confirmar:
+- v1 → actual
+- v2 → actual
+- v3 → actual
+- v4 → actual
+- v5 → actual
+- cualquier versión nueva generada por Jornada/OCR/Piloto.
+
+No perder:
+- IDs;
+- códigos AB;
+- personas;
+- historial.
+
+==================================================
+FASE 16 — DOCUMENTACIÓN PARA BIBLIOTECARIA
+==================================================
+
+Crear una guía NO técnica:
+
+docs/GUIA-BIBLIOTECA.md
+
+Lenguaje simple.
+
+Capítulos:
+1. Empezar
+2. Registrar institución
+3. Cargar materiales
+4. Jornada de catalogación
+5. Etiquetas
+6. Prestar/devolver
+7. Reservas
+8. Inventario
+9. Estado físico
+10. Backup
+11. Si algo sale mal
+
+Evitar hablar de IndexedDB/UUID salvo en notas técnicas separadas.
+
+==================================================
+FASE 17 — GUÍA DOCENTE
+==================================================
+
+Crear:
+
+docs/GUIA-DOCENTE.md
+
+Debe explicar:
+- buscar materiales;
+- buscar cuentos dentro de libros;
+- disponibilidad;
+- reservar;
+- ver Mis préstamos;
+- pedir extensión;
+- guardados.
+
+Muy breve y visual en estructura.
+
+==================================================
+FASE 18 — GUÍA DIRECTIVO / AUTORIDAD
+==================================================
+
+Crear:
+
+docs/GUIA-AUTORIDAD.md
+
+Explicar:
+- personas;
+- perfiles;
+- permisos;
+- responsables;
+- configuración institucional;
+- estadísticas agregadas;
+- límites del prototipo local.
+
+==================================================
+FASE 19 — GUÍA DE PILOTO
+==================================================
+
+Crear:
+
+docs/GUIA-PILOTO-ESCUELA.md
+
+Debe ser un protocolo real de 3–5 jornadas.
+
+Ejemplo:
+Día 1: setup + 20 materiales
+Día 2: catalogación + etiquetas
+Día 3: docentes + búsqueda/reserva
+Día 4: Mostrador
+Día 5: inventario + cierre + feedback
+
+Incluir qué observar y qué NO hacer.
+
+==================================================
+FASE 20 — CHECKLIST IMPRIMIBLE
+==================================================
+
+Crear una versión imprimible simple del checklist del piloto.
+
+Puede ser HTML/CSS print o documento dentro del sitio.
+
+No generar PDF si no hace falta.
+
+Checklist:
+- backup inicial;
+- responsables;
+- materiales;
+- etiquetas;
+- préstamo prueba;
+- reserva prueba;
+- inventario prueba;
+- feedback;
+- backup final.
+
+==================================================
+FASE 21 — MANUAL “SI ALGO SALE MAL”
+==================================================
+
+Crear guía clara:
+- no borrar datos del navegador;
+- exportar backup;
+- anotar error;
+- recargar;
+- probar otro flujo;
+- restaurar solamente si corresponde.
+
+Incluir cámara bloqueada, offline, backup inválido, error de fuente externa.
+
+==================================================
+FASE 22 — TOOLTIP / AYUDA CONTEXTUAL MÍNIMA
+==================================================
+
+Solo donde haya fricción real documentada.
+
+No llenar toda la UI de tooltips.
+
+Priorizar:
+- AB vs ISBN;
+- obra vs edición;
+- “No prestar”;
+- backup local;
+- modo piloto;
+- jornada.
+
+==================================================
+FASE 23 — FIRST-RUN PARA BIBLIOTECA
+==================================================
+
+Revisar onboarding para que una persona nueva entienda en menos de 1 minuto:
+- qué está viendo;
+- qué hacer primero;
+- cómo cargar material;
+- dónde está el backup.
+
+No obligar tours largos.
+
+==================================================
+FASE 24 — ERROR BOUNDARIES / FALLBACK UI
+==================================================
+
+Como es vanilla JS, crear manejo centralizado robusto equivalente a error boundaries:
+- capturar errores inesperados de render;
+- mostrar pantalla recuperable;
+- acción volver al inicio;
+- exportar respaldo;
+- registrar observación si piloto está activo.
+
+No tragarse el error en consola para desarrollo/tests.
+
+==================================================
+FASE 25 — LOG TÉCNICO LOCAL LIMITADO
+==================================================
+
+Evaluar un pequeño ring buffer en memoria/local session para errores técnicos recientes.
+
+NO telemetría.
+NO servidor.
+NO datos sensibles.
+
+Solo:
+- timestamp;
+- route;
+- error class/message resumido;
+- app version.
+
+Si no aporta suficiente valor, omitir.
+
+==================================================
+FASE 26 — EXPORT DE DIAGNÓSTICO
+==================================================
+
+Agregar opcionalmente “Exportar diagnóstico” en piloto/configuración.
+
+Archivo JSON con:
+- versión app;
+- versión DB;
+- navegador resumido;
+- viewport;
+- conteos agregados;
+- health checks;
+- errores técnicos recientes sin PII.
+
+NO incluir catálogo completo ni personas.
+
+Útil para que el usuario pueda mandarnos el archivo manualmente durante piloto.
+
+==================================================
+FASE 27 — TEST MATRIX DE NAVEGADORES
+==================================================
+
+En CI, mantener Chromium principal.
+
+Si es razonable y no vuelve el CI demasiado lento/flaky, agregar una smoke suite reducida en Firefox/WebKit para:
+- abrir app;
+- catálogo;
+- Mostrador sin cámara real;
+- Mi biblioteca;
+- backup parse.
+
+No correr toda la suite pesada en 3 motores.
+
+Priorizar estabilidad del CI.
+
+==================================================
+FASE 28 — CÁMARA CROSS-BROWSER
+==================================================
+
+Revisar compatibilidad de:
+- getUserMedia;
+- BarcodeDetector;
+- ZXing fallback;
+- capture=file.
+
+Crear matriz documentada:
+- Chrome Android;
+- Safari iOS;
+- Edge/Chrome desktop;
+- Firefox.
+
+No afirmar soporte sin test/limitación documentada.
+
+==================================================
+FASE 29 — PRINT QUALITY
+==================================================
+
+Revisar impresión de etiquetas:
+- A4;
+- márgenes;
+- cortes;
+- QR legible;
+- Code128 legible;
+- sin navegación al imprimir.
+
+Crear test visual/DOM de print CSS donde sea viable.
+
+==================================================
+FASE 30 — ACCESIBILIDAD AA-ORIENTED
+==================================================
+
+Sin prometer certificación WCAG si no se audita formalmente.
+
+Revisar orientación AA:
+- contraste;
+- foco;
+- labels;
+- teclado;
+- zoom 200%;
+- responsive con texto grande;
+- reduced motion.
+
+Documentar limitaciones conocidas.
+
+==================================================
+FASE 31 — SECURITY REVIEW LOCAL
+==================================================
+
+Aunque no haya backend, revisar:
+- HTML escaping;
+- XSS desde título/autor/notas;
+- URLs externas;
+- imports;
+- restore JSON malicioso;
+- data URLs de fotos;
+- innerHTML con datos de usuario;
+- target=_blank rel=noopener;
+- no eval/new Function.
+
+Agregar tests para cadenas con HTML/script en campos visibles.
+
+==================================================
+FASE 32 — PRIVACY REVIEW
+==================================================
+
+Confirmar que:
+- no hay trackers;
+- no hay analytics externos;
+- no hay datos enviados salvo consultas bibliográficas explícitas;
+- OCR local si corresponde;
+- backup es local;
+- docentes no ven actividad de terceros.
+
+Crear docs/PRIVACIDAD-PILOTO.md legible.
+
+==================================================
+FASE 33 — LICENCIAS / DEPENDENCIAS
+==================================================
+
+Crear inventario de dependencias/vendor:
+- nombre;
+- versión;
+- licencia;
+- uso.
+
+Incluir ZXing, QR, JsBarcode, OCR engine y cualquier otra librería.
+
+No distribuir licencias incorrectamente.
+
+Crear THIRD_PARTY_NOTICES.md si corresponde.
+
+==================================================
+FASE 34 — REPO HYGIENE
+==================================================
+
+Revisar:
+- archivos muertos;
+- tests obsoletos;
+- docs contradictorias;
+- comentarios TODO desactualizados;
+- assets duplicados;
+- versiones viejas no usadas.
+
+No borrar nada sin verificar referencias.
+
+==================================================
+FASE 35 — README ACTUAL
+==================================================
+
+Actualizar README para reflejar lo que existe HOY.
+
+Debe incluir:
+- propósito;
+- estado del proyecto;
+- cómo ejecutar localmente;
+- cómo correr tests;
+- arquitectura resumida;
+- límites actuales;
+- piloto.
+
+Eliminar roadmap obsoleto que diga que funciones ya implementadas son futuras.
+
+==================================================
+FASE 36 — RELEASE VERSION
+==================================================
+
+Definir una versión legible de aplicación para Field Pilot V1.
+
+Ejemplo:
+0.8.0-field-pilot
+
+o esquema coherente con el repo.
+
+Mostrarla discretamente en configuración/acerca del prototipo.
+
+No inventar SemVer si el repo ya usa otro sistema; respetar consistencia.
+
+==================================================
+FASE 37 — RELEASE NOTES
+==================================================
+
+Crear:
+RELEASE_NOTES.md
+
+Resumen para personas no técnicas:
+- qué puede hacer;
+- qué cambió;
+- limitaciones;
+- qué probar.
+
+==================================================
+FASE 38 — TESTS AUTOMATIZADOS DE ESCALA
+==================================================
+
+Agregar tests que no sean demasiado lentos:
+- 2k books search benchmark con límite razonable;
+- 10k integrity check;
+- 1k people search;
+- 300 queue items catalogation;
+- backup medium dataset.
+
+No hacer assertions de milisegundos demasiado frágiles en CI.
+
+En cambio usar thresholds amplios o detectar explosiones evidentes.
+
+==================================================
+FASE 39 — BROWSER SMOKE FIELD PILOT
+==================================================
+
+Crear una smoke suite compacta que haga un recorrido completo:
+1. abrir app;
+2. configurar institución;
+3. crear material;
+4. ejemplar AB;
+5. crear docente;
+6. prestar;
+7. devolver;
+8. reservar;
+9. inventario breve;
+10. backup exportable;
+11. Mi biblioteca.
+
+Debe ser rápida y muy estable.
+
+==================================================
+FASE 40 — CI FINAL
+==================================================
+
+Optimizar Actions para:
+- unit rápidos;
+- browser smoke;
+- suites extensas agrupadas razonablemente;
+- cache Playwright si es seguro;
+- cancel-in-progress;
+- no spamear runs.
+
+No silenciar fallos.
+
+Antes de terminar:
+- syntax green;
+- integrity green;
+- unit green;
+- browser green;
+- scale tests green;
+- Pages deploy green.
+
+==================================================
+FASE 41 — DELIVERABLE FINAL
+==================================================
+
+Crear docs/FIELD-PILOT-STATUS.md con:
+- commit/version;
+- CI status esperado;
+- qué fue auditado;
+- límites conocidos;
+- navegadores probados;
+- tamaños de dataset probados;
+- backup probado;
+- offline probado;
+- riesgos restantes;
+- recomendación para piloto real.
+
+==================================================
+NO HACER
+==================================================
+
+- No Supabase.
+- No Firebase.
+- No backend.
+- No cuentas reales online.
+- No sync falsa.
+- No servicios pagos.
+- No trackers.
+- No analytics externos.
+- No rediseño total.
+- No funciones grandes ajenas al piloto.
+- No convertir el producto en una PWA compleja si eso introduce inestabilidad.
+- No comprometer datos para mejorar performance.
+
+==================================================
+RESULTADO FINAL ESPERADO
+==================================================
+
+Al terminar, Asistente Bibliotecario debe estar en una versión Field Pilot V1 capaz de soportar:
+- varios días de uso;
+- bibliotecas pequeñas y medianas simuladas;
+- operación sin Internet para funciones locales;
+- fallos de fuentes externas;
+- cierres/reanudaciones;
+- backup/restore;
+- mobile y desktop;
+- múltiples roles;
+- catalogación intensiva;
+- circulación intensiva;
+- recuperación ante errores;
+- documentación entendible por Biblioteca, Docentes y Autoridad.
+
+No buscamos sumar muchas cosas nuevas.
+Buscamos que lo que ya construimos sea suficientemente sólido como para sobrevivir a una prueba real prolongada.
+
+No considerar el trabajo terminado hasta que el commit final esté completamente verde y cualquier limitación restante esté explícitamente documentada.

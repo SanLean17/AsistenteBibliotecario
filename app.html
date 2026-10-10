@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#EBF3FF">
   <meta name="description" content="Gestión y consulta inteligente para bibliotecas escolares e institucionales.">
+  <link rel="manifest" href="./manifest.webmanifest">
   <title>Catálogo · Asistente Bibliotecario</title>
-  <link rel="icon" href="./icon.svg?v=20261010-rc1" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=20261010-rc1">
-  <link rel="stylesheet" href="./design.css?v=20261010-rc1">
-  <link rel="stylesheet" href="./workspace.css?v=20261010-rc1">
+  <link rel="icon" href="./icon.svg?v=20261010-field1" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css?v=20261010-field1">
+  <link rel="stylesheet" href="./design.css?v=20261010-field1">
+  <link rel="stylesheet" href="./workspace.css?v=20261010-field1">
 </head>
 <body class="app-page">
   <aside class="sidebar" id="workspace-menu">
@@ -46,7 +47,7 @@
     <p>Asistente Bibliotecario está pensado para instituciones educativas que necesitan registrar, localizar y consultar su patrimonio bibliográfico de forma simple.</p>
     <p>La incorporación intenta reconocer el material sin pedirte antes el tipo de código. Actualmente, la recuperación de información bibliográfica consulta libros por ISBN; otros materiales también pueden registrarse sin ese identificador. La información institucional y las fotos de ejemplares permanecen en este navegador durante esta etapa de prueba.</p>
     <a class="button secondary" href="./">Ver sitio público</a>
-    <p>Exportá un respaldo con frecuencia. La futura versión institucional incorporará usuarios, préstamos, circulación, estadísticas, sincronización y herramientas de asistencia con IA.</p>
+    <p>Ya podés registrar personas, préstamos, devoluciones, reservas, inventarios y observaciones del piloto. Los perfiles se simulan en este navegador, sin contraseña ni sincronización entre equipos.</p><p data-field-version></p><p><a href="./docs/GUIA-PILOTO-ESCUELA.md" target="_blank" rel="noopener">Guía del piloto escolar</a> · <a href="./docs/checklist-piloto.html" target="_blank" rel="noopener">Lista para imprimir</a></p>
   </dialog>
 
   <input id="physical-photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden>
@@ -56,6 +57,6 @@
   <input id="aguapey-file" type="file" accept=".iso,application/octet-stream" hidden>
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <script type="module" src="./src/app.js?v=20261010-rc1"></script>
+  <script type="module" src="./src/app.js?v=20261010-field1"></script>
 </body>
 </html>

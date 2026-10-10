@@ -1,87 +1,59 @@
 # Asistente Bibliotecario
 
-Prototipo local para bibliotecas escolares argentinas. El nombre sigue siendo de trabajo.
+**FIELD PILOT V1 · 0.2.0-field.1**. Aplicación local para bibliotecas escolares argentinas. Preparada para una prueba controlada; no es una plataforma con cuentas ni sincronización.
 
-**RC1 · cierre técnico pre-piloto:** alcance, evidencia, checklist, comandos de QA y limitaciones en [docs/RELEASE-CANDIDATE.md](docs/RELEASE-CANDIDATE.md). El protocolo de uso y recuperación escolar está en [docs/PILOTO.md](docs/PILOTO.md).
+[Abrir aplicación](https://sanlean.com.ar/AsistenteBibliotecario/app.html#inicio) · [Sitio informativo](https://sanlean.com.ar/AsistenteBibliotecario/) · [Estado y evidencia](docs/FIELD-PILOT-STATUS.md) · [Notas de versión](RELEASE_NOTES.md).
 
-## Acceso
+## Qué incluye
 
-- Sitio público: https://sanlean.com.ar/AsistenteBibliotecario/
-- Aplicación interna: https://sanlean.com.ar/AsistenteBibliotecario/app.html#inicio
+Catálogo y búsqueda por título, autoría, temas y contenidos; alta manual/ISBN; jornada de catalogación; asistencia por fotografía con propuestas que requieren confirmación; ejemplares con códigos AB y fotos físicas; Mostrador, préstamos, devoluciones y reservas; Mi biblioteca y guardados; personas, roles y permisos locales; inventario, ubicaciones y estado físico; avisos, calidad, planificación y cooperación local; etiquetas QR/Code128; importación Aguapey/MARC UTF-8; respaldos y piloto con observaciones/informe.
 
-La landing explica el producto; la aplicación abre un panel con buscador, catálogo, incorporación, ejemplares y configuración. Los enlaces antiguos con rutas hash siguen funcionando. No se agregó ni modificó CNAME.
+La apertura sin conexión se prepara al visitar la aplicación con red. Esperar el aviso de preparación completa y comprobar una reapertura sin internet. Las fuentes bibliográficas y portadas externas pueden no estar disponibles. Los datos viven en este navegador y dispositivo; exportar un respaldo al inicio y cierre de cada jornada. Elegir un equipo principal evita catálogos divergentes.
 
-## Disponible
+## Para la escuela
 
-- Entrada única por cámara con ZXing multiformato. Si no reconoce el material, reintento, código/enlace o incorporación manual; sin elegir previamente ISBN, ISSN, DOI o QR.
-- Consulta en paralelo a Open Library y Google Books, con equivalencia ISBN-10/ISBN-13.
-- Combinación de metadatos con procedencia por campo, conflictos y datos originales de fuente.
-- Revisión posterior al reconocimiento: tipo de material, datos disponibles, temas, resumen y contenidos; copias físicas solamente cuando corresponden. Libros, revistas, diarios, artículos, documentos, producciones escolares y recursos digitales.
-- Búsqueda en título, autor, temas, sinónimos acotados, descripción y contenidos; sin inferencias de edad/grado ni IA.
-- Fichas compactas, portada ampliable, fotos independientes por ejemplar, inventario y edición individual de ubicación/estado.
-- Confirmaciones propias en zonas de peligro: borrar foto, reemplazar foto, eliminar ejemplar, reducir cantidad, eliminar registro, vaciar catálogo e importar coincidencias.
-- IndexedDB, exportación/importación JSON con fotografías, tema claro/oscuro y controles móviles de al menos 16 px.
+- [Guía de Biblioteca](docs/GUIA-BIBLIOTECA.md)
+- [Guía de Docente/Lector](docs/GUIA-DOCENTE.md)
+- [Guía de Autoridad Institucional](docs/GUIA-AUTORIDAD.md)
+- [Piloto de cinco días](docs/GUIA-PILOTO-ESCUELA.md) y [lista imprimible](docs/checklist-piloto.html)
+- [Si algo sale mal](docs/SI-ALGO-SALE-MAL.md) y [privacidad](docs/PRIVACIDAD-PILOTO.md)
+- [Matriz completa de capacidades y límites](docs/FIELD-PILOT.md)
 
-El catálogo conserva la misma base IndexedDB de versiones anteriores. La landing no abre esa base. La información no se sincroniza entre dispositivos y no existen cuentas reales; la circulación y los permisos funcionan en este dispositivo.
+## Ejecutar y verificar
 
-## Arquitectura y fuentes
-
-- [Arquitectura, modelo y roadmap](docs/ARCHITECTURE.md): separación obra/edición/ejemplar, institución/biblioteca/colección, contrato de almacenamiento y módulos futuros.
-- [Investigación y adaptadores bibliográficos](docs/BIBLIOGRAPHIC-PROVIDERS.md): BN Mariano Moreno, BNM, ISBN Argentina y proveedores comerciales futuros.
-- `src/providers/`: contrato/registro de fuentes, consultas HTTPS y normalizadores MARC21.
-- `server/bn-provider.mjs`: adaptador opcional Node + YAZ para la BN. Probado con datos controlados, no activado en Pages. La conexión TCP al destino oficial fue comprobada; todavía no se verificó recuperación Z39.50 real.
-- `src/storage.js`: fachada de repositorio; `src/storage/indexeddb.js`: implementación actual.
-
-No se agrega Supabase, infraestructura paga ni scraping. Las fuentes argentinas son diferentes y se muestran como consultas externas. Las funciones futuras —reservas, préstamos, usuarios, estadísticas de circulación, OCR/IA y red escolar— se indican expresamente como roadmap.
-
-## Identidad
-
-Sistema editorial con tipografía serif/display y sans, aire, bordes finos y grillas. Colores base: `#51C6FB`, `#3981F7`, `#EBF3FF`, `#0A112F`, con derivados neutros. `theme.css` comparte tokens y controles; `landing.css` y `design.css` separan composición pública y espacio de trabajo.
-
-## Desarrollo y pruebas
+Node.js 22 o posterior; sin compilación ni backend para operar la aplicación:
 
 ```sh
 node scripts/serve.mjs
-node --test tests/*.test.js
 ```
 
-Con Playwright disponible, en otra terminal:
+Abrir http://127.0.0.1:4173/app.html. También se publica como sitio estático bajo /AsistenteBibliotecario/.
 
 ```sh
-node tests/browser.cjs
-node tests/isbn-browser.cjs
-node tests/photos-browser.cjs
-node tests/migration-browser.cjs
-node tests/editorial-browser.cjs
-node tests/navigation-browser.cjs
+npm run check
+npm test
+npm install --no-save --package-lock=false playwright@1.62.1
+npx playwright install chromium firefox webkit
 ```
 
-`PLAYWRIGHT_MODULE` puede señalar una instalación externa. `BROWSER_CHANNEL=chrome` selecciona Chrome (por defecto Edge); `TEST_ENGINE=webkit` usa WebKit/iPhone. `TEST_BASE_URL` permite probar la publicación. Los tests usan perfiles aislados y respuestas de proveedores controladas; ZXing sí decodifica códigos reales generados para las pruebas. `qa/` queda fuera de Git.
+Elegir BROWSER_CHANNEL=chromium para Chromium descargado, o msedge/chrome si están instalados. El valor por defecto local es msedge. Ejecutar:
 
-La regresión de guardado tiene prueba de ISBN → ficha → datos físicos → guardar → recargar → persistencia. El formulario se identifica por `matches`, porque un control oculto `name="id"` oculta `form.id`. Los fallos de validación o almacenamiento se muestran sin recargar ni perder el formulario.
+```sh
+npm run test:browser-smoke
+npm run test:browser-flows
+npm run test:browser-field
+npm run test:browser-ocr
+node scripts/test-browser.mjs compatibility
+```
 
-### Pruebas de circulación local
+TEST_ENGINE=firefox o webkit selecciona el motor para el smoke compacto. PLAYWRIGHT_MODULE/NODE_PATH permiten una instalación externa. TEST_BASE_URL se reserva para smoke de publicación. Las suites locales crean su propio harness o servidor efímero; no requieren un servidor externo ya abierto. qa/ conserva diagnósticos/capturas y está excluido de Git. Los fixtures sintéticos de tests/ nunca se cargan en producción.
 
-- `node tests/local-browser.cjs`: personas, permisos, préstamos/devoluciones, reservas, ubicaciones, QR, concurrencia, respaldo y responsive.
-- `node tests/migration-circulation.cjs`: migración de v3 preservando fotos, préstamos y usuarios.
-- `node tests/import-browser.cjs`: MARC UTF-8, 852/859, duplicados y auditoría.
+Después de cambiar assets, actualizar coherentemente la versión visible y de imports y ejecutar node scripts/build-offline.mjs. El checker rechaza un worker desactualizado o archivos OCR alterados. Los assets textuales mantienen LF en Windows/Linux. No editar sw.js a mano: se genera desde scripts/offline-worker.template.js.
 
-Elegí el **perfil local** desde el menú. El perfil inicial Responsable local permite dar de alta personas y conceder permisos. No hay autenticación real: todos los datos y perfiles pertenecen exclusivamente a este navegador. Exportá un respaldo completo antes de trasladar la biblioteca a otro equipo.
+## Arquitectura y límites
 
-### Reconocer antes de preguntar
+JavaScript modular sin framework, IndexedDB versión 11, respaldo formato 5. src/storage.js expone el repositorio; storage/indexeddb.js conserva transacciones atómicas y escribe diferencias. Dominio y permisos se comprueban también al ejecutar operaciones. El worker solo conserva archivos de la release; no guarda respuestas bibliográficas ni toca la base de datos. Inter + Lora locales, paleta y dark mode existentes.
 
-`src/recognition.js` clasifica identificadores sin abrir enlaces arbitrarios. Recuperación automática disponible por ISBN; DOI, ISSN y URL se conservan para completar la ficha, sin afirmar que existe un proveedor conectado. Fotografiar una tapa/primera plana para proponer contenidos es futuro y exige confirmación humana.
+No hay login real, sincronización, analytics, notificaciones externas ni IA nueva. El OCR se ejecuta en el dispositivo con carga diferida; su uso offline no está garantizado. Importación de respaldo limitada a 50 MB y 10.000 materiales; fotos abundantes pueden superar ese tamaño. MARC-8 y exportación MARC no disponibles. El adaptador experimental server/bn-provider.mjs preexistente no está activado en Pages ni forma parte de este despliegue.
 
-`node tests/recognition-browser.cjs` verifica cámara primero, ISSN, diario con búsqueda temática, persistencia, QR real, recurso digital sin ejemplares y respaldos.
-
-### Avisos y pendientes internos
-
-Desde **Inicio → Avisos y pendientes**, o desde el menú, se abre `app.html#avisos`. El conteo corresponde a la institución y persona seleccionadas. Se puede filtrar por prioridad y área: préstamos, reservas, extensiones, permisos, estado físico e inventario.
-
-Biblioteca y Autoridad ven pendientes operativos e institucionales. Docente, Lector y Personal ven únicamente sus propios préstamos, reservas, solicitudes de extensión y permisos relevantes. Los botones respetan los permisos existentes; ver un aviso no habilita una operación. Autoridad puede consultar las reservas institucionales sin controles de gestión cuando no tiene ese permiso.
-
-Los avisos se calculan desde los datos actuales: no se guardan, no se marcan como leídos ni se agregan al historial. Cambian o desaparecen al devolver, resolver una solicitud, retirar/cancelar una reserva, revisar un ejemplar o cerrar un inventario. Se actualizan al navegar, cada 30 segundos mientras la pestaña está visible y al volver a ella. Los filtros se conservan durante la actualización automática.
-
-La ventana de anticipación reutiliza los días configurados para solicitar extensión (por defecto, 1 día). El vencimiento real de préstamos se informa aunque exista tolerancia para bloquear nuevos préstamos. Las reservas vencidas dejan de anunciarse como disponibles para retirar. Los permisos vencidos se distinguen de los revocados y dejan de avisarse si hay un permiso de reemplazo vigente.
-
-Todo es local a este navegador: sin backend, correos, push ni sincronización. `npm run test:notices-browser` prueba interacciones y las resoluciones 320/390/768/1440 en ambos temas, con un perfil aislado y archivos servidos dentro de la prueba. GitHub Actions ejecuta esta prueba en Chromium además de las pruebas unitarias.
+[Arquitectura e historial](docs/ARCHITECTURE.md) · [Fuentes bibliográficas](docs/BIBLIOGRAPHIC-PROVIDERS.md) · [Licencias de terceros](THIRD_PARTY_NOTICES.md) · [Cierre RC1 histórico](docs/RELEASE-CANDIDATE.md).

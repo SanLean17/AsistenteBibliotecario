@@ -1,4 +1,4 @@
-import {legacyProfile,profileRole,ROLES} from './permissions.js?v=20261010-rc1';
+import {legacyProfile,profileRole,ROLES} from './permissions.js?v=20261010-field1';
 export const EXTRA_STORES=['people','memberships','invitations','saved'];
 export function migrateAccess(s){
  if(s.settings.some(x=>x.id==='access-model-v5'))return;
@@ -16,14 +16,15 @@ export function projectState(all,iid,actorId){
  const s={};for(const [name,records] of Object.entries(all))s[name]=records.filter(r=>name==='people'||r.institutionId===iid||(name==='institutions'&&r.id===iid));
  s.institutionId=iid;s.people=structuredClone(all.people);
  const institution=s.institutions[0];
- s.patrons=s.memberships.map(m=>({...all.people.find(p=>p.id===m.personId),...m,id:m.personId,role:profileRole(m.accessProfile),active:m.status==='active',mainAdmin:institution?.mainAdminId===m.personId}));
+ const peopleById=new Map(all.people.map(p=>[p.id,p]));
+ s.patrons=s.memberships.map(m=>({...peopleById.get(m.personId),...m,id:m.personId,role:profileRole(m.accessProfile),active:m.status==='active',mainAdmin:institution?.mainAdminId===m.personId}));
  s.availableInstitutions=all.institutions.filter(i=>all.memberships.some(m=>m.personId===actorId&&m.institutionId===i.id));
  s.settings=s.settings.map(c=>({...c,id:c.id==='config:'+iid?'local':c.id}));
  return s;
 }
 export function mergeScope(all,s,iid){
  all.people=s.people;
- for(const name of Object.keys(all)){if(name==='people'||name==='patrons')continue;const records=s[name]||[];all[name]=all[name].filter(r=>r.institutionId!==iid&&!(name==='institutions'&&r.id===iid));for(const r of records){if(name!=='settings'&&all[name].some(other=>other.id===r.id))throw new Error('Identificador ya utilizado en otra institución.');r.institutionId=iid;if(name==='settings'&&r.id==='local'&&iid!=='local-institution')r.id='config:'+iid;all[name].push(r);}}
+ for(const name of Object.keys(all)){if(name==='people'||name==='patrons')continue;const records=s[name]||[];all[name]=all[name].filter(r=>r.institutionId!==iid&&!(name==='institutions'&&r.id===iid));const used=new Set(all[name].map(r=>r.id));for(const r of records){if(name!=='settings'&&used.has(r.id))throw new Error('Identificador ya utilizado en otra institución.');r.institutionId=iid;if(name==='settings'&&r.id==='local'&&iid!=='local-institution')r.id='config:'+iid;used.add(r.id);all[name].push(r);}}
  // Legacy projection is retained only for compatibility with old backups.
  all.patrons=all.people.map(p=>({...p}));
 }

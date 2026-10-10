@@ -24,13 +24,13 @@ jobs:
         with:
           node-version: 22
       - name: Check JavaScript syntax
-        run: find src scripts server tests -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0 | xargs -0 -n1 node --check
+        run: node --check sw.js && find src scripts server tests -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0 | xargs -0 -n1 node --check
       - name: Check repository integrity
         run: npm run check
       - name: Run logic tests
         run: npm test
   browser:
-    name: Browser smoke, flows and local OCR
+    name: Browser smoke, field pilot, compatibility and OCR
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -45,9 +45,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-1.62.1-chromium-ubuntu
-      - name: Install Chromium and system dependencies
-        run: npx playwright install --with-deps chromium
+          key: playwright-1.62.1-all-ubuntu
+      - name: Install browsers and system dependencies
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Browser smoke — routes, accessibility, volume and recovery
         run: npm run test:browser-smoke
         env:
@@ -60,10 +60,22 @@ jobs:
         run: npm run test:browser-ocr
         env:
           BROWSER_CHANNEL: chromium
+      - name: Field pilot — offline, volume, school and recovery
+        run: npm run test:browser-field
+        env:
+          BROWSER_CHANNEL: chromium
+      - name: Firefox compact compatibility
+        run: node scripts/test-browser.mjs compatibility
+        env:
+          TEST_ENGINE: firefox
+      - name: WebKit compact compatibility
+        run: node scripts/test-browser.mjs compatibility
+        env:
+          TEST_ENGINE: webkit
       - name: Preserve QA evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: rc1-browser-evidence
+          name: field-pilot-evidence
           path: qa/
           retention-days: 7

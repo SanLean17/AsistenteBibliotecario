@@ -1,4 +1,8 @@
-# Verification — editorial iteration, 2026-10-05
+# Verification — historial de pruebas
+
+## FIELD PILOT V1 — 2026-10-11
+
+La evidencia vigente está en [FIELD-PILOT-STATUS.md](../docs/FIELD-PILOT-STATUS.md). Las secciones siguientes son históricas. Las suites actuales se definen en scripts/test-browser.mjs y CI; no inferir que todos los scripts antiguos sueltos siguen representando la UI actual. FIELD agrega 6 pruebas de escala (188 unitarias totales), tres suites de campo y compatibilidad compacta Firefox/WebKit, además de la matriz y los flujos RC1.
 
 ## RC1 — 2026-10-10
 

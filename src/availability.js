@@ -20,7 +20,7 @@ export function materialAvailability(book,{loans=[],reservations=[],now=new Date
     if(reservation)return {copy,status:'reserved',reservation,estimatedAt:validDate(reservation.expiresAt)};
     if(copy.status==='lost')return {copy,status:'lost',estimatedAt:null};
     if(copy.status==='withdrawn')return {copy,status:'withdrawn',estimatedAt:null};
-    if(copy.status==='damaged'||copy.condition==='Deteriorado')return {copy,status:'damaged',estimatedAt:null};
+    if(copy.status==='damaged'||copy.careLevel==='restricted'||copy.condition==='Deteriorado')return {copy,status:'damaged',estimatedAt:null};
     return {copy,status:'available',estimatedAt:null};
   });
 
@@ -92,6 +92,6 @@ export function exemplarAvailability(copy,{loans=[],reservations=[],now=new Date
   if(reservation)return {status:'reserved',label:'Reservado',estimatedAt:validDate(reservation.expiresAt),note:'Sujeto al retiro o vencimiento de la reserva.'};
   if(copy.status==='lost')return {status:'lost',label:'Extraviado',estimatedAt:null,note:'Sin fecha estimada.'};
   if(copy.status==='withdrawn')return {status:'withdrawn',label:'Dado de baja',estimatedAt:null,note:'No disponible para circulación.'};
-  if(copy.status==='damaged'||copy.condition==='Deteriorado')return {status:'damaged',label:'Deteriorado',estimatedAt:null,note:'No disponible hasta revisión.'};
+  if(copy.status==='damaged'||copy.careLevel==='restricted'||copy.condition==='Deteriorado')return {status:'damaged',label:'Deteriorado',estimatedAt:null,note:'No disponible hasta revisión.'};
   return {status:'available',label:'Disponible',estimatedAt:null,note:'Puede prestarse según la política de la institución.'};
 }

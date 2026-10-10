@@ -1,0 +1,16 @@
+# Guía de Autoridad Institucional
+
+## Preparar responsables
+Confirmá la institución, biblioteca y responsable principal. En Personas, revisá nombre, cargo institucional y perfil de acceso. El cargo describe el trabajo de la persona; el perfil determina qué herramientas ve. Usá Biblioteca, Autoridad Institucional, Docente, Personal Institucional o Lector/Estudiante según corresponda.
+
+## Habilitar tareas puntuales
+Un permiso temporal habilita solamente la tarea delegada y durante el período elegido. Revisá persona, acción y vencimiento antes de guardarlo. Al terminar, revocalo; el cambio se aplica a las operaciones siguientes. No delegues administración completa para resolver una tarea de carga puntual.
+
+## Acordar la operación
+Revisá plazos, cantidad de préstamos, renovaciones y reservas con Biblioteca. Elegí una computadora principal y un responsable de respaldos. No mantengas catálogos divergentes en varios equipos: no hay sincronización ni combinación automática de préstamos.
+
+## Evaluar el piloto
+En Puesta en marcha, revisá pasos pendientes. En Piloto escolar, activá el período de prueba y acordá sus objetivos. Consultá cantidades y observaciones agregadas; exportá el informe al cierre. No uses estadísticas para atribuir culpa o evaluar personas. Pedí un respaldo inicial y uno final y verificá dónde se guardaron.
+
+## Límites que hay que explicar
+Los perfiles funcionan localmente y se seleccionan sin contraseña; no son un inicio de sesión institucional. No hay cuentas en línea, mensajes automáticos ni acceso remoto. El equipo debe estar supervisado. Los archivos de respaldo contienen datos personales y requieren cuidado. El diagnóstico técnico exportable contiene cantidades y versión, sin nombres ni títulos.

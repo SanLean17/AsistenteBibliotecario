@@ -1,6 +1,6 @@
-import {MATERIAL_TYPES} from './recognition.js?v=20261010-rc1';
-import {contentSearchText} from './material-types.js?v=20261010-rc1';
-import {cleanISBN} from './isbn.js?v=20261010-rc1';
+import {MATERIAL_TYPES} from './recognition.js?v=20261010-field1';
+import {contentSearchText} from './material-types.js?v=20261010-field1';
+import {cleanISBN} from './isbn.js?v=20261010-field1';
 
 export const STOPWORDS=new Set(['de','del','la','el','los','las','un','una','que','con','sobre','tengan','tenga','algo','para','en','necesito','busco','quiero','material','materiales','recurso','recursos','tema','temas']);
 
@@ -77,8 +77,8 @@ function fieldEntries(book){
   ].map(([label,weight,values])=>[label,weight,normalizeSearch(values.filter(Boolean).join(' '))]);
 }
 
-export function searchCatalog(books,query,{category='',materialType='',availability='',isAvailable=()=>true,inferIntent=true}={}){
-  const raw=String(query||'').trim();
+export function searchCatalog(books,query,{category='',materialType='',availability='',isAvailable=()=>true,inferIntent=true,index}={}){
+  const raw=String(query||'').trim(),normalizedQuery=normalizeSearch(raw);
   const isbn=cleanISBN(raw);
   const inferredType=materialType||(inferIntent?materialIntent(raw):'');
   const inferredAvailability=availability||(inferIntent?availabilityIntent(raw):'');
@@ -97,7 +97,7 @@ export function searchCatalog(books,query,{category='',materialType='',availabil
       continue;
     }
 
-    const fields=fieldEntries(book);
+    const fields=index?.get(book)||fieldEntries(book);
     const combined=fields.map(([, ,text])=>text).join(' ');
     if(terms.length&&!includesAll(combined,terms))continue;
 
@@ -109,7 +109,7 @@ export function searchCatalog(books,query,{category='',materialType='',availabil
     }
 
     const title=normalizeSearch(book.title);
-    if(raw&&title===normalizeSearch(raw))score+=30;
+    if(raw&&title===normalizedQuery)score+=30;
     else if(terms.length&&includesAll(title,terms))score+=12;
     if(inferredType)score+=4;
     if(raw&&isAvailable(book))score+=1;
@@ -143,3 +143,6 @@ export function suggestedQueries(books,limit=6){
     .slice(0,limit)
     .map(([label])=>label);
 }
+
+// Rebuild whenever the catalog snapshot changes; no stale global cache.
+export const createSearchIndex=books=>new Map(books.map(book=>[book,fieldEntries(book)]));

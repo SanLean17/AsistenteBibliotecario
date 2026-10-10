@@ -1,4 +1,4 @@
-import {canonicalISBN} from './isbn.js?v=20261010-rc1';
+import {canonicalISBN} from './isbn.js?v=20261010-field1';
 
 const norm=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
 const normDOI=value=>String(value??'').trim().toLowerCase().replace(/^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)/i,'');
@@ -55,4 +55,16 @@ export function detectCatalogMatches(books,draft,{excludeId=''}={}){
 
 export function strongestMatch(books,draft,options){
   return detectCatalogMatches(books,draft,options)[0]||null;
+}
+
+// Inverted keys cover every exact/similarity predicate above. Bound worst-case
+// homogeneous catalogs explicitly, without presenting a partial scan as complete.
+export function catalogDuplicatePairs(books,{maxComparisons=20000,maxResults=500}={}){
+ const buckets=new Map(),pairs=[];let comparisons=0;
+ const keys=b=>[canonicalISBN(b.isbn)&&'isbn:'+canonicalISBN(b.isbn),normDOI(b.doi)&&'doi:'+normDOI(b.doi),normURL(b.resourceUrl)&&'url:'+normURL(b.resourceUrl),issn(b.issn)&&'issn:'+issn(b.issn),norm(b.author||b.authors?.join('; '))&&'author:'+norm(b.author||b.authors?.join('; ')),b.publisher&&'publisher:'+norm(b.publisher),b.year&&'year:'+String(b.year)].filter(Boolean);
+ for(const book of books){const candidateIds=new Set(),bookKeys=keys(book);for(const key of bookKeys)for(const other of buckets.get(key)||[])candidateIds.add(other);
+  for(const other of candidateIds){if(comparisons>=maxComparisons||pairs.length>=maxResults)return {pairs,partial:true,comparisons};comparisons++;const match=detectCatalogMatches([book],other)[0];if(match)pairs.push({book:other,match});}
+  for(const key of bookKeys){if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(book);}
+ }
+ return {pairs,partial:false,comparisons};
 }

@@ -1,7 +1,7 @@
-import {isEnabled,PERMISSIONS} from './permissions.js?v=20261010-rc1';
-import {validISBN,canonicalISBN} from './isbn.js?v=20261010-rc1';
-import {validISSN,recognizeIdentifier} from './recognition.js?v=20261010-rc1';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-rc1';
+import {isEnabled,PERMISSIONS} from './permissions.js?v=20261010-field1';
+import {validISBN,canonicalISBN} from './isbn.js?v=20261010-field1';
+import {validISSN,recognizeIdentifier} from './recognition.js?v=20261010-field1';
+import {catalogDuplicatePairs} from './duplicates.js?v=20261010-field1';
 
 export const SEVERITIES={error:'Error',warning:'Advertencia',suggestion:'Sugerencia'};
 export const validAB=value=>/^AB-\d{6,}$/.test(value||'')&&Number.isSafeInteger(Number(value.slice(3)))&&Number(value.slice(3))>0;
@@ -31,7 +31,7 @@ export function deriveDataQuality(state,{at=new Date(),includeDuplicates=true}={
    if(e.careLevel==='restricted'&&e.status==='available')add('care','error',e.id,'No prestar figura como disponible',ed,er);
   }
  }
- if(includeDuplicates)for(let i=0;i<books.length;i++)for(const match of detectCatalogMatches(books.slice(i+1),books[i]))add('duplicate','warning',books[i].id+':'+match.book.id,'Posible duplicado · '+({'exact-edition':'misma edición','same-work':'misma obra',similar:'similar'})[match.kind],(books[i].title||'Material')+' / '+(match.book.title||'Material')+' · '+match.reasons.join(' · '),'ficha/'+encodeURIComponent(books[i].id),{relatedRoute:'ficha/'+encodeURIComponent(match.book.id)});
+ if(includeDuplicates){const scan=catalogDuplicatePairs(books);for(const {book,match} of scan.pairs)add('duplicate','warning',book.id+':'+match.book.id,'Posible duplicado · '+({'exact-edition':'misma edición','same-work':'misma obra',similar:'similar'})[match.kind],(book.title||'Material')+' / '+(match.book.title||'Material')+' · '+match.reasons.join(' · '),'ficha/'+encodeURIComponent(book.id),{relatedRoute:'ficha/'+encodeURIComponent(match.book.id)});if(scan.partial)add('duplicates-partial','warning','catalog','Revisión de duplicados parcial','El catálogo tiene muchas coincidencias. Se muestran hasta 500 propuestas y se limita el trabajo por revisión. Revisá por título antes de incorporar; no se modificó ninguna ficha.','biblioteca');}
  for(const inv of s.inventorySessions||[])if(['open','draft'].includes(inv.status)&&(!Number.isFinite(Date.parse(inv.createdAt||inv.startedAt))||+new Date(at)-Date.parse(inv.createdAt||inv.startedAt)>=30*86400000))add('inventory','warning',inv.id,'Inventario abierto antiguo o sin fecha','Revisá la sesión antes de cerrarla.','inventario');
  for(const g of s.grants||[]){
   const invalid=Boolean(g.revokedAt&&g.active!==false)||!s.patrons?.some(p=>p.id===g.userId)||!PERMISSIONS.includes(g.permission)||[g.startsAt,g.expiresAt].some(v=>v&&!Number.isFinite(Date.parse(v)))||(g.startsAt&&g.expiresAt&&Date.parse(g.startsAt)>=Date.parse(g.expiresAt));

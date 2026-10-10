@@ -1,5 +1,5 @@
-import {deriveNotices} from './notices.js?v=20261010-rc1';
-import {isEnabled} from './permissions.js?v=20261010-rc1';
+import {deriveNotices} from './notices.js?v=20261010-field1';
+import {isEnabled} from './permissions.js?v=20261010-field1';
 
 const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 const activeLoan=l=>['loaned','overdue'].includes(l.status)&&!l.returnedAt;
@@ -17,12 +17,13 @@ export function findHoldingByCode(state,code){
 }
 
 export function searchPeople(state,query,{at=new Date(),limit=12}={}){
-  const q=norm(query),parts=q.split(' ').filter(Boolean);
+  const q=norm(query),parts=q.split(' ').filter(Boolean),counts=new Map();
+  for(const loan of state.loans||[])if(activeLoan(loan)){const id=loan.patron?.id,value=counts.get(id)||{active:0,overdue:0};value.active++;if(Date.parse(loan.dueAt)<+at)value.overdue++;counts.set(id,value);}
   return (state.patrons||[]).filter(p=>isEnabled(p,new Date(at))).map(person=>{
     const hay=norm([person.name,person.cargo,person.course,person.accessProfile].filter(Boolean).join(' '));
     const score=!q?1:parts.reduce((n,t)=>n+(hay.includes(t)?1:0),0);
-    const active=(state.loans||[]).filter(l=>activeLoan(l)&&l.patron?.id===person.id).length;
-    const overdue=(state.loans||[]).filter(l=>activeLoan(l)&&l.patron?.id===person.id&&Date.parse(l.dueAt)<+new Date(at)).length;
+    const active=counts.get(person.id)?.active||0;
+    const overdue=counts.get(person.id)?.overdue||0;
     return {person,score,activeLoans:active,overdueLoans:overdue};
   }).filter(x=>!q||x.score===parts.length)
     .sort((a,b)=>b.score-a.score||a.person.name.localeCompare(b.person.name,'es'))

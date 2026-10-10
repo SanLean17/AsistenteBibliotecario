@@ -1,11 +1,11 @@
 {
   "name": "asistente-bibliotecario",
-  "version": "0.1.0-rc.1",
+  "version": "0.2.0-field.1",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "node scripts/serve.mjs",
-    "check": "node scripts/check-integrity.mjs",
+    "check": "node scripts/check-integrity.mjs && node scripts/build-offline.mjs --check",
     "test": "node --test tests/*.test.js",
     "test:notices-browser": "node tests/notices-browser.cjs",
     "verify": "npm run check && npm test",
@@ -18,6 +18,9 @@
     "test:school-pilot-browser": "node tests/school-pilot-browser.cjs",
     "test:browser-smoke": "node scripts/test-browser.mjs smoke",
     "test:browser-flows": "node scripts/test-browser.mjs flows",
-    "test:browser-ocr": "node scripts/test-browser.mjs ocr"
+    "test:browser-ocr": "node scripts/test-browser.mjs ocr",
+    "build:offline": "node scripts/build-offline.mjs",
+    "test:browser-field": "node scripts/test-browser.mjs field",
+    "test:scale": "node --test tests/field-scale.test.js"
   }
 }
