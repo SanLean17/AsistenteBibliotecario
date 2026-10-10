@@ -5,7 +5,8 @@ const normDOI=value=>String(value??'').trim().toLowerCase().replace(/^(?:https?:
 const normURL=value=>{try{const u=new URL(String(value??'').trim());u.hash='';return u.toString().replace(/\/$/,'');}catch{return '';}}
 const issn=value=>String(value??'').replace(/[^0-9Xx]/g,'').toUpperCase();
 
-function tokens(value){return new Set(norm(value).split(' ').filter(Boolean));}
+const TITLE_STOPWORDS=new Set(['de','del','la','el','los','las','un','una','y','e','en','por','para','con']);
+function tokens(value){return new Set(norm(value).split(' ').filter(t=>t&&!TITLE_STOPWORDS.has(t)));}
 function overlap(a,b){
   const A=tokens(a),B=tokens(b);if(!A.size||!B.size)return 0;
   let common=0;for(const t of A)if(B.has(t))common++;
