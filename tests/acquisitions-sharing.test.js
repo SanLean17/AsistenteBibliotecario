@@ -51,3 +51,14 @@ test('docente no administra cooperación entre bibliotecas',()=>{
   const s=state();
   assert.throws(()=>command(s,'teacher','resource.share.create',{title:'Libro',targetInstitution:'Otra escuela'}),/No tenés permiso/);
 });
+
+test('cooperación identifica el ejemplar propio sin modificar su UUID ni código',()=>{
+ const s=state(),id=crypto.randomUUID();s.books[0].exemplars=[{id,internalCode:'AB-000001'}];
+ const req=command(s,'lib','resource.share.create',{title:'Atlas',targetInstitution:'Otra escuela',exemplarId:id});
+ assert.equal(req.bookId,'b1');assert.equal(req.holding.exemplarId,id);assert.equal(req.holding.internalCode,'AB-000001');
+ assert.equal(req.ownerInstitutionName,'Escuela');assert.notEqual(req.holding.institutionId,'local-institution');
+ const ref=req.holding.globalHoldingRef;command(s,'lib','resource.share.update',{id:req.id,status:'agreed'});assert.equal(req.holding.globalHoldingRef,ref);
+ assert.throws(()=>command(s,'lib','resource.share.create',{title:'Atlas',targetInstitution:'Otra escuela',exemplarId:'AB-000001'}));
+ s.books.push({id:'b2',title:'Otro',exemplars:[]});
+ assert.throws(()=>command(s,'lib','resource.share.create',{title:'Atlas',targetInstitution:'Otra escuela',exemplarId:id,bookId:'b2'}),/no corresponde/);
+});

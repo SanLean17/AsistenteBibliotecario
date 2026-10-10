@@ -1,6 +1,7 @@
+import {shareableHolding,validateSharedHolding} from './holding-identity.js?v=20261010-1';
 const text=(value,max=500)=>String(value??'').trim().slice(0,max);
 
-export function shareableCatalogRecord(book,{institutionId='',institutionName='',libraryName='',availability=null}={}){
+export function shareableCatalogRecord(book,{institutionId='',institutionName='',libraryName='',availability=null,includeHoldings=false}={}){
   if(!book?.id||!book?.title)throw new Error('Material inválido para compartir.');
   const identifiers={};
   for(const key of ['isbn','issn','doi'])if(book[key])identifiers[key]=text(book[key],500);
@@ -22,6 +23,7 @@ export function shareableCatalogRecord(book,{institutionId='',institutionName=''
       identifiers
     },
     holdings:{
+      ...(includeHoldings?{items:(book.exemplars||[]).map(e=>shareableHolding(e,institutionId))}:{}),
       total:Number(book.copies)||0,
       status:availability?.status||'unknown',
       label:text(availability?.label||'',120),
@@ -35,6 +37,11 @@ export function validateSharedCatalogRecord(raw){
   const forbidden=['patron','email','loan','borrower','person','userId','actorId','reservations'];
   const serialized=JSON.stringify(raw).toLowerCase();
   for(const word of forbidden)if(serialized.includes('"'+word.toLowerCase()+'"'))throw new Error('El registro compartido contiene datos internos no permitidos.');
+  if(raw.holdings?.items!==undefined){
+    if(!Array.isArray(raw.holdings.items))throw new Error('Ejemplares compartidos inválidos.');
+    const refs=new Set(),ids=new Set();
+    for(const holding of raw.holdings.items){validateSharedHolding(holding,raw.institution.id);if(refs.has(holding.globalHoldingRef)||ids.has(holding.exemplarId))throw new Error('Ejemplar compartido duplicado.');refs.add(holding.globalHoldingRef);ids.add(holding.exemplarId);}
+  }
   return raw;
 }
 
