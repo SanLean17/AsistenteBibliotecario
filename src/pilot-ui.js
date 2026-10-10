@@ -1,6 +1,6 @@
-import {deriveReadiness,deriveDataQuality,pilotManager,SEVERITIES} from './pilot.js?v=20261010-7';
-import {readState,getActorId,execute} from './storage.js?v=20261010-7';
-import {hasPermission} from './permissions.js?v=20261010-7';
+import {deriveReadiness,deriveDataQuality,pilotManager,SEVERITIES} from './pilot.js?v=20261010-rc1';
+import {readState,getActorId,execute} from './storage.js?v=20261010-rc1';
+import {hasPermission} from './permissions.js?v=20261010-rc1';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const link=(route,label)=>`<a class="button secondary" href="#${esc(route)}">${label}</a>`;
 export function renderPilotSummary(s,actor){

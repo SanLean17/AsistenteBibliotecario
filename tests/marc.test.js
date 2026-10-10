@@ -45,3 +45,5 @@ test('parsea ISO 2709 MARC y conserva inventario Aguapey',()=>{
 import {previewMarc} from '../src/cataloging-import.js';
 import {validateBook} from '../src/catalog.js';
 test('cataloging MARC preview groups repeats, keeps raw sources and counts only new origin copies',()=>{const bytes=new TextEncoder().encode(isoRecord()+isoRecord()),p=previewMarc(bytes,[]);assert.equal(p.summary.records,2);assert.equal(p.summary.repeated,1);assert.equal(p.entries.length,1);assert.equal(p.entries[0].draft.sourceRecords.length,2);const book=validateBook(p.entries[0].draft),again=previewMarc(bytes,[book]);assert.equal(again.summary.exactMatches,1);assert.equal(again.summary.existingISBN,1);assert.equal(again.summary.newCopies,0);});
+
+test('RC1 rejects empty and explicitly MARC-8 input before preview',()=>{assert.throws(()=>parseISO2709(new Uint8Array()),/vacío/);const bytes=new TextEncoder().encode(isoRecord());bytes[9]=32;assert.throws(()=>parseISO2709(bytes),/MARC-8.*UTF-8/);});

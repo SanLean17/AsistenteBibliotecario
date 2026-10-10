@@ -1,10 +1,10 @@
-import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261010-7';
-import {canCatalog,QUEUE_LABELS,SESSION_LABELS,classifyCapture,catalogingSummary,planCataloging} from './cataloging.js?v=20261010-7';
-import {previewMarc} from './cataloging-import.js?v=20261010-7';
-import {lookupISBN} from './metadata.js?v=20261010-7';
-import {scanISBN,scanMaterialFromFile,createMaterialDetector} from './scanner.js?v=20261010-7';
-import {drawLabel} from './labels.js?v=20261010-7';
-import {locationPath} from './inventory.js?v=20261010-7';
+import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261010-rc1';
+import {canCatalog,QUEUE_LABELS,SESSION_LABELS,classifyCapture,catalogingSummary,planCataloging} from './cataloging.js?v=20261010-rc1';
+import {previewMarc} from './cataloging-import.js?v=20261010-rc1';
+import {lookupISBN} from './metadata.js?v=20261010-rc1';
+import {scanISBN,scanMaterialFromFile,createMaterialDetector} from './scanner.js?v=20261010-rc1';
+import {drawLabel} from './labels.js?v=20261010-rc1';
+import {locationPath} from './inventory.js?v=20261010-rc1';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=s=>document.querySelector(s);

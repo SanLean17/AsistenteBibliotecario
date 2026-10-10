@@ -64,6 +64,7 @@ for(const file of [...walk('src',p=>p.endsWith('.js')),...walk('tests',p=>/\.(js
 
 for(const htmlName of ['app.html','index.html']){
   const file=path.join(root,htmlName),text=fs.readFileSync(file,'utf8');
+  for(const m of text.matchAll(/\?v=([^"'&\s]+)/g))if(m[1]!==appVersion)issues.push(htmlName+': versión de recurso '+m[1]+' distinta de '+appVersion);
   for(const m of text.matchAll(/\b(?:src|href)=['"]([^'"]+)['"]/g)){
     const ref=m[1];
     if(!ref||ref.startsWith('#')||ref.includes('://')||ref.startsWith('mailto:')||ref.startsWith('tel:')||ref.startsWith('data:'))continue;

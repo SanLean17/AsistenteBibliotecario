@@ -1,5 +1,5 @@
-import {deriveNotices} from './notices.js?v=20261010-7';
-import {isEnabled} from './permissions.js?v=20261010-7';
+import {deriveNotices} from './notices.js?v=20261010-rc1';
+import {isEnabled} from './permissions.js?v=20261010-rc1';
 
 const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 const activeLoan=l=>['loaned','overdue'].includes(l.status)&&!l.returnedAt;

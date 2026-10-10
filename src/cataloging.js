@@ -1,8 +1,8 @@
-import {canonicalISBN} from './isbn.js?v=20261010-7';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-7';
-import {validateBook} from './catalog.js?v=20261010-7';
-import {hasPermission,requirePermission} from './permissions.js?v=20261010-7';
-import {locationLabelsFromNode} from './inventory.js?v=20261010-7';
+import {canonicalISBN} from './isbn.js?v=20261010-rc1';
+import {detectCatalogMatches} from './duplicates.js?v=20261010-rc1';
+import {validateBook} from './catalog.js?v=20261010-rc1';
+import {hasPermission,requirePermission} from './permissions.js?v=20261010-rc1';
+import {locationLabelsFromNode} from './inventory.js?v=20261010-rc1';
 
 export const QUEUE_LABELS={pending:'Buscando metadatos','ready-new':'Listo para incorporar','existing-edition':'Edición existente','same-work':'Posible otra edición',similar:'Registro parecido','metadata-missing':'Sin metadatos',invalid:'Código inválido / ilegible','needs-review':'Requiere revisión',incorporated:'Incorporado'};
 export const SESSION_LABELS={open:'Jornada en curso',completed:'Jornada finalizada',cancelled:'Jornada cancelada'};
@@ -20,7 +20,7 @@ export function classifyCapture(books,item){
  if(item.source==='marc'&&draft.isbn&&!canonicalISBN(draft.isbn))return {status:'needs-review',matches:[],reason:'ISBN MARC inválido: corregilo o dejalo vacío.'};
  const matches=detectCatalogMatches(books,{...draft,isbn:isbn||'',workId:''});
  const marc=clean(draft.identifiers?.marc001);
- if(marc)for(const book of books)if(book.identifiers?.marc001===marc&&!matches.some(m=>m.book.id===book.id))matches.unshift({kind:'exact-edition',book,reasons:['Mismo MARC001']});
+ if(marc)for(const book of books)if(book.identifiers?.marc001===marc){const previous=matches.findIndex(m=>m.book.id===book.id);if(previous>=0)matches.splice(previous,1);matches.unshift({kind:'exact-edition',book,reasons:['Mismo MARC001']});}
  const exact=matches.filter(m=>m.kind==='exact-edition');
  if(exact.length>1)return {status:'needs-review',matches,reason:'Hay varias coincidencias exactas. Revisá el catálogo antes de incorporar.'};
  if(exact.length){const existing=exact[0].book;if(marc&&existing.identifiers?.marc001===marc&&isbn&&canonicalISBN(existing.isbn)&&canonicalISBN(existing.isbn)!==isbn)return {status:'needs-review',matches,reason:'El MARC001 coincide pero el ISBN es diferente. Revisá el registro de origen.'};return {status:'existing-edition',matches,targetId:existing.id};}

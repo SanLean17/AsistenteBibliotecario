@@ -1,4 +1,4 @@
-import {pilotManager,pilotScope,deriveReadiness,deriveDataQuality} from './pilot.js?v=20261010-7';
+import {pilotManager,pilotScope,deriveReadiness,deriveDataQuality} from './pilot.js?v=20261010-rc1';
 
 export const FEEDBACK_TYPES={ux:'Uso y navegación',error:'Error',idea:'Idea',question:'Pregunta',data:'Datos',performance:'Lentitud'};
 export const FEEDBACK_STATUS={open:'Abierta',reviewed:'Revisada',resolved:'Resuelta',discarded:'Descartada'};

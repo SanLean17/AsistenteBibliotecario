@@ -1,7 +1,7 @@
-import {isEnabled,PERMISSIONS} from './permissions.js?v=20261010-7';
-import {validISBN,canonicalISBN} from './isbn.js?v=20261010-7';
-import {validISSN,recognizeIdentifier} from './recognition.js?v=20261010-7';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-7';
+import {isEnabled,PERMISSIONS} from './permissions.js?v=20261010-rc1';
+import {validISBN,canonicalISBN} from './isbn.js?v=20261010-rc1';
+import {validISSN,recognizeIdentifier} from './recognition.js?v=20261010-rc1';
+import {detectCatalogMatches} from './duplicates.js?v=20261010-rc1';
 
 export const SEVERITIES={error:'Error',warning:'Advertencia',suggestion:'Sugerencia'};
 export const validAB=value=>/^AB-\d{6,}$/.test(value||'')&&Number.isSafeInteger(Number(value.slice(3)))&&Number(value.slice(3))>0;
@@ -10,7 +10,7 @@ export function pilotScope(state){
  const scoped=x=>!x.institutionId||x.institutionId===state.institutionId;
  return Object.fromEntries(Object.entries(state).map(([key,value])=>[key,Array.isArray(value)?value.filter(scoped).map(x=>key==='books'?{...x,exemplars:(x.exemplars||[]).filter(scoped)}:x):value]));
 }
-export function deriveDataQuality(state,{at=new Date()}={}){
+export function deriveDataQuality(state,{at=new Date(),includeDuplicates=true}={}){
  const s=pilotScope(state),issues=[],books=s.books||[],locations=s.libraryLocations||[],codes=new Map();
  const add=(type,severity,entity,title,detail,route,extra={})=>issues.push({id:type+':'+entity,type,severity,title,detail,route,...extra});
  for(const b of books){
@@ -31,7 +31,7 @@ export function deriveDataQuality(state,{at=new Date()}={}){
    if(e.careLevel==='restricted'&&e.status==='available')add('care','error',e.id,'No prestar figura como disponible',ed,er);
   }
  }
- for(let i=0;i<books.length;i++)for(const match of detectCatalogMatches(books.slice(i+1),books[i]))add('duplicate','warning',books[i].id+':'+match.book.id,'Posible duplicado · '+({'exact-edition':'misma edición','same-work':'misma obra',similar:'similar'})[match.kind],(books[i].title||'Material')+' / '+(match.book.title||'Material')+' · '+match.reasons.join(' · '),'ficha/'+encodeURIComponent(books[i].id),{relatedRoute:'ficha/'+encodeURIComponent(match.book.id)});
+ if(includeDuplicates)for(let i=0;i<books.length;i++)for(const match of detectCatalogMatches(books.slice(i+1),books[i]))add('duplicate','warning',books[i].id+':'+match.book.id,'Posible duplicado · '+({'exact-edition':'misma edición','same-work':'misma obra',similar:'similar'})[match.kind],(books[i].title||'Material')+' / '+(match.book.title||'Material')+' · '+match.reasons.join(' · '),'ficha/'+encodeURIComponent(books[i].id),{relatedRoute:'ficha/'+encodeURIComponent(match.book.id)});
  for(const inv of s.inventorySessions||[])if(['open','draft'].includes(inv.status)&&(!Number.isFinite(Date.parse(inv.createdAt||inv.startedAt))||+new Date(at)-Date.parse(inv.createdAt||inv.startedAt)>=30*86400000))add('inventory','warning',inv.id,'Inventario abierto antiguo o sin fecha','Revisá la sesión antes de cerrarla.','inventario');
  for(const g of s.grants||[]){
   const invalid=Boolean(g.revokedAt&&g.active!==false)||!s.patrons?.some(p=>p.id===g.userId)||!PERMISSIONS.includes(g.permission)||[g.startsAt,g.expiresAt].some(v=>v&&!Number.isFinite(Date.parse(v)))||(g.startsAt&&g.expiresAt&&Date.parse(g.startsAt)>=Date.parse(g.expiresAt));
@@ -41,7 +41,7 @@ export function deriveDataQuality(state,{at=new Date()}={}){
  return issues.sort((a,b)=>Object.keys(SEVERITIES).indexOf(a.severity)-Object.keys(SEVERITIES).indexOf(b.severity)||a.id.localeCompare(b.id));
 }
 export function deriveReadiness(state,{at=new Date()}={}){
- const s=pilotScope(state),c=s.settings?.find(x=>x.id==='local')||{},issues=deriveDataQuality(s,{at}),copies=(s.books||[]).flatMap(b=>b.exemplars||[]),steps=[];
+ const s=pilotScope(state),c=s.settings?.find(x=>x.id==='local')||{},issues=deriveDataQuality(s,{at,includeDuplicates:false}),copies=(s.books||[]).flatMap(b=>b.exemplars||[]),steps=[];
  const add=(id,category,label,done,route,required=true,detail='')=>steps.push({id,category,label,done:Boolean(done),route,required,detail});
  add('institution','Configuración básica','Institución creada',s.institutions?.some(i=>i.id===s.institutionId&&i.status!=='disabled'&&i.name?.trim()&&(i.id!=='local-institution'||i.name!=='Mi escuela')),'organizacion');
  add('library','Configuración básica','Nombre de biblioteca guardado',c.libraryName?.trim()&&c.libraryNameConfirmedAt,'organizacion',true,'Guardá el nombre en Institución para confirmarlo.');

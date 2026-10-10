@@ -1,5 +1,9 @@
 # Verification — editorial iteration, 2026-10-05
 
+## RC1 — 2026-10-10
+
+El cierre actual se documenta en [RELEASE-CANDIDATE.md](../docs/RELEASE-CANDIDATE.md). Las cifras siguientes corresponden a iteraciones históricas, no al total actual. RC1 tiene 182 pruebas unitarias, una matriz smoke de 200 combinaciones de ruta/tamaño/tema, 13 suites de flujos y una prueba del motor OCR real. Los comandos `test:browser-smoke`, `test:browser-flows` y `test:browser-ocr` ejecutan exactamente los grupos usados por CI. Las mediciones de 1.500 materiales, 300 capturas y el roundtrip completo están en `qa/rc1-performance.json` y en la salida de smoke. La validación física en la escuela continúa pendiente.
+
 ## Scope and results
 
 - 17 unit tests pass: ISBN equivalence/checksums, metadata merging and provenance, provider failures/cancellation, search, backups, copy identity, MARC21 normalization, byte-accurate UTF-8 ISO2709 parsing, injectable BN adapter and repository contract.

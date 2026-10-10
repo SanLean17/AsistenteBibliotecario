@@ -1,13 +1,15 @@
-import {validatePilotBackup} from './school-pilot.js?v=20261010-7';
-import {validateAssistanceBackup} from './assistance-domain.js?v=20261010-7';
-import {validateCatalogingBackup} from './cataloging.js?v=20261010-7';
-import {parseArchive} from './catalog.js?v=20261010-7';
-import {importAguapeyISO} from './marc.js?v=20261010-7';
-import {STORES,activeLoan,activeReservation} from './local-domain.js?v=20261010-7';
-import {PERMISSIONS,ROLES,PROFILES,isEnabled,validWindow} from './permissions.js?v=20261010-7';
+import {restoreIntegrity} from './recovery.js?v=20261010-rc1';
+import {validatePilotBackup} from './school-pilot.js?v=20261010-rc1';
+import {validateAssistanceBackup} from './assistance-domain.js?v=20261010-rc1';
+import {validateCatalogingBackup} from './cataloging.js?v=20261010-rc1';
+import {parseArchive} from './catalog.js?v=20261010-rc1';
+import {importAguapeyISO} from './marc.js?v=20261010-rc1';
+import {STORES,activeLoan,activeReservation} from './local-domain.js?v=20261010-rc1';
+import {PERMISSIONS,ROLES,PROFILES,isEnabled,validWindow} from './permissions.js?v=20261010-rc1';
 export class ImportProvider{parse(){throw new Error('Implementar parse en el proveedor.');}}
 export const AguapeyMarcProvider={id:'aguapey-marc',parse(input){const result=importAguapeyISO(input);if(result.records>10000)throw new Error('El archivo supera 10000 registros.');if(result.skipped)throw new Error('Hay registros sin título. Revisá el archivo para evitar una importación incompleta.');return result;}};
 export const JsonBackupProvider={id:'json-backup',parse(text){const data=JSON.parse(text);if(data.version>=4&&Array.isArray(data.books))for(const b of data.books){if(!Array.isArray(b.exemplars)||b.copies!==b.exemplars.length)throw new Error('Cantidad de ejemplares inconsistente en respaldo.');if(b.exemplars.some(e=>!e?.id))throw new Error('Ejemplar sin identidad en respaldo.');}const legacy=parseArchive(text);if(data.version<4)return legacy;validatePilotBackup(data);data.assistanceSessions??=[];validateAssistanceBackup(data.assistanceSessions);data.catalogingSessions??=[];validateCatalogingBackup(data.catalogingSessions);if(data.version===4)for(const name of ['people','memberships','invitations','saved','collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions'])data[name]??=[];if(data.version===5)for(const name of ['collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions'])data[name]??=[];for(const store of STORES){if(!Array.isArray(data[store])||data[store].length>100000)throw new Error('Respaldo incompleto: '+store);if(data[store].some(v=>!v||typeof v.id!=='string'||!v.id)||new Set(data[store].map(v=>v.id)).size!==data[store].length)throw new Error('Identificadores inválidos en '+store);}
+ if(data.version===5){const integrity=restoreIntegrity(data);if(integrity.errors.length)throw new Error(integrity.errors.join(' '));}
  const config=data.settings.find(x=>x.id==='local');if(!config||!Number.isSafeInteger(config.sequence)||config.sequence<1||!config.institutionId||!config.libraryId||!config.collectionId)throw new Error('Configuración de respaldo inválida.');const books=legacy.books.map((b,i)=>({...b,institutionId:data.books[i].institutionId,libraryId:data.books[i].libraryId,collectionId:data.books[i].collectionId,exemplars:b.exemplars.map((e,j)=>({...e,institutionId:data.books[i].exemplars[j].institutionId,libraryId:data.books[i].exemplars[j].libraryId,collectionId:data.books[i].exemplars[j].collectionId}))})),copies=books.flatMap(b=>b.exemplars);if(new Set(copies.map(c=>c.id)).size!==copies.length||new Set(copies.map(c=>c.internalCode)).size!==copies.length||copies.some(c=>!/^AB-\d{6,}$/.test(c.internalCode||'')))throw new Error('Códigos internos inválidos o repetidos.');
  for(const u of data.patrons){if(!u.name||(u.role&&!ROLES[u.role]))throw new Error('Persona inválida en respaldo.');validWindow(u.startsAt,u.expiresAt);}if(!data.patrons.some(u=>isEnabled(u)&&(u.mainAdmin||['director','administrador','bibliotecario'].includes(u.role))))throw new Error('El respaldo necesita un perfil de gestión habilitado.');
  for(const g of data.grants){if(!data.patrons.some(u=>u.id===g.userId)||!PERMISSIONS.includes(g.permission))throw new Error('Permiso sin persona o desconocido.');validWindow(g.startsAt,g.expiresAt);}

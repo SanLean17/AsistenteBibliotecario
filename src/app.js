@@ -1,36 +1,36 @@
-import {initSchoolPilotUI,renderSchoolPilot,updatePilotChrome,showRecovery} from './school-pilot-ui.js?v=20261010-7';
-import {backupPreview,timed,recordTiming} from './recovery.js?v=20261010-7';
-import {markExportInitiated} from './storage.js?v=20261010-7';
-import {renderAssistance,initAssistanceUI} from './assistance-ui.js?v=20261010-7';
-import {renderCataloging,initCatalogingUI,openMarcCataloging} from './cataloging-ui.js?v=20261010-7';
-import {renderReader,initReaderUI} from './reader-ui.js?v=20261010-7';
-import {renderMaterialActions} from './reader.js?v=20261010-7';
-import {renderPilot} from './pilot-ui.js?v=20261010-7';
-import {renderDesk,initDeskUI} from './desk-ui.js?v=20261010-7';
-import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-7';
-import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-7';
-import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-7';
-import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-7';
-import {execute,exportArchive,restoreArchive,readState,getActorId,getInstitutionId} from './storage.js?v=20261010-7';
-import {JsonBackupProvider} from './imports.js?v=20261010-7';
-import { mobileNavigation } from './navigation.js?v=20261010-7';
-import { localizeBook } from './subjects.js?v=20261010-7';
-import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-7';
-import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-7';
-import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-7';
-import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-7';
-import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-7';
-import {searchSummary,suggestedQueries} from './search-engine.js?v=20261010-7';
-import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-7';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-7';
-import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-7';
-import { assignMissingInventoryCodes } from './domain.js?v=20261010-7';
+import {initSchoolPilotUI,renderSchoolPilot,updatePilotChrome,showRecovery} from './school-pilot-ui.js?v=20261010-rc1';
+import {backupPreview,timed,recordTiming} from './recovery.js?v=20261010-rc1';
+import {markExportInitiated} from './storage.js?v=20261010-rc1';
+import {renderAssistance,initAssistanceUI} from './assistance-ui.js?v=20261010-rc1';
+import {renderCataloging,initCatalogingUI,openMarcCataloging} from './cataloging-ui.js?v=20261010-rc1';
+import {renderReader,initReaderUI} from './reader-ui.js?v=20261010-rc1';
+import {renderMaterialActions} from './reader.js?v=20261010-rc1';
+import {renderPilot} from './pilot-ui.js?v=20261010-rc1';
+import {renderDesk,initDeskUI} from './desk-ui.js?v=20261010-rc1';
+import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-rc1';
+import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-rc1';
+import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-rc1';
+import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-rc1';
+import {execute,exportArchive,restoreArchive,readState,getActorId,getInstitutionId} from './storage.js?v=20261010-rc1';
+import {JsonBackupProvider} from './imports.js?v=20261010-rc1';
+import { mobileNavigation } from './navigation.js?v=20261010-rc1';
+import { localizeBook } from './subjects.js?v=20261010-rc1';
+import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-rc1';
+import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-rc1';
+import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-rc1';
+import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-rc1';
+import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-rc1';
+import {searchSummary,suggestedQueries} from './search-engine.js?v=20261010-rc1';
+import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-rc1';
+import {detectCatalogMatches} from './duplicates.js?v=20261010-rc1';
+import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-rc1';
+import { assignMissingInventoryCodes } from './domain.js?v=20261010-rc1';
 
 const $=s=>document.querySelector(s);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let books=[],loansSnapshot=[],reservationsSnapshot=[],ready=false,query='',category='',materialFilter='',availabilityFilter='',topicFilter='',lookupController,scanController,lookupVersion=0,draft=null,detailPhotos=[],photoTarget=null,toastTimer;
 const readBooks=async()=>timed('catalog',async()=> (await getBooks()).map(localizeBook));
-const refreshCirculationSnapshot=async()=>{[loansSnapshot,reservationsSnapshot]=await Promise.all([getLoans(),getReservations()]);};
+const refreshCirculationSnapshot=async()=>{const s=await readState();loansSnapshot=s.loans;reservationsSnapshot=s.reservations;};
 const route=()=>location.hash.slice(1)||'inicio';
 const routeBase=()=>route().split('/')[0];
 
@@ -78,6 +78,10 @@ function updateNav(){
   document.querySelectorAll('[data-nav]').forEach(el=>{const active=el.dataset.nav===routeBase()||(el.dataset.nav==='biblioteca'&&['ficha','editar'].includes(routeBase()));el.classList.toggle('active',active);if(active)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
 }
 async function render(){
+ const requested=route();
+ try{await renderRoute();}finally{if(requested===route()){const heading=$('#main h1');if(heading)document.title=heading.textContent+' · Asistente Bibliotecario';}}
+}
+async function renderRoute(){
   closeWorkspaceMenu();
   updateNav();
   if(!ready)return;
@@ -121,7 +125,7 @@ function renderHome(){
  <section><div class="section-heading"><div><span class="eyebrow">ÚLTIMAS INCORPORACIONES</span><h2>En tu biblioteca</h2></div><a class="button secondary" href="#biblioteca">Ver catálogo</a></div>${recent.length?cards(recent):empty()}</section>`;
 }
 function renderExemplars(){
- $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">INVENTARIO FÍSICO</span><h1>Ejemplares</h1><p class="muted">Cada copia conserva su identidad, ubicación, estado y fotografía. Préstamos y reservas disponibles en este navegador.</p></div><a class="button primary" href="#agregar">Agregar al catálogo</a></div><div class="holdings-list">${books.flatMap(b=>(b.exemplars||[]).map((e,i)=>`<article class="holding-row"><div><span class="eyebrow">${escape(e.internalCode||e.inventoryCode||'Ejemplar '+(i+1))}</span><h2>${escape(b.title)}</h2><p>${escape(e.location||'Ubicación pendiente')} · ${escape(holdingState(e))} · ${escape(e.condition||'Bueno')}</p></div><a class="button secondary" href="#ficha/${escape(b.id)}/${escape(e.id)}">Ver ejemplar</a></article>`)).join('')||empty()} </div>`;
+ $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">INVENTARIO FÍSICO</span><h1>Ejemplares</h1><p class="muted">Cada ejemplar conserva su identidad, ubicación, estado y fotografía. Préstamos y reservas disponibles en este navegador.</p></div><a class="button primary" href="#agregar">Agregar al catálogo</a></div><div class="holdings-list">${books.flatMap(b=>(b.exemplars||[]).map((e,i)=>`<article class="holding-row"><div><span class="eyebrow">${escape(e.internalCode||e.inventoryCode||'Ejemplar '+(i+1))}</span><h2>${escape(b.title)}</h2><p>${escape(e.location||'Ubicación pendiente')} · ${escape(holdingState(e))} · ${escape(e.condition||'Bueno')}</p></div><a class="button secondary" href="#ficha/${escape(b.id)}/${escape(e.id)}">Ver ejemplar</a></article>`)).join('')||empty()} </div>`;
 }
 function renderLibrary(){
   const started=performance.now();

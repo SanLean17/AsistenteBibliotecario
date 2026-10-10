@@ -2,6 +2,8 @@
 
 Prototipo local para bibliotecas escolares argentinas. El nombre sigue siendo de trabajo.
 
+**RC1 · cierre técnico pre-piloto:** alcance, evidencia, checklist, comandos de QA y limitaciones en [docs/RELEASE-CANDIDATE.md](docs/RELEASE-CANDIDATE.md). El protocolo de uso y recuperación escolar está en [docs/PILOTO.md](docs/PILOTO.md).
+
 ## Acceso
 
 - Sitio público: https://sanlean.com.ar/AsistenteBibliotecario/

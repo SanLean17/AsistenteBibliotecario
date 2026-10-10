@@ -1,6 +1,6 @@
-import {canonicalISBN,validISBN} from './isbn.js?v=20261010-7';
-import {validISSN,recognizeIdentifier} from './recognition.js?v=20261010-7';
-import {normalizeContentEntries} from './material-types.js?v=20261010-7';
+import {canonicalISBN,validISBN} from './isbn.js?v=20261010-rc1';
+import {validISSN,recognizeIdentifier} from './recognition.js?v=20261010-rc1';
+import {normalizeContentEntries} from './material-types.js?v=20261010-rc1';
 export const CAPTURE_KINDS={cover:'Portada','title-page':'Portadilla / título','copyright-page':'Página legal',index:'Índice','newspaper-front':'Primera plana de diario','magazine-cover':'Tapa / sumario de revista',document:'Documento',other:'Otra captura'};
 export const ASSIST_FIELDS={title:'Título',subtitle:'Subtítulo',author:'Autoría / responsables',publisher:'Editorial',year:'Año',edition:'Edición',isbn:'ISBN',issn:'ISSN',doi:'DOI',resourceUrl:'URL',publication:'Publicación',publicationDate:'Fecha de publicación',volume:'Volumen',issueNumber:'Número',issuingBody:'Organismo',documentNumber:'Número de documento',materialType:'Tipo de material',description:'Descripción',subjects:'Tema / palabra clave',contentEntries:'Contenido interno'};
 export const sourceLabel=kind=>'OCR · '+(CAPTURE_KINDS[kind]||'Otra captura').toLowerCase();

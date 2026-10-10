@@ -1,4 +1,4 @@
-import { LOCAL_SCOPE } from './domain.js?v=20261010-7';
+import { LOCAL_SCOPE } from './domain.js?v=20261010-rc1';
 
 const FT='\x1e', RT='\x1d', SD='\x1f';
 const trim=value=>String(value??'').replace(/[\s\/:;,]+$/g,'').trim();
@@ -16,8 +16,8 @@ export function parseMarcField(tag,text){
   return {tag,ind1:indicators[0],ind2:indicators[1],subfields};
 }
 export function parseISO2709(input){
- const bytes=input instanceof Uint8Array?input:new Uint8Array(input),records=[];let offset=0;
- while(offset<bytes.length){if(bytes.length-offset<25)throw new Error('Registro MARC truncado.');const leader=decodeBytes(bytes.slice(offset,offset+24)),length=Number(leader.slice(0,5)),base=Number(leader.slice(12,17));if(!Number.isInteger(length)||length<25||offset+length>bytes.length||!Number.isInteger(base)||base<25||base>=length||(base-25)%12||bytes[offset+base-1]!==30||bytes[offset+length-1]!==29)throw new Error('Directorio o longitud ISO 2709 inválidos.');const fields=[];for(let i=offset+24;i<offset+base-1;i+=12){const entry=decodeBytes(bytes.slice(i,i+12)),tag=entry.slice(0,3),size=Number(entry.slice(3,7)),start=Number(entry.slice(7,12)),begin=offset+base+start,end=begin+size-1;if(!/^\d{3}$/.test(tag)||!Number.isInteger(size)||size<1||!Number.isInteger(start)||start<0||end>=offset+length-1||bytes[end]!==30)throw new Error('Campo ISO 2709 inválido.');fields.push(parseMarcField(tag,decodeBytes(bytes.slice(begin,end))));}records.push({leader,recordLength:length,fields});offset+=length;
+ const bytes=input instanceof Uint8Array?input:new Uint8Array(input),records=[];let offset=0;if(!bytes.length)throw new Error('El archivo MARC está vacío. Elegí una exportación con registros.');
+ while(offset<bytes.length){if(bytes.length-offset<25)throw new Error('Registro MARC truncado.');const leader=decodeBytes(bytes.slice(offset,offset+24)),length=Number(leader.slice(0,5)),base=Number(leader.slice(12,17));if(!Number.isInteger(length)||length<25||offset+length>bytes.length||!Number.isInteger(base)||base<25||base>=length||(base-25)%12||bytes[offset+base-1]!==30||bytes[offset+length-1]!==29)throw new Error('Directorio o longitud ISO 2709 inválidos.');if(leader[9]!=='a')throw new Error('Codificación MARC-8 no compatible. Exportá en UTF-8 antes de importar.');const fields=[];for(let i=offset+24;i<offset+base-1;i+=12){const entry=decodeBytes(bytes.slice(i,i+12)),tag=entry.slice(0,3),size=Number(entry.slice(3,7)),start=Number(entry.slice(7,12)),begin=offset+base+start,end=begin+size-1;if(!/^\d{3}$/.test(tag)||!Number.isInteger(size)||size<1||!Number.isInteger(start)||start<0||end>=offset+length-1||bytes[end]!==30)throw new Error('Campo ISO 2709 inválido.');fields.push(parseMarcField(tag,decodeBytes(bytes.slice(begin,end))));}records.push({leader,recordLength:length,fields});offset+=length;
  }return records;
 }
 const fields=(record,tag)=>record.fields.filter(f=>f.tag===tag);

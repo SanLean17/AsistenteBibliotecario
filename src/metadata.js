@@ -1,5 +1,5 @@
-import { localizeBook } from './subjects.js?v=20261010-7';
-import { cleanISBN, validISBN, canonicalISBN, isbnVariants } from './isbn.js?v=20261010-7';
+import { localizeBook } from './subjects.js?v=20261010-rc1';
+import { cleanISBN, validISBN, canonicalISBN, isbnVariants } from './isbn.js?v=20261010-rc1';
 
 export const OFFICIAL_CATALOGS = [
   {name:'Biblioteca Nacional Mariano Moreno',short:'BN Mariano Moreno',url:'https://catalogo.bn.gov.ar/',note:'Registros argentinos · Z39.50 requiere un servidor intermediario'},
@@ -7,8 +7,8 @@ export const OFFICIAL_CATALOGS = [
   {name:'Agencia Argentina de ISBN', short:'ISBN Argentina', url:'https://www.isbn.org.ar/web/busqueda-simple.php', note:'Registro nacional de ISBN'}
 ];
 
-export {safeCover,googleRecord,openLibraryRecord} from './providers/records.js?v=20261010-7';
-import {createBrowserProviders} from './providers/browser.js?v=20261010-7';
+export {safeCover,googleRecord,openLibraryRecord} from './providers/records.js?v=20261010-rc1';
+import {createBrowserProviders} from './providers/browser.js?v=20261010-rc1';
 export function mergeMetadata(records, isbn) {
   const book = { isbn:cleanISBN(isbn), sources:[], fieldSources:{}, conflicts:[] };
   for (const record of records.filter(Boolean)) {

@@ -1,6 +1,6 @@
 {
   "name": "asistente-bibliotecario",
-  "version": "0.1.0",
+  "version": "0.1.0-rc.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,6 +15,9 @@
     "test:cataloging-browser": "node tests/cataloging-browser.cjs",
     "test:assistance-browser": "node tests/assistance-browser.cjs",
     "test:ocr-engine": "node tests/ocr-engine-browser.cjs",
-    "test:school-pilot-browser": "node tests/school-pilot-browser.cjs"
+    "test:school-pilot-browser": "node tests/school-pilot-browser.cjs",
+    "test:browser-smoke": "node scripts/test-browser.mjs smoke",
+    "test:browser-flows": "node scripts/test-browser.mjs flows",
+    "test:browser-ocr": "node scripts/test-browser.mjs ocr"
   }
 }

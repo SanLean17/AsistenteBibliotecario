@@ -3,32 +3,8 @@ name: Tests
 on:
   push:
     branches: [main]
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - 'scripts/**'
-      - 'server/**'
-      - 'app.html'
-      - 'index.html'
-      - '*.css'
-      - 'assets/**'
-      - 'vendor/**'
-      - 'package.json'
-      - '.github/workflows/tests.yml'
   pull_request:
     branches: [main]
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - 'scripts/**'
-      - 'server/**'
-      - 'app.html'
-      - 'index.html'
-      - '*.css'
-      - 'assets/**'
-      - 'vendor/**'
-      - 'package.json'
-      - '.github/workflows/tests.yml'
 
 concurrency:
   group: tests-${{ github.workflow }}-${{ github.ref }}
@@ -53,7 +29,8 @@ jobs:
         run: npm run check
       - name: Run logic tests
         run: npm test
-  notices-browser:
+  browser:
+    name: Browser smoke, flows and local OCR
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -64,41 +41,29 @@ jobs:
           node-version: 22
       - name: Install browser test runtime
         run: npm install --no-save --package-lock=false playwright@1.62.1
-      - name: Install Chromium
+      - name: Cache pinned Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-1.62.1-chromium-ubuntu
+      - name: Install Chromium and system dependencies
         run: npx playwright install --with-deps chromium
-      - name: Check pilot readiness and diagnostics
-        run: npm run test:pilot-browser
+      - name: Browser smoke — routes, accessibility, volume and recovery
+        run: npm run test:browser-smoke
         env:
           BROWSER_CHANNEL: chromium
-      - name: Check school pilot, recovery and all-profile routes
-        run: npm run test:school-pilot-browser
+      - name: Browser workflows — roles, circulation, cataloging and pilot
+        run: npm run test:browser-flows
         env:
           BROWSER_CHANNEL: chromium
-      - name: Check notices interactions and responsive themes
-        run: npm run test:notices-browser
+      - name: Local OCR engine and cancellation
+        run: npm run test:browser-ocr
         env:
           BROWSER_CHANNEL: chromium
-      - name: Check daily circulation desk
-        run: npm run test:desk-browser
-        env:
-          BROWSER_CHANNEL: chromium
-      - name: Check teacher and reader experience
-        run: npm run test:reader-browser
-        env:
-          BROWSER_CHANNEL: chromium
-      - name: Check cataloging sessions and batch labels
-        run: npm run test:cataloging-browser
-        env:
-          BROWSER_CHANNEL: chromium
-      - name: Check photo assistance and human confirmation
-        run: npm run test:assistance-browser
-        env:
-          BROWSER_CHANNEL: chromium
-      - name: Check collection, inventory, migration and copy identity
-        run: |
-          node tests/collection-planning-browser.cjs
-          node tests/inventory-dual-browser.cjs
-          node tests/migration-browser.cjs
-          node tests/holding-identity-browser.cjs
-        env:
-          BROWSER_CHANNEL: chromium
+      - name: Preserve QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rc1-browser-evidence
+          path: qa/
+          retention-days: 7
