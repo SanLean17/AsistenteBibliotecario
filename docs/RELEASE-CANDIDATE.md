@@ -48,7 +48,8 @@ La prueba de volumen usa 1.500 materiales y ejemplares, inventario de 1.500 y co
 
 Las casillas representan pruebas reproducidas, no una certificación general. Para aceptar una revisión distinta, volver a ejecutar las pruebas y comprobar su SHA en Actions.
 
-- [ ] CI del commit final verde: consultar [Tests en main](https://github.com/SanLean17/AsistenteBibliotecario/actions/workflows/tests.yml?query=branch%3Amain). Pendiente de publicación de este cierre.
+- [x] CI verde del cierre de código `81b29907d86e888b83b5961924b9a49c7a6c8869`: [Tests, ejecución 38091571716](https://github.com/SanLean17/AsistenteBibliotecario/actions/runs/38091571716), primer intento, lógica y navegador completos. La revisión posterior solo registra esta evidencia; comprobar también su SHA en [Tests en main](https://github.com/SanLean17/AsistenteBibliotecario/actions/workflows/tests.yml?query=branch%3Amain).
+- [x] [Publicación de RC1](https://github.com/SanLean17/AsistenteBibliotecario/actions/runs/38091571258) correcta; navegador vacío sobre el sitio publicado confirmó assets `20261010-rc1`, Inicio, título y alternativa manual de cámara.
 - [x] Sin excepciones críticas de JavaScript en los flujos ejecutados (`ui-helpers.cjs`, `finish`).
 - [x] Rutas principales y títulos: `rc1-browser.cjs`, `school-pilot-browser.cjs`.
 - [x] Roles, hash directo, permisos temporales y vencidos: `reader-browser.cjs`, `access-browser.cjs`, pruebas de acceso/dominio.
