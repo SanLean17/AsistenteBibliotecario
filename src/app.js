@@ -1,21 +1,22 @@
-import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-2';
-import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-2';
-import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-2';
-import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-2';
-import {execute,exportArchive,restoreArchive} from './storage.js?v=20261010-2';
-import {JsonBackupProvider,AguapeyMarcProvider} from './imports.js?v=20261010-2';
-import { mobileNavigation } from './navigation.js?v=20261010-2';
-import { localizeBook } from './subjects.js?v=20261010-2';
-import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-2';
-import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-2';
-import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-2';
-import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-2';
-import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-2';
-import {searchSummary,suggestedQueries} from './search-engine.js?v=20261010-2';
-import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-2';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-2';
-import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-2';
-import { assignMissingInventoryCodes } from './domain.js?v=20261010-2';
+import {renderPilot} from './pilot-ui.js?v=20261010-3';
+import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-3';
+import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-3';
+import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-3';
+import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-3';
+import {execute,exportArchive,restoreArchive} from './storage.js?v=20261010-3';
+import {JsonBackupProvider,AguapeyMarcProvider} from './imports.js?v=20261010-3';
+import { mobileNavigation } from './navigation.js?v=20261010-3';
+import { localizeBook } from './subjects.js?v=20261010-3';
+import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-3';
+import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-3';
+import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-3';
+import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-3';
+import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-3';
+import {searchSummary,suggestedQueries} from './search-engine.js?v=20261010-3';
+import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-3';
+import {detectCatalogMatches} from './duplicates.js?v=20261010-3';
+import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-3';
+import { assignMissingInventoryCodes } from './domain.js?v=20261010-3';
 
 const $=s=>document.querySelector(s);
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -38,7 +39,7 @@ function confirmAction(title,message,label='Eliminar definitivamente'){
 }
 function dangerZone(title,message,button){return `<section class="danger-zone"><h2>Zona de peligro</h2><div class="danger-row"><div><h3>${title}</h3><p>${message}</p></div>${button}</div></section>`;}
 function renderSettings(){
-  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">TU ESPACIO DE TRABAJO</span><h1>Configuración</h1><p class="muted">Cuidá el catálogo de tu biblioteca y elegí cómo trabajar.</p></div></div><section class="panel settings-panel"><h2>Una copia, mucha tranquilidad.</h2><p>Los registros y las fotos se guardan en este navegador. Exportá un respaldo antes de cambiar de dispositivo o borrar datos.</p><div class="button-row"><button class="button primary" data-action="export">Exportar respaldo</button><button class="button secondary" data-action="import">Importar respaldo</button><button class="button secondary" data-action="theme">Cambiar tema claro / oscuro</button></div></section>${dangerZone('Vaciar el catálogo de esta institución','Se eliminarán los registros, ejemplares y fotografías de la institución actual. Esta acción no se puede deshacer. Exportá primero un respaldo.',`<button class="button danger" data-action="clear-catalog" ${books.length?'':'disabled'}>Vaciar catálogo</button>`)}`;
+  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">TU ESPACIO DE TRABAJO</span><h1>Configuración</h1><p class="muted">Cuidá el catálogo de tu biblioteca y elegí cómo trabajar.</p></div></div><section class="panel settings-panel"><h2>Una copia, mucha tranquilidad.</h2><p>Los registros y las fotos se guardan solo en este navegador y dispositivo. No hay sincronización ni respaldo automático. Para cambiar de dispositivo, exportá un archivo y luego importalo allí. Comprobá que el archivo se descargó y guardalo en un lugar seguro. No podemos verificar que conservaste el archivo, por eso no mostramos una fecha de último respaldo. Exportá antes de importar, corregir en lote o borrar datos.</p><div class="button-row"><button class="button primary" data-action="export">Exportar respaldo</button><button class="button secondary" data-action="import">Importar respaldo</button><button class="button secondary" data-action="theme">Cambiar tema claro / oscuro</button></div></section>${dangerZone('Vaciar el catálogo de esta institución','Se eliminarán los registros, ejemplares y fotografías de la institución actual. Esta acción no se puede deshacer. Exportá primero un respaldo.',`<button class="button danger" data-action="clear-catalog" ${books.length?'':'disabled'}>Vaciar catálogo</button>`)}`;
 }
 function setTheme(theme){document.documentElement.dataset.theme=theme;try{localStorage.setItem('ab-theme',theme);}catch{}document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='dark'?'#0A112F':'#EBF3FF');}
 let savedTheme;try{savedTheme=localStorage.getItem('ab-theme');}catch{}
@@ -78,6 +79,7 @@ async function render(){
   await refreshSession();await refreshCirculationSnapshot();if(current!==route())return;
   if(current.startsWith('registro')){await renderAccess(current);return;}
   if(!accessForRoute(current)){$('#main').innerHTML='<section class="notice"><h1>Acceso no habilitado</h1><p>El perfil seleccionado no tiene permiso vigente. Elegí un perfil local habilitado en el menú.</p></section>';return;}
+  if(await renderPilot(current))return;
   if(await renderAccess(current))return;
   if(await renderLocal(current))return;
   if(current==='biblioteca')return renderLibrary();

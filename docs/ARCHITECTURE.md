@@ -1,5 +1,38 @@
 # Arquitectura y dirección del prototipo
 
+## Preparación para piloto escolar — 2026-10-10
+
+`#puesta-en-marcha` y `#calidad` (alias `#diagnostico`) son vistas locales para perfiles activos Biblioteca/Autoridad de la institución seleccionada. No agregan permisos a esos perfiles: los enlaces y las correcciones siguen sujetos a los permisos existentes. El dashboard enlaza al progreso. Esta guía nunca bloquea catalogación ni circulación.
+
+`src/pilot.js` calcula proyecciones puras, sin flags de tareas completadas, puntajes, escrituras ni copias persistidas de incidencias. Los datos ajenos a la institución se excluyen. “Lista para piloto” significa que se cumplen **todos** estos criterios:
+
+- Configuración básica: institución activa con nombre (el espacio inicial “Mi escuela” requiere renombrarse), nombre de biblioteca guardado explícitamente y al menos una ubicación física activa configurada.
+- Catálogo: al menos un material, todos los códigos físicos AB válidos y únicos dentro de la institución, y cero incidencias de severidad error. Un material digital sin copias no necesita códigos; no se exige crear ejemplares ficticios.
+- Operación: al menos un perfil Biblioteca activo y vigente, y política de préstamos revisada mediante el guardado real del formulario. `libraryNameConfirmedAt` y `policyReviewedAt` son evidencia de esas operaciones, conservada en settings y en el respaldo; visitar una pantalla no completa pasos. Las instalaciones anteriores deben guardar esos formularios una vez. La eliminación de materiales, ubicaciones o responsables vuelve a dejar pendientes los pasos correspondientes.
+- Respaldo y seguridad: exportar, comprobar y conservar un archivo es **recomendación**, no criterio verificable. No se muestra fecha de último respaldo: iniciar una descarga no prueba que el archivo se conservó. Personas/docentes son una recomendación según el uso de la escuela.
+
+La categoría de respaldo se muestra incluso cuando dice “Lista para piloto”. Ese estado indica preparación básica local, no producción, autenticación real, seguridad multiusuario ni sincronización. Los perfiles continúan siendo seleccionables localmente sin contraseña.
+
+### Diagnóstico y severidades
+
+| Severidad | Casos | Efecto en preparación |
+|---|---|---|
+| Error | AB ausente, malformado o repetido; ISBN/ISSN/DOI presente pero inválido; ISBN e ISBN13 contradictorios; restricted con available; permiso con fechas, persona o permiso inconsistentes | Impide mostrar Lista para piloto, sin bloquear el uso |
+| Advertencia | Ubicación estructurada incompleta, material sin ejemplares ni URL/DOI, posibles duplicados de edición/obra/similares, inventario open/draft de al menos 30 días o sin fecha válida, permiso vencido aún activo | Revisión recomendada |
+| Sugerencia | Temas ausentes, descripción ausente cuando tampoco hay contenidos | Enriquecimiento opcional; nunca se inventan metadatos |
+
+ISBN e ISSN usan sus validadores; DOI comprueba formato, no existencia remota. AB admite un mínimo de seis dígitos y crece sin truncarse dentro del rango entero seguro existente. Una ubicación está completa si refiere a un estante configurado activo o contiene sector, estantería y estante. El diagnóstico de duplicados reutiliza `duplicates.js`, muestra cada pareja una vez y enlaza ambas fichas; una coincidencia no prueba que deban fusionarse. La falta de acceso físico/digital puede ser intencional, por eso es advertencia. Los filtros no modifican datos. Inventarios se revisan en su sección y no se cierran en lote.
+
+### Correcciones explícitas y respaldo
+
+`pilot.codes` asigna solo AB faltantes con el secuenciador monotónico existente; conserva códigos presentes (incluidos los inválidos, que requieren revisión del origen/restauración validada), IDs y numeración previa. `pilot.care` cambia available a damaged solo si careLevel ya es restricted. No altera condiciones, bibliografía, préstamos, reservas, extraviados ni bajas. Ambos requieren perfil gestor, permiso holdings.edit, confirmación y se ejecutan dentro de la transacción institucional existente. Cada lote no vacío audita actor, institución, cantidad, IDs y valores antes/después. Repetirlo sin candidatos no agrega eventos. Se comprueba también que no haya cambiado institución/perfil durante la confirmación.
+
+Los grants vencidos ya se concilian y auditan con `expireAccess` al refrescar; no se agrega un segundo mecanismo. El normalizador preexistente puede asignar códigos ausentes durante apertura/importación, por lo que esos casos pueden estar resueltos antes de abrir el diagnóstico. No se agregan correcciones bibliográficas silenciosas ni fusiones automáticas.
+
+Configuración explica exportar/importar para trasladar los datos entre dispositivos, sin backup automático. Se mantiene el recordatorio antes de operaciones destructivas y se agrega antes de los lotes. **Datos demo omitidos deliberadamente**: no se introduce carga ni eliminación parcial que pueda mezclarse con datos reales.
+
+Validación: `tests/pilot.test.js` cubre preparación, pureza, aislamiento, identificadores, duplicados y correcciones; `tests/pilot-browser.cjs` recorre checklist, diagnóstico, filtros, enlaces, cancelación/confirmación, auditoría y guardado real en 320/390/768/1440 px en claro/oscuro. El workflow mantiene concurrency/cancel-in-progress y ejecuta sintaxis, integridad, npm test y ambos recorridos de navegador.
+
 ## Dos experiencias, una identidad
 
 `index.html` es la landing pública. Explica el producto, ofrece recursos y distingue capacidades disponibles de desarrollos futuros. No abre IndexedDB ni muestra cifras de una institución. `app.html` contiene el espacio interno local: panel con buscador, catálogo, incorporación, ejemplares y configuración. Los enlaces antiguos `/#biblioteca`, `/#ficha/...`, etc. se redirigen conservando su destino. IndexedDB conserva el nombre y migra sus stores a la versión 4, en el mismo origen: cambiar de página no cambia ni borra el catálogo.

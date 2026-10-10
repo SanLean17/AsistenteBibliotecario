@@ -8,6 +8,7 @@
     "check": "node scripts/check-integrity.mjs",
     "test": "node --test tests/*.test.js",
     "test:notices-browser": "node tests/notices-browser.cjs",
-    "verify": "npm run check && npm test"
+    "verify": "npm run check && npm test",
+    "test:pilot-browser": "node tests/pilot-browser.cjs"
   }
 }

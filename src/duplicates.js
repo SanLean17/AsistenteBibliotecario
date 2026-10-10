@@ -1,4 +1,4 @@
-import {canonicalISBN} from './isbn.js?v=20261010-2';
+import {canonicalISBN} from './isbn.js?v=20261010-3';
 
 const norm=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
 const normDOI=value=>String(value??'').trim().toLowerCase().replace(/^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)/i,'');

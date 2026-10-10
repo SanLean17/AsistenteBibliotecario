@@ -10,7 +10,7 @@ const {setup,save,assert}=require('./ui-helpers.cjs');
   await page.locator('[name=copies]').fill('1');
   await save(page);
 
-  let s=await page.evaluate(async()=>await(await import('./src/storage.js?v=20261010-2')).readState());
+  let s=await page.evaluate(async()=>await(await import('./src/storage.js?v=20261010-3')).readState());
   const book=s.books.find(b=>b.title==='Historias del barrio');
 
   await go('coleccion');
@@ -34,7 +34,7 @@ const {setup,save,assert}=require('./ui-helpers.cjs');
   await personForm.locator('button').click();
   await page.getByText('Docente de prueba',{exact:true}).waitFor();
 
-  s=await page.evaluate(async()=>await(await import('./src/storage.js?v=20261010-2')).readState());
+  s=await page.evaluate(async()=>await(await import('./src/storage.js?v=20261010-3')).readState());
   const teacher=s.patrons.find(p=>p.name==='Docente de prueba');
   await page.locator('#app-menu-toggle').click();
   await page.locator('#local-actor').selectOption(teacher.id);
