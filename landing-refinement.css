@@ -29,3 +29,23 @@
 
 @media(max-width:760px){.hero-copy h1{font-size:clamp(48px,12vw,70px)}}
 #product-menu-toggle{display:flex}
+
+/* FAQ editorial accordion: wide question pills with answers below. */
+.resources{display:block}
+.resources>div:first-child{max-width:760px;margin-bottom:42px}
+.resources>div:first-child>p{max-width:560px}
+.resources .faq-list{display:grid;gap:14px;width:100%}
+.resources .faq-list details{padding:0;border:0}
+.resources .faq-list details:first-child{border-top:0}
+.resources .faq-list summary{position:relative;display:flex;align-items:center;min-height:64px;padding:18px 68px 18px 24px;border:1px solid transparent;border-radius:999px;background:var(--surface-2);color:var(--text);font:500 16px/1.45 var(--sans);list-style:none;cursor:pointer;transition:background .18s ease,border-color .18s ease,transform .18s ease}
+.resources .faq-list summary::-webkit-details-marker{display:none}
+.resources .faq-list summary::marker{content:''}
+.resources .faq-list summary::after{content:'+';position:absolute;right:24px;top:50%;transform:translateY(-50%);font:400 30px/1 var(--sans);color:var(--text)}
+.resources .faq-list details[open] summary::after{content:'×';font-size:27px}
+.resources .faq-list summary:hover{border-color:var(--soft-border);background:color-mix(in srgb,var(--surface-2) 78%,var(--primary-soft))}
+.resources .faq-list details[open] summary{background:color-mix(in srgb,var(--surface-2) 88%,var(--primary-soft));border-color:var(--soft-border)}
+.resources .faq-list details>p,.resources .faq-list details>a{margin-left:24px;margin-right:24px}
+.resources .faq-list details p{max-width:940px;margin-top:22px;margin-bottom:8px;font-size:15px;line-height:1.75}
+.resources .faq-list details>p:last-of-type{margin-bottom:24px}
+.resources .faq-list details>.button,.resources .faq-list details>.text-link{margin-top:10px;margin-bottom:26px}
+@media(max-width:760px){.resources>div:first-child{margin-bottom:30px}.resources .faq-list{gap:10px}.resources .faq-list summary{min-height:58px;padding:16px 56px 16px 19px;border-radius:28px;font-size:14px}.resources .faq-list summary::after{right:19px;font-size:27px}.resources .faq-list details>p,.resources .faq-list details>a{margin-left:19px;margin-right:19px}.resources .faq-list details p{font-size:14px;line-height:1.7;margin-top:17px}}
