@@ -40,7 +40,7 @@ Se conserva lectura completa del estado para mutaciones; el pico de memoria no s
 
 ## Navegadores y límites conocidos
 
-Chromium/Edge tiene cobertura amplia. WebKit pasó el smoke compacto local; Firefox local Windows no pudo iniciar el binario descargado (`spawn UNKNOWN`), por lo que se valida el smoke compacto en Linux/CI. No se presenta WebKit emulado como prueba de Safari en un iPhone físico.
+Chromium/Edge tiene cobertura amplia. WebKit pasó el smoke compacto local; Firefox y WebKit aprobaron también el smoke compacto en Linux/CI. Los binarios descargados de Firefox y Chromium no pudieron iniciar localmente en Windows (`spawn UNKNOWN`); la cobertura local amplia se ejecutó en Edge. No se presenta WebKit emulado como prueba de Safari en un iPhone físico.
 
 Quedan para la escuela: cámara Android/iPhone, lector USB físico, teclado virtual, hoja impresa real, cierre/suspensión del sistema operativo y observación durante varios días. No se provocó corrupción artificial de disco ni apagado físico durante una migración. Sí se comprobaron rollback atómico, migración representativa desde IndexedDB v1, referencias e identidades y reapertura tras operaciones.
 
@@ -50,12 +50,19 @@ Se conservaron módulos y scripts históricos cuya eliminación no era necesaria
 
 ## Cierre de publicación
 
-La evidencia del commit publicado y sus ejecuciones de Tests/Pages se agrega después de verificarlas. Hasta entonces, esta sección no certifica una release publicada.
+Validación del 11 de octubre de 2026 sobre `b7d0ff197a2ad983459a4e72769b4e810b60f8a1`, que contiene la implementación `0355517` y la corrección del harness offline:
+
+- [Tests: ejecución completa aprobada](https://github.com/SanLean17/AsistenteBibliotecario/actions/runs/38185132276): sintaxis, integridad, 188 pruebas, rutas, 13 suites funcionales, OCR real, FIELD PILOT y compatibilidad Firefox/WebKit.
+- [Pages: publicación aprobada](https://github.com/SanLean17/AsistenteBibliotecario/actions/runs/38185131989).
+- Publicación real comprobada en un contexto Edge aislado: assets idénticos al repositorio, versión visible, manual y checklist accesibles, pantalla de 320 px sin desborde y catálogo abierto en una pestaña nueva sin red. Captura local: `qa/field-published-offline-320.png`.
+- El primer CI detectó la divergencia de `navigator.onLine` al crear una pestaña offline en Chromium/Playwright 1.62 ([incidencia upstream](https://github.com/microsoft/playwright/issues/42174)). El harness conserva el bloqueo real de red y comprueba que falla una petición no cacheada; usa además el control explícito de estado de red de Chromium para verificar el aviso. No se retiró ni silenció ninguna prueba.
+
+El commit posterior de este informe solo documenta resultados; el estado de la punta de `main` se consulta en [GitHub Actions](https://github.com/SanLean17/AsistenteBibliotecario/actions?query=branch%3Amain).
 
 - [x] Dominio y escala locales aprobados.
 - [x] Offline, actualización, volumen, recuperación y recorrido escolar locales aprobados.
 - [x] Manuales por rol, protocolo, privacidad, problemas y lista imprimible disponibles.
-- [ ] Tests del commit final completamente verdes, incluidos Firefox/WebKit compactos.
-- [ ] Pages del commit final verde y smoke de la publicación verificado.
+- [x] Tests del commit validado completamente verdes, incluidos Firefox/WebKit compactos.
+- [x] Pages del commit validado verde y smoke de la publicación verificado.
 
 Recomendación funcional: apta para **piloto controlado**, con equipo principal, respaldo inicial/final, responsable y registro alternativo. No ampliar a operación institucional exclusiva antes de validar los dispositivos y completar el protocolo de [cinco días](GUIA-PILOTO-ESCUELA.md).
