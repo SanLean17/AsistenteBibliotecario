@@ -8,17 +8,19 @@ const {start}=require('./field-server.cjs');
   await page.getByText('Preparada para abrir sin conexión en este navegador.',{exact:true}).waitFor();
   const ids=await page.evaluate(async()=>{const st=await import('./src/storage.js?v=20261010-field1'),{validateBook}=await import('./src/catalog.js?v=20261010-field1');const b=validateBook({title:'Escuela sin conexión',copies:2});await st.saveBook(b);const p=await st.execute('person.save',{name:'Participante de prueba',cargo:'Docente',accessProfile:'docente',status:'active'});return {book:b.id,person:p.id,copy:(await st.getBooks())[0].exemplars[0].id};});
   await context.setOffline(true);await page.close();page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
-  // Playwright 1.62 Chromium can leave navigator.onLine true on a page born offline.
-  // Toggle on the still-blank page, before navigation: github.com/microsoft/playwright/issues/42174.
-  await context.setOffline(false);await context.setOffline(true);
   await page.goto(server.base+'app.html#biblioteca');await page.getByRole('heading',{name:'Escuela sin conexión'}).waitFor();
-  assert.equal(await page.evaluate(()=>navigator.onLine),false);
   assert.equal(await page.evaluate(()=>fetch('./package.json?offline-proof').then(()=>false,()=>true)),true,'Uncached request must fail without network');
+  // Chromium 151/Playwright 1.62 can block requests but leave navigator.onLine true
+  // on a page born offline (microsoft/playwright#42174). Keep real network blocking
+  // above, and explicitly emulate the navigator state for the banner/event checks.
+  const network=await context.newCDPSession(page);
+  const navigatorOffline=offline=>network.send('Network.overrideNetworkState',{offline,latency:0,downloadThroughput:-1,uploadThroughput:-1});
+  await navigatorOffline(true);await page.waitForFunction(()=>navigator.onLine===false);
   await page.getByText(/Sin conexión. Podés seguir trabajando/).waitFor();
   for(const route of ['inicio','mostrador','mi-biblioteca','jornada-catalogacion','inventario','atencion','etiquetas','configuracion']){await page.goto(server.base+'app.html#'+route);await page.waitForFunction(()=>document.querySelector('main h1')&&document.title.startsWith(document.querySelector('main h1').textContent));}
   const offline=await page.evaluate(async ids=>{const st=await import('./src/storage.js?v=20261010-field1');const l=await st.execute('loan.create',{exemplarId:ids.copy,patronId:ids.person});await st.execute('loan.return',{id:l.id});const r=await st.execute('reservation.create',{bookId:ids.book,patronId:ids.person});await st.execute('reservation.transition',{id:r.id,status:'cancelled'});const i=await st.execute('inventory.quick.start');const s=await st.readState();await st.execute('inventory.scan',{id:i.id,code:s.books[0].exemplars[0].internalCode});return {loan:l.id,inventory:i.id,archive:await st.exportArchive()};},ids);
   assert.equal(offline.archive.loans[0].status,'returned');assert.equal(offline.archive.inventorySessions[0].findings.length,1);
-  await context.setOffline(false);server.state.release='B';
+  await navigatorOffline(false);await context.setOffline(false);server.state.release='B';
   await page.evaluate(async()=>{const reg=await navigator.serviceWorker.getRegistration();await reg.update();});
   await page.getByRole('button',{name:'Aplicar actualización',exact:true}).waitFor();
   await page.goto(server.base+'app.html#mostrador');await page.getByRole('button',{name:'Aplicar actualización',exact:true}).click();await page.getByText(/Terminá tu operación y abrí Configuración/).waitFor();assert.equal(await page.locator('body').getAttribute('data-qa-release'),null);
