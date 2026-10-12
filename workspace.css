@@ -168,3 +168,15 @@
 .field-status{margin:0 0 1rem;padding:.65rem 1rem;border:1px solid currentColor;border-radius:12px;overflow-wrap:anywhere}.field-status p{margin:.25rem 0;font-size:.875rem}.catalog-pages{justify-content:center;margin:1.5rem 0}.catalog-pages span{align-self:center}
 @media print{.field-status{display:none!important}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+/* Migration shares the existing visual language and keeps untrusted cells bounded. */
+#migration-center {min-width:0;overflow-wrap:anywhere}
+#migration-center .panel {margin-block:1rem;padding:clamp(1rem,3vw,2rem)}
+#migration-center label {display:block;margin-block:.7rem;min-width:0}
+#migration-center select,#migration-center input:not([type=checkbox]) {max-width:100%;width:100%;min-width:0}
+#migration-center .migration-row {display:block;margin-block:1rem}
+#migration-center dd {margin:0 0 .6rem;white-space:pre-wrap}
+#migration-center dt {font-weight:bold}
+#migration-center .migration-preview article {border-bottom:1px solid currentColor;padding:.5rem}
+#migration-center .button {white-space:normal;max-width:100%;margin:.25rem 0}
+#migration-center .migration-label-choice[hidden] {display:none}
+@media print {#migration-center > :not(#migration-body),#migration-body > :not(.print-labels){display:none!important}}

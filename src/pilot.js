@@ -1,7 +1,7 @@
-import {isEnabled,PERMISSIONS} from './permissions.js?v=20261010-field1';
-import {validISBN,canonicalISBN} from './isbn.js?v=20261010-field1';
-import {validISSN,recognizeIdentifier} from './recognition.js?v=20261010-field1';
-import {catalogDuplicatePairs} from './duplicates.js?v=20261010-field1';
+import {isEnabled,PERMISSIONS} from './permissions.js?v=20261011-migration1';
+import {validISBN,canonicalISBN} from './isbn.js?v=20261011-migration1';
+import {validISSN,recognizeIdentifier} from './recognition.js?v=20261011-migration1';
+import {catalogDuplicatePairs} from './duplicates.js?v=20261011-migration1';
 
 export const SEVERITIES={error:'Error',warning:'Advertencia',suggestion:'Sugerencia'};
 export const validAB=value=>/^AB-\d{6,}$/.test(value||'')&&Number.isSafeInteger(Number(value.slice(3)))&&Number(value.slice(3))>0;
@@ -11,10 +11,12 @@ export function pilotScope(state){
  return Object.fromEntries(Object.entries(state).map(([key,value])=>[key,Array.isArray(value)?value.filter(scoped).map(x=>key==='books'?{...x,exemplars:(x.exemplars||[]).filter(scoped)}:x):value]));
 }
 export function deriveDataQuality(state,{at=new Date(),includeDuplicates=true}={}){
- const s=pilotScope(state),issues=[],books=s.books||[],locations=s.libraryLocations||[],codes=new Map();
+ const s=pilotScope(state),issues=[],books=s.books||[],locations=s.libraryLocations||[],codes=new Map(),legacyCodes=new Map();
  const add=(type,severity,entity,title,detail,route,extra={})=>issues.push({id:type+':'+entity,type,severity,title,detail,route,...extra});
  for(const b of books){
   const route='ficha/'+encodeURIComponent(b.id),detail=b.title||'Material sin título';
+  if(!String(b.title||'').trim())add('missing-title','error',b.id,'Título vacío',detail,route);
+  if(/\uFFFD|Ã[\u0080-\u00bf]/.test([b.title,b.author,b.description,...(b.subjects||[])].join(' ')))add('encoding','warning',b.id,'Caracteres de origen para revisar',detail,route);
   if(!(b.subjects||[]).some(x=>String(x).trim()))add('topics','suggestion',b.id,'Sin temas o palabras clave',detail,route);
   if(!String(b.description||'').trim()&&!(b.contents||[]).length)add('description','suggestion',b.id,'Descripción opcional para mejorar la búsqueda',detail,route);
   if(!(b.exemplars||[]).length&&!b.resourceUrl&&!b.doi)add('orphan','warning',b.id,'Sin ejemplares ni acceso digital',detail,route);
@@ -27,6 +29,7 @@ export function deriveDataQuality(state,{at=new Date(),includeDuplicates=true}={
    const er='ejemplar/'+encodeURIComponent(e.id),ed=detail+' · '+(e.internalCode||'Sin código'),p=e.physicalLocation||{};
    if(!validAB(e.internalCode))add('code','error',e.id,'Código AB ausente o inválido',ed,er);
    if(e.internalCode){if(codes.has(e.internalCode))add('code-duplicate','error',e.id,'Código AB repetido',ed,er);codes.set(e.internalCode,e.id);}
+   if(e.inventoryCode){if(legacyCodes.has(e.inventoryCode))add('legacy-code-duplicate','warning',e.id,'Inventario legado repetido',ed,er);legacyCodes.set(e.inventoryCode,e.id);}
    if(!(p.sector&&p.shelving&&p.shelf)&&!locations.some(l=>l.id===p.shelfId&&l.type==='shelf'&&l.active!==false))add('location','warning',e.id,'Ubicación estructurada incompleta',ed,er);
    if(e.careLevel==='restricted'&&e.status==='available')add('care','error',e.id,'No prestar figura como disponible',ed,er);
   }

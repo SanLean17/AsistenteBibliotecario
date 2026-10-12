@@ -1,32 +1,33 @@
-import {initSchoolPilotUI,renderSchoolPilot,updatePilotChrome,showRecovery} from './school-pilot-ui.js?v=20261010-field1';
-import {backupPreview,timed,recordTiming,diagnosticSummary} from './recovery.js?v=20261010-field1';
-import {markExportInitiated} from './storage.js?v=20261010-field1';
-import {renderAssistance,initAssistanceUI} from './assistance-ui.js?v=20261010-field1';
-import {renderCataloging,initCatalogingUI,openMarcCataloging} from './cataloging-ui.js?v=20261010-field1';
-import {renderReader,initReaderUI} from './reader-ui.js?v=20261010-field1';
-import {renderMaterialActions} from './reader.js?v=20261010-field1';
-import {renderPilot} from './pilot-ui.js?v=20261010-field1';
-import {renderDesk,initDeskUI} from './desk-ui.js?v=20261010-field1';
-import {initAccessUI,renderAccess} from './access-ui.js?v=20261010-field1';
-import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261010-field1';
-import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261010-field1';
-import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261010-field1';
-import {execute,exportArchive,restoreArchive,readState,getActorId,getInstitutionId} from './storage.js?v=20261010-field1';
-import {JsonBackupProvider} from './imports.js?v=20261010-field1';
-import { mobileNavigation } from './navigation.js?v=20261010-field1';
-import { localizeBook } from './subjects.js?v=20261010-field1';
-import { preparePhoto, validPhotoURL } from './photos.js?v=20261010-field1';
-import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261010-field1';
-import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261010-field1';
-import { canonicalISBN, cleanISBN } from './isbn.js?v=20261010-field1';
-import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261010-field1';
-import {searchSummary,suggestedQueries,createSearchIndex} from './search-engine.js?v=20261010-field1';
-import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261010-field1';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-field1';
-import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261010-field1';
-import { assignMissingInventoryCodes } from './domain.js?v=20261010-field1';
+import {renderMigration,initMigrationUI} from './migration-ui.js?v=20261011-migration1';
+import {initSchoolPilotUI,renderSchoolPilot,updatePilotChrome,showRecovery} from './school-pilot-ui.js?v=20261011-migration1';
+import {backupPreview,timed,recordTiming,diagnosticSummary} from './recovery.js?v=20261011-migration1';
+import {markExportInitiated} from './storage.js?v=20261011-migration1';
+import {renderAssistance,initAssistanceUI} from './assistance-ui.js?v=20261011-migration1';
+import {renderCataloging,initCatalogingUI,openMarcCataloging} from './cataloging-ui.js?v=20261011-migration1';
+import {renderReader,initReaderUI} from './reader-ui.js?v=20261011-migration1';
+import {renderMaterialActions} from './reader.js?v=20261011-migration1';
+import {renderPilot} from './pilot-ui.js?v=20261011-migration1';
+import {renderDesk,initDeskUI} from './desk-ui.js?v=20261011-migration1';
+import {initAccessUI,renderAccess} from './access-ui.js?v=20261011-migration1';
+import {recognizeIdentifier,identifierDraft,MATERIAL_TYPES} from './recognition.js?v=20261011-migration1';
+import {profileForMaterial,normalizeContentEntries} from './material-types.js?v=20261011-migration1';
+import {initLocalUI,refreshSession,renderLocal,accessForRoute,holdingState,can} from './local-ui.js?v=20261011-migration1';
+import {execute,exportArchive,restoreArchive,readState,getActorId,getInstitutionId} from './storage.js?v=20261011-migration1';
+import {JsonBackupProvider} from './imports.js?v=20261011-migration1';
+import { mobileNavigation } from './navigation.js?v=20261011-migration1';
+import { localizeBook } from './subjects.js?v=20261011-migration1';
+import { preparePhoto, validPhotoURL } from './photos.js?v=20261011-migration1';
+import { lookupISBN, safeCover, OFFICIAL_CATALOGS } from './metadata.js?v=20261011-migration1';
+import { scanISBN, scanMaterialFromFile, createMaterialDetector } from './scanner.js?v=20261011-migration1';
+import { canonicalISBN, cleanISBN } from './isbn.js?v=20261011-migration1';
+import { categories, searchBooks, searchCatalog, validateBook, parseArchive } from './catalog.js?v=20261011-migration1';
+import {searchSummary,suggestedQueries,createSearchIndex} from './search-engine.js?v=20261011-migration1';
+import {materialAvailability,formatAvailabilityEstimate,exemplarAvailability} from './availability.js?v=20261011-migration1';
+import {detectCatalogMatches} from './duplicates.js?v=20261011-migration1';
+import { openDatabase, getBooks, saveBook, deleteBook, clearCatalog, mergeBooks, getPhotos, savePhoto, deletePhoto, deleteExemplar, getLoans, getReservations, getPatrons, getActivity } from './storage.js?v=20261011-migration1';
+import { assignMissingInventoryCodes } from './domain.js?v=20261011-migration1';
 
-import {initOffline,FIELD_VERSION} from './offline.js?v=20261010-field1';
+import {initOffline,FIELD_VERSION} from './offline.js?v=20261011-migration1';
 const $=s=>document.querySelector(s);
 let indexedBooks,searchIndex,libraryPage=0,librarySignature='',libraryScroll=0,previousRoute='',searchTimer;
 const PAGE_SIZE=48;
@@ -111,13 +112,15 @@ async function renderRoute(){
   if(current==='configuracion')return renderSettings();
   if(current==='ejemplares')return renderExemplars();
   if(current==='interoperabilidad')return renderInteroperability();
+  if(current==='migracion')return renderMigration();
   if(current.startsWith('ficha/'))return renderDetail(current.split('/')[1],current.split('/')[2]);
   if(current.startsWith('editar/'))return renderEditor(current.split('/')[1]);
   renderHome();
 }
 function renderInteroperability(){
  $('#main').innerHTML=`<div class="page-heading"><div><span class="eyebrow">INTEROPERABILIDAD</span><h1>Importar y exportar</h1><p class="muted">Evitá volver a catalogar una biblioteca que ya tiene registros en otro sistema.</p></div></div>
- <section class="panel settings-panel"><span class="eyebrow">AGUAPEY</span><h2>Importar MARC / ISO 2709</h2><p>Aguapey puede exportar su base bibliográfica en formato MARC como archivo ISO 2709. Este prototipo ya puede leer ese archivo y recuperar título, autores, editorial, temas, contenidos y datos locales de inventario cuando están presentes.</p><button class="button primary" data-action="import-aguapey">Elegir archivo .ISO</button><p class="muted">Los campos locales 852 y 859 se conservan cuando aparecen. La vista previa distingue fichas nuevas, coincidencias y conflictos. El archivo pasa a una cola de revisión antes de incorporar.</p></section>
+ <section class="panel settings-panel"><h2>Centro de Migración</h2><p>Traé un catálogo de Aguapey, Excel, Google Sheets, CSV, TSV o JSON propio. Mapeá columnas, revisá conflictos y confirmá la importación completa.</p><a class="button primary" href="#migracion">Abrir Centro de Migración</a></section>
+ <section class="panel settings-panel"><span class="eyebrow">AGUAPEY</span><h2>Importar MARC / ISO 2709</h2><p>También podés conservar el flujo de revisión por Jornada. Los campos 852 y 859 mantienen el inventario y la ubicación de origen.</p><button class="button secondary" data-action="import-aguapey">Elegir archivo .ISO</button></section>
  <section class="panel settings-panel"><span class="eyebrow">RESPALDO PROPIO</span><h2>Asistente Bibliotecario</h2><p>El respaldo JSON conserva información que MARC no representa directamente en este prototipo, como fotografías, personas, permisos, préstamos y reservas locales.</p><div class="button-row"><button class="button secondary" data-action="export">Exportar respaldo JSON</button><button class="button secondary" data-action="import">Importar respaldo JSON</button></div></section>
  <section class="notice"><strong>Próximo paso</strong><p>La exportación MARC/ISO hacia Aguapey se habilitará cuando validemos el mapeo con archivos reales de escuelas para no generar registros incompatibles.</p></section>`;
 }
@@ -292,7 +295,7 @@ document.addEventListener('click',async event=>{
  if(button.dataset.action==='help')$('#help').showModal();
  if(button.dataset.action==='manual'){draft=identifierDraft($('#isbn-query')?.value||'');location.hash='#editar/nuevo';}
  if(button.dataset.action==='export'){if(button.disabled)return;button.disabled=true;button.setAttribute('aria-busy','true');notify('Preparando respaldo… Esperá a que comience la descarga.');await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));try{const exportInstitution=getInstitutionId(),exportActor=getActorId();const blob=new Blob([JSON.stringify(await exportArchive())],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='biblioteca-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);await markExportInitiated(exportInstitution,exportActor);notify('Exportación iniciada. Comprobá que conservaste el archivo.');}catch{notify('No se pudo exportar el respaldo. Conservá los datos y volvé a intentar.');}finally{button.disabled=false;button.removeAttribute('aria-busy');}}
- if(button.dataset.action==='diagnostic'){try{const s=await readState();const {requirePermission}=await import('./permissions.js?v=20261010-field1');requirePermission(s,getActorId(),'sensitive.export');const ua=navigator.userAgent,browser=/Edg/.test(ua)?'Edge':/Firefox/.test(ua)?'Firefox':/Chrome/.test(ua)?'Chromium':/Safari/.test(ua)?'Safari':'Otro';const data=diagnosticSummary(s,{appVersion:FIELD_VERSION,dbVersion:11,browser,viewport:{width:innerWidth,height:innerHeight}}),url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='diagnostico-biblioteca.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Diagnóstico preparado: versión, cantidades y resultado de integridad. Sin nombres ni catálogo.');}catch{notify('No se pudo preparar el diagnóstico. Revisá los permisos del perfil.');}return;}
+ if(button.dataset.action==='diagnostic'){try{const s=await readState();const {requirePermission}=await import('./permissions.js?v=20261011-migration1');requirePermission(s,getActorId(),'sensitive.export');const ua=navigator.userAgent,browser=/Edg/.test(ua)?'Edge':/Firefox/.test(ua)?'Firefox':/Chrome/.test(ua)?'Chromium':/Safari/.test(ua)?'Safari':'Otro';const data=diagnosticSummary(s,{appVersion:FIELD_VERSION,dbVersion:11,browser,viewport:{width:innerWidth,height:innerHeight}}),url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='diagnostico-biblioteca.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Diagnóstico preparado: versión, cantidades y resultado de integridad. Sin nombres ni catálogo.');}catch{notify('No se pudo preparar el diagnóstico. Revisá los permisos del perfil.');}return;}
  if(button.dataset.action==='import')$('#import-file').click();
  if(button.dataset.action==='import-aguapey')$('#aguapey-file').click();
  if(button.dataset.action==='camera-unavailable')showRecognitionFallback('Si no podés usar la cámara, ingresá el código, usá una fotografía o incorporá el material manualmente.');
@@ -350,6 +353,7 @@ window.addEventListener('error',event=>{if(event.error)showRecovery(event.error)
 initDeskUI();
 initAssistanceUI({refresh:async()=>{books=await readBooks();await render();},onDraft:value=>{draft={...value,copies:can('holdings.create')?1:0,exemplars:[]};location.hash='#editar/nuevo';}});
 initCatalogingUI(async()=>{books=await readBooks();await render();});
+initMigrationUI(async()=>{books=await readBooks();await render();});
 initReaderUI(async()=>{books=await readBooks();await render();});
 initAccessUI(async context=>{if(context){query='';category='';materialFilter='';availabilityFilter='';topicFilter='';draft=null;detailPhotos=[];cancelLookup();}books=await readBooks();await render();});
 initLocalUI(async context=>{if(context){query='';category='';draft=null;detailPhotos=[];cancelLookup();}books=await readBooks();await render();});

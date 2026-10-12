@@ -57,3 +57,6 @@ JavaScript modular sin framework, IndexedDB versión 11, respaldo formato 5. src
 No hay login real, sincronización, analytics, notificaciones externas ni IA nueva. El OCR se ejecuta en el dispositivo con carga diferida; su uso offline no está garantizado. Importación de respaldo limitada a 50 MB y 10.000 materiales; fotos abundantes pueden superar ese tamaño. MARC-8 y exportación MARC no disponibles. El adaptador experimental server/bn-provider.mjs preexistente no está activado en Pages ni forma parte de este despliegue.
 
 [Arquitectura e historial](docs/ARCHITECTURE.md) · [Fuentes bibliográficas](docs/BIBLIOGRAPHIC-PROVIDERS.md) · [Licencias de terceros](THIRD_PARTY_NOTICES.md) · [Cierre RC1 histórico](docs/RELEASE-CANDIDATE.md).
+## Migration Center V1
+
+Las escuelas con catálogo previo pueden usar **Importar / exportar → Centro de Migración** para Aguapey/MARC UTF-8, CSV de Excel/Sheets, TSV o JSON propio. Análisis local, mapeo editable, revisión de duplicados, importación atómica, historial, CSV de salida y etiquetas AB. [Guía paso a paso](docs/MIGRACION.md). No requiere backend ni servicios pagos.

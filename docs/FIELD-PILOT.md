@@ -1,5 +1,9 @@
 # FIELD PILOT V1
 
+## Escuelas con catálogo previo
+
+No es necesario empezar de cero. Usá [Centro de Migración](MIGRACION.md) desde Importar / exportar para CSV de Excel/Sheets, TSV, Aguapey UTF-8 o catálogo JSON propio. Hacé primero una prueba pequeña con respaldo previo; revisá columnas, conflictos, ubicaciones y ejemplares antes del commit atómico. Después imprimí etiquetas AB e iniciá un inventario físico de validación. No se importan automáticamente personas ni perfiles. MARC-8 requiere conversión externa y la exportación MARC sigue deshabilitada.
+
 Versión **0.2.0-field.1**, 11 de octubre de 2026. Base: RC1 `a77cb37`. Aplicación local para una prueba escolar controlada de varios días. No representa validación en una escuela real ni soporte multiusuario en línea.
 
 ## Matriz del producto

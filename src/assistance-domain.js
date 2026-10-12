@@ -1,10 +1,10 @@
-import {CAPTURE_KINDS,ASSIST_FIELDS,proposeFromOCR,confirmedPatch} from './assistance.js?v=20261010-field1';
-import {createAssistanceDraft,MATERIAL_TYPES} from './material-types.js?v=20261010-field1';
-import {hasPermission,requirePermission} from './permissions.js?v=20261010-field1';
-import {validateBook} from './catalog.js?v=20261010-field1';
-import {classifyCapture} from './cataloging.js?v=20261010-field1';
-import {detectCatalogMatches} from './duplicates.js?v=20261010-field1';
-import {validAssistImage} from './assistance-image.js?v=20261010-field1';
+import {CAPTURE_KINDS,ASSIST_FIELDS,proposeFromOCR,confirmedPatch} from './assistance.js?v=20261011-migration1';
+import {createAssistanceDraft,MATERIAL_TYPES} from './material-types.js?v=20261011-migration1';
+import {hasPermission,requirePermission} from './permissions.js?v=20261011-migration1';
+import {validateBook} from './catalog.js?v=20261011-migration1';
+import {classifyCapture} from './cataloging.js?v=20261011-migration1';
+import {detectCatalogMatches} from './duplicates.js?v=20261011-migration1';
+import {validAssistImage} from './assistance-image.js?v=20261011-migration1';
 const at=()=>new Date().toISOString();
 const shared=['title','subtitle','author','authors','subjects','contentEntries','contents','description'];
 export function canAssist(s,actor,target='new'){return (target==='material'?['catalog.edit','contents.manage','topics.manage']:['catalog.create']).some(p=>hasPermission(actor,p,s.grants));}

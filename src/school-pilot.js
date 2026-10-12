@@ -1,10 +1,10 @@
-import {pilotManager,pilotScope,deriveReadiness,deriveDataQuality} from './pilot.js?v=20261010-field1';
+import {pilotManager,pilotScope,deriveReadiness,deriveDataQuality} from './pilot.js?v=20261011-migration1';
 
 export const FEEDBACK_TYPES={ux:'Uso y navegación',error:'Error',idea:'Idea',question:'Pregunta',data:'Datos',performance:'Lentitud'};
 export const FEEDBACK_STATUS={open:'Abierta',reviewed:'Revisada',resolved:'Resuelta',discarded:'Descartada'};
 export const FEEDBACK_SEVERITY={low:'Baja',medium:'Media',high:'Alta'};
 export const PILOT_TASKS={title:'Buscar por título',author:'Buscar por autor',topic:'Buscar por tema',content:'Encontrar un texto dentro de una antología',scan:'Escanear un ejemplar',loan:'Registrar un préstamo',return:'Registrar una devolución',reserve:'Solicitar una reserva',collect:'Retirar una reserva'};
-const routes=new Set(['inicio','biblioteca','agregar','jornada-catalogacion','asistencia','mostrador','circulacion','reservas','ejemplares','ejemplar','ficha','editar','inventario','atencion','usuarios','permisos','organizacion','coleccion','avisos','calidad','puesta-en-marcha','actividad','etiquetas','interoperabilidad','configuracion','mi-biblioteca','guardados','piloto']);
+const routes=new Set(['inicio','biblioteca','agregar','jornada-catalogacion','asistencia','mostrador','circulacion','reservas','ejemplares','ejemplar','ficha','editar','inventario','atencion','usuarios','permisos','organizacion','coleccion','avisos','calidad','puesta-en-marcha','actividad','etiquetas','interoperabilidad','migracion','configuracion','mi-biblioteca','guardados','piloto']);
 export const pilotConfig=s=>s.settings?.find(x=>x.id==='local')||{};
 export const safeRoute=value=>routes.has(String(value||'').replace(/^#/,'').split(/[/?]/)[0])?String(value).replace(/^#/,'').split(/[/?]/)[0]:'inicio';
 // Only an allowlist, never a URL, raw user agent, stack or record identifier.

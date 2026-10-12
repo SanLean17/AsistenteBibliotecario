@@ -1,6 +1,6 @@
-import {parseISO2709,marcRecordToCatalog} from './marc.js?v=20261010-field1';
-import {classifyCapture} from './cataloging.js?v=20261010-field1';
-import {canonicalISBN} from './isbn.js?v=20261010-field1';
+import {parseISO2709,marcRecordToCatalog} from './marc.js?v=20261011-migration1';
+import {classifyCapture} from './cataloging.js?v=20261011-migration1';
+import {canonicalISBN} from './isbn.js?v=20261011-migration1';
 
 // Parsing and preview are read-only. No item is incorporated by selecting a file.
 export function previewMarc(input,books){
