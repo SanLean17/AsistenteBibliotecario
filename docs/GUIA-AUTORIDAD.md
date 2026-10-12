@@ -14,3 +14,7 @@ En Puesta en marcha, revisá pasos pendientes. En Piloto escolar, activá el per
 
 ## Límites que hay que explicar
 Los perfiles funcionan localmente y se seleccionan sin contraseña; no son un inicio de sesión institucional. No hay cuentas en línea, mensajes automáticos ni acceso remoto. El equipo debe estar supervisado. Los archivos de respaldo contienen datos personales y requieren cuidado. El diagnóstico técnico exportable contiene cantidades y versión, sin nombres ni títulos.
+
+## Informe institucional agregado
+
+En Inicio → **Circulación y analítica**, elegí las fechas y descargá el **Informe breve para dirección**. Resume colección, crecimiento registrado, circulación, reservas, necesidades y estado físico. No incluye nombres ni rankings de docentes/lectores. La falta de datos se informa expresamente; una señal no genera compras, bajas ni sanciones. Para comparar ciclos hay que indicar las fechas de ambos y contar con al menos 5 préstamos en cada uno. [Alcance y privacidad](ANALITICA-BIBLIOTECA.md).

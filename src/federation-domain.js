@@ -1,7 +1,7 @@
-import {validateFederationSnapshot,FEDERATION_LIMITS,federationId,federationString} from './federation.js?v=20261012-hemeroteca2';
-import {holdingReference,validateSharedHolding,shareableHolding} from './holding-identity.js?v=20261012-hemeroteca2';
-import {requirePermission} from './permissions.js?v=20261012-hemeroteca2';
-import {materialAvailability,exemplarAvailability} from './availability.js?v=20261012-hemeroteca2';
+import {validateFederationSnapshot,FEDERATION_LIMITS,federationId,federationString} from './federation.js?v=20261012-analytics1';
+import {holdingReference,validateSharedHolding,shareableHolding} from './holding-identity.js?v=20261012-analytics1';
+import {requirePermission} from './permissions.js?v=20261012-analytics1';
+import {materialAvailability,exemplarAvailability} from './availability.js?v=20261012-analytics1';
 
 export const COOPERATION_TYPES={interlibrary:'Préstamo interbibliotecario',exchange:'Intercambio',reference:'Consulta / referencia',donation:'Donación ofrecida',other:'Otro'};
 export const COOPERATION_STATUS={draft:'Borrador',prepared:'Preparado',agreed:'Acordado',received:'Recibido',returned:'Devuelto',cancelled:'Cancelado'};

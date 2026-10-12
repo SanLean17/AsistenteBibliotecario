@@ -64,6 +64,10 @@ jobs:
         run: npm run test:hemeroteca-browser
         env:
           BROWSER_CHANNEL: chromium
+      - name: Institutional analytics, history, privacy and exports
+        run: npm run test:analytics-browser
+        env:
+          BROWSER_CHANNEL: chromium
       - name: Local OCR engine and cancellation
         run: npm run test:browser-ocr
         env:

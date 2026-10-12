@@ -1,6 +1,6 @@
 {
   "name": "asistente-bibliotecario",
-  "version": "0.6.0-hemeroteca.2",
+  "version": "0.7.0-analytics.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -24,6 +24,8 @@
     "test:scale": "node --test tests/field-scale.test.js",
     "test:pedagogical": "node --test tests/teaching.test.js",
     "test:pedagogical-browser": "node tests/teaching-browser.cjs",
+    "test:analytics": "node --test tests/institutional-analytics.test.js",
+    "test:analytics-browser": "node tests/analytics-browser.cjs",
     "test:hemeroteca": "node --test tests/serials.test.js",
     "test:hemeroteca-browser": "node tests/hemeroteca-browser.cjs"
   }

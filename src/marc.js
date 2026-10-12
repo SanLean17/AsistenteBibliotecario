@@ -1,4 +1,4 @@
-import { LOCAL_SCOPE } from './domain.js?v=20261012-hemeroteca2';
+import { LOCAL_SCOPE } from './domain.js?v=20261012-analytics1';
 
 const FT='\x1e', RT='\x1d', SD='\x1f';
 const trim=value=>String(value??'').replace(/[\s\/:;,]+$/g,'').trim();

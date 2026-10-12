@@ -20,3 +20,7 @@ Abrí **Mis proyectos** para crear planes privados o institucionales, organizar 
 ## Revistas, diarios y artículos
 
 La entrada secundaria **Revistas y diarios** abre Hemeroteca. Buscá por titular, artículo, tema, fecha o número. La ficha muestra el contenedor: **Reservar el número que contiene este artículo** solicita ese material físico. Podés agregar un artículo a un proyecto y vincularlo a una experiencia docente; no crea otra ficha ni otra copia. Consulta en sala no admite reserva de préstamo.
+
+## Mi historial de circulación
+
+Desde Inicio → **Mi historial** podés consultar tus préstamos actuales y devueltos, reservas y renovaciones. La analítica institucional y los historiales agregados de materiales están reservados a Biblioteca y Autoridad. Tus proyectos privados no participan en el informe institucional.

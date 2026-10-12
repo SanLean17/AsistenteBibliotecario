@@ -48,3 +48,7 @@ En **Mis proyectos**, consultá planes institucionales, aprobá experiencias env
 ## Hemeroteca
 
 Desde Inicio o el menú Hemeroteca, creá una publicación y luego sus números. Fotografiar el sumario o la primera plana produce propuestas que requieren revisión y confirmación. Los ejemplares AB usan el inventario, las etiquetas y la circulación normales. Revisá revistas y diarios anteriores antes de vincularlos. Consultá [HEMEROTECA.md](HEMEROTECA.md) para CSV/MARC, duplicados y respaldos.
+
+## Circulación e información para decidir
+
+Desde Inicio, abrí **Circulación y analítica**. Elegí un período para consultar préstamos, reservas, demanda no cubierta, materiales usados, conservación, proyectos e inventarios. Cada sugerencia muestra la evidencia y requiere revisión humana. Desde la ficha se accede al historial agregado del material y de cada ejemplar, sin nombres. Se pueden descargar informes JSON, HTML imprimible y CSV agregados. Consultá [Analítica de biblioteca](ANALITICA-BIBLIOTECA.md) para conocer denominadores, fórmula de demanda, privacidad y límites.
