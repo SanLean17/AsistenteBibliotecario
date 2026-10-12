@@ -8,7 +8,7 @@ exports.start=async()=>{
   if(state.release!=='A'){
    const original=await fs.readFile(path.join(root,'app.html')),updated=Buffer.from(original.toString().replace('<body ','<body data-qa-release="'+state.release+'" '));
    if(relative==='app.html')body=updated;
-   if(relative==='sw.js')body=Buffer.from(body.toString().replace('const RELEASE="20261011-network2"','const RELEASE="20261011-network2-'+state.release+'"').replaceAll(crypto.createHash('sha256').update(original).digest('hex'),crypto.createHash('sha256').update(updated).digest('hex')));
+   if(relative==='sw.js')body=Buffer.from(body.toString().replace('const RELEASE="20261012-teaching1"','const RELEASE="20261012-teaching1-'+state.release+'"').replaceAll(crypto.createHash('sha256').update(original).digest('hex'),crypto.createHash('sha256').update(updated).digest('hex')));
   }
   if(state.broken&&relative==='workspace.css')body=Buffer.from('/* incomplete deploy */');
   const type={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.webmanifest':'application/manifest+json','.ttf':'font/ttf'}[path.extname(file)]||'application/octet-stream';

@@ -1,9 +1,10 @@
-import {normalizeLoanPolicy} from './loan-policy.js?v=20261011-network2';
-import {isEnabled,LABELS} from './permissions.js?v=20261011-network2';
-import {conditionAttentionItems} from './condition.js?v=20261011-network2';
+import {teachingActor} from './teaching.js?v=20261012-teaching1';
+import {normalizeLoanPolicy} from './loan-policy.js?v=20261012-teaching1';
+import {isEnabled,LABELS} from './permissions.js?v=20261012-teaching1';
+import {conditionAttentionItems} from './condition.js?v=20261012-teaching1';
 
 export const NOTICE_PRIORITIES={high:'Alta',medium:'Media',low:'Baja'};
-export const NOTICE_AREAS={loans:'Préstamos',reservations:'Reservas',renewals:'Extensiones',permissions:'Permisos',condition:'Estado físico',inventory:'Inventario'};
+export const NOTICE_AREAS={teaching:'Uso pedagógico',loans:'Préstamos',reservations:'Reservas',renewals:'Extensiones',permissions:'Permisos',condition:'Estado físico',inventory:'Inventario'};
 const managers=['biblioteca','autoridad'];
 const DAY=86400000;
 const timestamp=value=>Date.parse(value||'');
@@ -84,6 +85,8 @@ export function deriveNotices(state,actor,{at=new Date()}={}){
     }
   }
   const rank={high:0,medium:1,low:2};
+  for(const e of records('teachingExperiences'))if(teachingActor(state,actor.id)&&e.status==='submitted')add('teaching',e.id,'teaching.approval','medium','Experiencia pendiente de aprobación',e.activityDescription,{route:'mis-proyectos',entityId:e.id,label:'Revisar experiencia',permissions:['catalog.view']});
+  for(const e of records('classroomSelections'))if(teachingActor(state,actor.id)&&e.status==='prepared')add('teaching',e.id,'teaching.prepared','medium','Selección para aula preparada',e.note||'Consultá a Biblioteca para el retiro.',{route:'mis-proyectos',entityId:e.id,label:'Ver selección',permissions:['catalog.view']},e.teacherId);
   return [...notices.values()].sort((a,b)=>rank[a.priority]-rank[b.priority]||(timestamp(a.dueAt)||Infinity)-(timestamp(b.dueAt)||Infinity)||a.id.localeCompare(b.id));
 }
 

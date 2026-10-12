@@ -56,6 +56,10 @@ jobs:
         run: npm run test:browser-flows
         env:
           BROWSER_CHANNEL: chromium
+      - name: Pedagogical workflows, privacy, migration and responsive
+        run: npm run test:pedagogical-browser
+        env:
+          BROWSER_CHANNEL: chromium
       - name: Local OCR engine and cancellation
         run: npm run test:browser-ocr
         env:

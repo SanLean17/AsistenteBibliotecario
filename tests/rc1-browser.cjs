@@ -18,7 +18,7 @@ const {setup,assert,noOverflow,fs}=require('./ui-helpers.cjs');
  await go('configuracion');await page.locator('[data-action=import]').click(); // File chooser can be cancelled without losing the route.
  await go('inicio');
  const seeded=await page.evaluate(async()=>{
-  const st=await import('../src/storage.js?v=20261011-network2'),{validateBook}=await import('../src/catalog.js?v=20261011-network2'),{command}=await import('../src/local-domain.js?v=20261011-network2');
+  const st=await import('../src/storage.js?v=20261012-teaching1'),{validateBook}=await import('../src/catalog.js?v=20261012-teaching1'),{command}=await import('../src/local-domain.js?v=20261012-teaching1');
   const actor=st.getActorId(),start=performance.now();
   await st.mutate(s=>{for(let i=0;i<1500;i++)s.books.push(validateBook({title:'Material de prueba '+i,author:'Autora '+i,subjects:['Historia'],contents:['Capítulo océanos'],copies:1}));});
   const seedMs=performance.now()-start;
@@ -43,15 +43,15 @@ const {setup,assert,noOverflow,fs}=require('./ui-helpers.cjs');
  });
  const timings={seed:seeded.seedMs};
  for(const route of ['inicio','biblioteca','mostrador','jornada-catalogacion/'+seeded.queue,'inventario']){const start=Date.now();await go(route);timings[route.split('/')[0]]=Date.now()-start;assert.ok(timings[route.split('/')[0]]<15000,route+' exceeded generous smoke budget');}
- assert.equal(await page.evaluate(async()=> (await(await import('../src/storage.js?v=20261011-network2')).readState()).inventorySessions[0].expectedExemplarIds.length),1500);
+ assert.equal(await page.evaluate(async()=> (await(await import('../src/storage.js?v=20261012-teaching1')).readState()).inventorySessions[0].expectedExemplarIds.length),1500);
  await go('biblioteca');let start=Date.now();await page.locator('#search').fill('océanos');await page.waitForFunction(()=>document.querySelector('.catalog-summary')?.textContent.includes('1500'));timings.search=Date.now()-start;
  await go('jornada-catalogacion/'+seeded.queue);assert.equal(await page.locator('[data-queue-item]').count(),300);await page.reload();await page.locator('#cataloging-capture').waitFor();assert.equal(await page.locator('[data-queue-item]').count(),300);
- const grant=await page.evaluate(async ids=>{const st=await import('../src/storage.js?v=20261011-network2');const g=await st.execute('grant.add',{userId:ids.patron,permission:'catalog.edit',expiresAt:new Date(Date.now()+3600000).toISOString()});st.setActorId(ids.patron);return g.id;},seeded);
+ const grant=await page.evaluate(async ids=>{const st=await import('../src/storage.js?v=20261012-teaching1');const g=await st.execute('grant.add',{userId:ids.patron,permission:'catalog.edit',expiresAt:new Date(Date.now()+3600000).toISOString()});st.setActorId(ids.patron);return g.id;},seeded);
  await go('editar/'+seeded.book);await page.locator('#book-form').waitFor();assert.equal(await page.locator('[data-delete]:visible').count(),0);
- await page.evaluate(async({ids,grant})=>{const st=await import('../src/storage.js?v=20261011-network2');st.setActorId(ids.actor);await st.execute('grant.revoke',{id:grant});st.setActorId(ids.patron);let denied=false;try{await st.saveBook((await st.getBooks())[0]);}catch{denied=true;}if(!denied)throw new Error('Revocation did not apply immediately');},{ids:seeded,grant});
- await page.reload();await page.getByRole('heading',{name:'Acceso no habilitado'}).waitFor();await page.evaluate(async id=>(await import('../src/storage.js?v=20261011-network2')).setActorId(id),seeded.actor);
+ await page.evaluate(async({ids,grant})=>{const st=await import('../src/storage.js?v=20261012-teaching1');st.setActorId(ids.actor);await st.execute('grant.revoke',{id:grant});st.setActorId(ids.patron);let denied=false;try{await st.saveBook((await st.getBooks())[0]);}catch{denied=true;}if(!denied)throw new Error('Revocation did not apply immediately');},{ids:seeded,grant});
+ await page.reload();await page.getByRole('heading',{name:'Acceso no habilitado'}).waitFor();await page.evaluate(async id=>(await import('../src/storage.js?v=20261012-teaching1')).setActorId(id),seeded.actor);
  const roundtrip=await page.evaluate(async()=>{
-  const st=await import('../src/storage.js?v=20261011-network2'),{STORES}=await import('../src/local-domain.js?v=20261011-network2'),{restoreIntegrity}=await import('../src/recovery.js?v=20261011-network2');
+  const st=await import('../src/storage.js?v=20261012-teaching1'),{STORES}=await import('../src/local-domain.js?v=20261012-teaching1'),{restoreIntegrity}=await import('../src/recovery.js?v=20261012-teaching1');
   let blocked=false;try{await st.deleteBook((await st.readState()).books[0].id);}catch{blocked=true;}if(!blocked)throw new Error('Active inventory allowed deletion');const inventory=(await st.readState()).inventorySessions[0];await st.execute('inventory.close',{id:inventory.id});if((await st.getBooks()).some(b=>b.exemplars.some(e=>e.status==='lost')))throw new Error('Inventory automatically marked loss');
   const archive=await st.exportArchive();
   for(const change of [a=>a.books[0].workId='missing',a=>a.settings.find(c=>c.id==='local').sequence=1,a=>a.photos[0].bookId='missing']){const invalid=structuredClone(archive);change(invalid);const before=JSON.stringify(await st.readAll());let rejected=false;try{await st.restoreArchive(invalid);}catch{rejected=true;}if(!rejected||JSON.stringify(await st.readAll())!==before)throw new Error('Invalid backup changed data');}

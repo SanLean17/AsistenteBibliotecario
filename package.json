@@ -1,6 +1,6 @@
 {
   "name": "asistente-bibliotecario",
-  "version": "0.4.0-network.2",
+  "version": "0.5.0-teaching.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -21,6 +21,8 @@
     "test:browser-ocr": "node scripts/test-browser.mjs ocr",
     "build:offline": "node scripts/build-offline.mjs",
     "test:browser-field": "node scripts/test-browser.mjs field",
-    "test:scale": "node --test tests/field-scale.test.js"
+    "test:scale": "node --test tests/field-scale.test.js",
+    "test:pedagogical": "node --test tests/teaching.test.js",
+    "test:pedagogical-browser": "node tests/teaching-browser.cjs"
   }
 }

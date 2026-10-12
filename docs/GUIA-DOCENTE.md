@@ -12,3 +12,7 @@ Usá el equipo y perfil indicado por Biblioteca. Esta prueba es local: lo que ha
 Si no encontrás un contenido, probá palabras más generales o pedí ayuda. Si no aparece una acción, puede depender de la política institucional, de tu habilitación o del estado del material. No cambies de perfil para forzarla. Las notificaciones se consultan dentro del sistema; no llegan por correo.
 
 Para una observación del piloto, describí qué intentaste hacer sin incluir datos de otras personas. Biblioteca puede registrarla en Piloto escolar.
+
+## Proyectos y experiencias de aula
+
+Abrí **Mis proyectos** para crear planes privados o institucionales, organizar libros y contenidos internos, guardar listas y solicitar reservas seleccionadas. Las cantidades múltiples se solicitan a Biblioteca sin apartar ejemplares. Registrá la experiencia como borrador y enviala a revisión para compartirla institucionalmente. Podés archivar, duplicar y exportar HTML imprimible. Ver [Uso pedagógico](USO-PEDAGOGICO.md).

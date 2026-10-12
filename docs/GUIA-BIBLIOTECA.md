@@ -40,3 +40,7 @@ Antes y después de cada jornada, en Configuración elegí Exportar respaldo. Es
 Para comprobar un archivo, elegí Importar respaldo: la vista previa informa qué contiene antes de modificar nada. Podés cancelar después de verificar. Restaurar un respaldo completo reemplaza la institución correspondiente; primero respaldá el estado actual. No se permite reemplazar mientras existan préstamos o reservas activos en ese espacio. Para recuperar en una emergencia, usá un navegador de prueba vacío o cerrá las operaciones solamente si eso refleja la situación real.
 
 Si algo falla, **no borres los datos del navegador**. Exportá si todavía es posible, anotá la operación, volvé al inicio y probá recargar. Si persiste, registrá una observación en Piloto escolar y consultá [Si algo sale mal](SI-ALGO-SALE-MAL.md). Nunca importes archivos al azar ni repitas muchas veces una confirmación sin revisar su resultado.
+
+## Acompañar proyectos docentes
+
+En **Mis proyectos**, consultá planes institucionales, aprobá experiencias enviadas, destacá listas y resolvé pedidos de varias copias. Prepará selecciones de aula sin cambiar ubicaciones ni reemplazar préstamos. Convertí señales docentes en necesidades solo cuando corresponda. Los proyectos privados ajenos no se muestran. Ver [Uso pedagógico](USO-PEDAGOGICO.md).

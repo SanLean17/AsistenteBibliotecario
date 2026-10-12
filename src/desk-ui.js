@@ -1,11 +1,11 @@
-import {timed} from './recovery.js?v=20261011-network2';
-import {readState,execute,getActorId} from './storage.js?v=20261011-network2';
-import {hasPermission,isEnabled,PROFILES} from './permissions.js?v=20261011-network2';
-import {deskHoldingSnapshot,searchPeople,personOperations} from './daily-operations.js?v=20261011-network2';
-import {normalizeLoanPolicy,dueDateFromPolicy} from './loan-policy.js?v=20261011-network2';
-import {careLabel,PHYSICAL_CONDITIONS,CARE_LEVELS,nextWorseCondition} from './condition.js?v=20261011-network2';
-import {scanISBN} from './scanner.js?v=20261011-network2';
-import {internalDetector,internalFromPhoto} from './labels.js?v=20261011-network2';
+import {timed} from './recovery.js?v=20261012-teaching1';
+import {readState,execute,getActorId} from './storage.js?v=20261012-teaching1';
+import {hasPermission,isEnabled,PROFILES} from './permissions.js?v=20261012-teaching1';
+import {deskHoldingSnapshot,searchPeople,personOperations} from './daily-operations.js?v=20261012-teaching1';
+import {normalizeLoanPolicy,dueDateFromPolicy} from './loan-policy.js?v=20261012-teaching1';
+import {careLabel,PHYSICAL_CONDITIONS,CARE_LEVELS,nextWorseCondition} from './condition.js?v=20261012-teaching1';
+import {scanISBN} from './scanner.js?v=20261012-teaching1';
+import {internalDetector,internalFromPhoto} from './labels.js?v=20261012-teaching1';
 
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

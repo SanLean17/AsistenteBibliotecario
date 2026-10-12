@@ -1,6 +1,6 @@
-import {hasPermission} from './permissions.js?v=20261011-network2';
-import {activeLoan,activeReservation,config} from './local-domain.js?v=20261011-network2';
-import {renewalRequestStatus} from './loan-policy.js?v=20261011-network2';
+import {hasPermission} from './permissions.js?v=20261012-teaching1';
+import {activeLoan,activeReservation,config} from './local-domain.js?v=20261012-teaching1';
+import {renewalRequestStatus} from './loan-policy.js?v=20261012-teaching1';
 
 export const operationalProfile=actor=>Boolean(actor?.mainAdmin||['biblioteca','autoridad'].includes(actor?.accessProfile));
 export const reservationLabels={requested:'Solicitada',approved:'Aprobada',ready:'Lista para retirar',expired:'Vencida',cancelled:'Cancelada',collected:'Retirada'};
@@ -39,6 +39,7 @@ export function materialActions(state,actor,book){
 
 // Keep basic navigation short; every extra entry requires its own capability.
 export function readerNavigation(route,actor,can){
+ if(route==='mis-proyectos')return actor?.accessProfile==='docente'||operationalProfile(actor);
  if(operationalProfile(actor))return true;
  if(['inicio','biblioteca','mi-biblioteca','guardados','avisos'].includes(route))return true;
  const grants={'red-escolar':['resource.sharing.manage'],'jornada-catalogacion':['catalog.create','holdings.create'],agregar:['catalog.create'],ejemplares:['holdings.create','holdings.edit','inventory.manage'],mostrador:['circulation.loan','circulation.return','reservations.manage','holdings.edit'],circulacion:['circulation.loan','circulation.return','circulation.renew.approve'],reservas:['reservations.manage'],usuarios:['users.manage','people.invite','people.validate','profiles.manage'],organizacion:['institution.edit','library.configure','policy.configure'],coleccion:['collection.needs.manage','recommendations.manage','resource.sharing.manage'],interoperabilidad:['catalog.create'],inventario:['inventory.manage','holdings.create','holdings.edit'],atencion:['holdings.edit','inventory.manage'],etiquetas:['inventory.manage'],actividad:['reports.view','institution.stats'],configuracion:['library.configure','sensitive.export','catalog.clear']};
@@ -56,7 +57,7 @@ export function renderRenewal(loan,status){
 }
 export function renderMaterialActions(state,actor,book){
  const a=materialActions(state,actor,book);
- return `<section class="reader-material" aria-label="Mi actividad con este material"><p id="reader-feedback" role="status"></p><div class="button-row"><button class="button secondary" data-reader-command="saved.toggle" data-book-id="${esc(book.id)}" aria-pressed="${a.saved}">${a.saved?'Quitar de guardados':'Guardar material'}</button>${a.canReserve?`<button class="button primary" data-reader-command="reservation.create" data-book-id="${esc(book.id)}">Reservar material</button>`:''}</div>${a.reservation?`<p>Tu reserva: <strong>${esc(reservationLabels[a.reservation.status])}</strong>${a.reservation.status==='ready'&&a.reservation.expiresAt?' · Retirá hasta '+date(a.reservation.expiresAt):''}. <a href="#mis-reservas">Ver mis reservas</a></p>`:!a.canReserve?`<p>${esc(a.reservationReason)}</p>`:''}${a.loan?`<p><strong>Lo tenés en préstamo</strong> · Devolver ${date(a.loan.dueAt)}</p>${renderRenewal(a.loan,a.renewal)}`:''}${book.circulationPolicy==='non-renewable'?'<p>Préstamo sin renovación.</p>':''}</section>`;
+ return `<section class="reader-material" aria-label="Mi actividad con este material"><p id="reader-feedback" role="status"></p><div class="button-row">${actor.accessProfile==='docente'?`<a class="button secondary" href="#mis-proyectos/add?book=${encodeURIComponent(book.id)}">Agregar a proyecto</a>`:''}<button class="button secondary" data-reader-command="saved.toggle" data-book-id="${esc(book.id)}" aria-pressed="${a.saved}">${a.saved?'Quitar de guardados':'Guardar material'}</button>${a.canReserve?`<button class="button primary" data-reader-command="reservation.create" data-book-id="${esc(book.id)}">Reservar material</button>`:''}</div>${a.reservation?`<p>Tu reserva: <strong>${esc(reservationLabels[a.reservation.status])}</strong>${a.reservation.status==='ready'&&a.reservation.expiresAt?' · Retirá hasta '+date(a.reservation.expiresAt):''}. <a href="#mis-reservas">Ver mis reservas</a></p>`:!a.canReserve?`<p>${esc(a.reservationReason)}</p>`:''}${a.loan?`<p><strong>Lo tenés en préstamo</strong> · Devolver ${date(a.loan.dueAt)}</p>${renderRenewal(a.loan,a.renewal)}`:''}${book.circulationPolicy==='non-renewable'?'<p>Préstamo sin renovación.</p>':''}</section>`;
 }
 export function renderSaved(state,actor){
  const saved=personalLibrary(state,actor).saved;
@@ -69,7 +70,7 @@ export function renderRecommendations(state,actor){
 export function renderPersonalLibrary(state,actor,view='mi-biblioteca'){
  const own=personalLibrary(state,actor),policy=config(state).policy||{};
  const loans=own.activeLoans.map(l=>{const book=state.books.find(b=>b.id===l.bookId),late=Date.parse(l.dueAt)<Date.now();return `<article class="holding-row" data-personal-loan="${esc(l.id)}" data-overdue="${late}"><div><strong>${titleLink(state,l)}</strong><p>${late?'<strong>Vencido</strong> · ':''}Devolver ${date(l.dueAt)}</p>${renderRenewal(l,renewalRequestStatus(l,policy,{book,reservations:state.reservations}))}</div></article>`;}).join('')||'<p>No tenés préstamos activos.</p>';
- const reservations=own.reservations.slice().reverse().map(r=>`<article class="holding-row" data-personal-reservation="${esc(r.id)}"><div><strong>${titleLink(state,r)}</strong><p>${esc(reservationLabels[r.status]||r.status)}${r.status==='ready'&&r.expiresAt?' · Retirá hasta '+date(r.expiresAt):''}</p></div></article>`).join('')||'<p>No tenés reservas registradas.</p>';
+ const reservations=own.reservations.slice().reverse().map(r=>`<article class="holding-row" data-personal-reservation="${esc(r.id)}"><div><strong>${titleLink(state,r)}</strong><p>${esc(reservationLabels[r.status]||r.status)}${r.contextNote?' · '+esc(r.contextNote):''}${r.status==='ready'&&r.expiresAt?' · Retirá hasta '+date(r.expiresAt):''}</p></div></article>`).join('')||'<p>No tenés reservas registradas.</p>';
  const returned=own.loans.filter(l=>l.returnedAt||l.status==='returned').map(l=>`<article class="holding-row"><div><strong>${titleLink(state,l)}</strong><p>Devuelto · ${date(l.returnedAt)}</p></div></article>`).join('')||'<p>No tenés devoluciones registradas.</p>';
  const history=own.history.length?`<ol class="reader-history">${own.history.map(e=>`<li><strong>${esc(e.label)}</strong> · ${esc(e.title)} <time>${date(e.createdAt)}</time></li>`).join('')}</ol>`:'<p>Todavía no hay movimientos personales registrados.</p>';
  const heading=({'mis-prestamos':'Mis préstamos','mis-reservas':'Mis reservas',guardados:'Materiales guardados'})[view]||'Mi biblioteca';

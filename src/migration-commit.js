@@ -1,7 +1,7 @@
-import {inspectDraft,MIGRATION_FIELDS} from './migration.js?v=20261011-network2';
-import {validateBook} from './catalog.js?v=20261011-network2';
-import {requirePermission} from './permissions.js?v=20261011-network2';
-import {canonicalISBN} from './isbn.js?v=20261011-network2';
+import {inspectDraft,MIGRATION_FIELDS} from './migration.js?v=20261012-teaching1';
+import {validateBook} from './catalog.js?v=20261012-teaching1';
+import {requirePermission} from './permissions.js?v=20261012-teaching1';
+import {canonicalISBN} from './isbn.js?v=20261012-teaching1';
 
 // Called only inside the existing institution-scoped IndexedDB transaction.
 export function applyMigration(s,actorId,plan,{config,normalizeHoldings,audit}){

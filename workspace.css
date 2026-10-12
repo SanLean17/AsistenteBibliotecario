@@ -180,3 +180,8 @@
 #migration-center .button {white-space:normal;max-width:100%;margin:.25rem 0}
 #migration-center .migration-label-choice[hidden] {display:none}
 @media print {#migration-center > :not(#migration-body),#migration-body > :not(.print-labels){display:none!important}}
+
+/* Teaching workflows reuse the light/dark theme tokens and native controls. */
+#teaching-center{min-width:0;overflow-wrap:anywhere}#teaching-center .panel{margin-block:1rem;padding:clamp(12px,3vw,24px)}#teaching-center article{padding-block:12px;border-bottom:1px solid var(--border,currentColor)}#teaching-center form{max-width:100%;display:grid;gap:12px}#teaching-center input:not([type=checkbox]),#teaching-center select,#teaching-center textarea{box-sizing:border-box;width:100%;min-width:0;max-width:100%}#teaching-center .button-row{display:flex;flex-wrap:wrap;gap:8px}#teaching-center .holding-row>div{min-width:0;width:100%}#teaching-center summary{cursor:pointer;padding:12px;font-weight:700}#teaching-center button,#teaching-center .button{white-space:normal;min-height:44px}#teaching-center label{display:grid;gap:6px}#teaching-center input[type=checkbox]{width:22px;height:22px}#teaching-center :focus-visible{outline:3px solid currentColor;outline-offset:3px}
+
+#teaching-center .button.secondary{color:var(--text);border-color:var(--line)}#teaching-center input,#teaching-center select,#teaching-center textarea{font-size:16px}#teaching-center .panel h3{margin-top:12px}

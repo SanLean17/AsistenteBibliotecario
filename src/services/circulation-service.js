@@ -1,4 +1,4 @@
-import {execute} from '../storage.js?v=20261011-network2';
+import {execute} from '../storage.js?v=20261012-teaching1';
 export const lend=data=>execute('loan.create',data);
 export const returnCopy=(id,status='available')=>execute('loan.return',{id,status});
 export const reserve=data=>execute('reservation.create',data);
