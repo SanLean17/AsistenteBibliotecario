@@ -15,3 +15,9 @@ El respaldo completo contiene catálogo y datos personales, incluidos préstamos
 El diagnóstico técnico exportable usa una lista cerrada de campos: versión, versión de almacenamiento, familia de navegador, dimensiones de pantalla, cantidades y número de errores/advertencias de integridad. No incluye títulos, nombres, correos, códigos, rutas con identificadores, mensajes de error ni trazas. No se envía automáticamente. No se agregó un registro técnico persistente de excepciones; las observaciones locales existentes cubren ese propósito con intervención humana.
 
 Una nueva versión cambia archivos de la aplicación, no borra los registros locales. El navegador puede retirar datos por políticas de espacio o configuración; preparar el modo sin conexión no reemplaza un respaldo. No usar navegación privada para la operación real. Acordar responsables, retención y eliminación de datos con la institución antes del piloto.
+
+## Red Escolar: archivos compartibles separados
+
+El catálogo federado excluye identidades de prestatarios e historial individual: no exporta personas, emails, préstamos o reservas individuales, permisos, auditoría, notas privadas, ubicación exacta, fotografías ni feedback. Solo incluye materiales elegidos como compartibles; por defecto son locales. Revisar títulos y temas para no compartir PII ingresada manualmente en campos bibliográficos.
+
+Los catálogos remotos se procesan y guardan en el dispositivo, dentro del espacio institucional, sin consultas automáticas a terceros. El seguimiento y observaciones de cooperación son privados y viajan únicamente en el respaldo completo, nunca en la exportación federada. El checksum no autentica al emisor. Un archivo entregado anteriormente no se retira al cambiar la visibilidad local. [Guía de Red Escolar](RED-ESCOLAR.md).

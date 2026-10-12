@@ -52,7 +52,7 @@ Después de cambiar assets, actualizar coherentemente la versión visible y de i
 
 ## Arquitectura y límites
 
-JavaScript modular sin framework, IndexedDB versión 11, respaldo formato 5. src/storage.js expone el repositorio; storage/indexeddb.js conserva transacciones atómicas y escribe diferencias. Dominio y permisos se comprueban también al ejecutar operaciones. El worker solo conserva archivos de la release; no guarda respuestas bibliográficas ni toca la base de datos. Inter + Lora locales, paleta y dark mode existentes.
+JavaScript modular sin framework, IndexedDB versión 12, respaldo formato 5. src/storage.js expone el repositorio; storage/indexeddb.js conserva transacciones atómicas y escribe diferencias. Dominio y permisos se comprueban también al ejecutar operaciones. El worker solo conserva archivos de la release; no guarda respuestas bibliográficas ni toca la base de datos. Inter + Lora locales, paleta y dark mode existentes.
 
 No hay login real, sincronización, analytics, notificaciones externas ni IA nueva. El OCR se ejecuta en el dispositivo con carga diferida; su uso offline no está garantizado. Importación de respaldo limitada a 50 MB y 10.000 materiales; fotos abundantes pueden superar ese tamaño. MARC-8 y exportación MARC no disponibles. El adaptador experimental server/bn-provider.mjs preexistente no está activado en Pages ni forma parte de este despliegue.
 
@@ -60,3 +60,7 @@ No hay login real, sincronización, analytics, notificaciones externas ni IA nue
 ## Migration Center V1
 
 Las escuelas con catálogo previo pueden usar **Importar / exportar → Centro de Migración** para Aguapey/MARC UTF-8, CSV de Excel/Sheets, TSV o JSON propio. Análisis local, mapeo editable, revisión de duplicados, importación atómica, historial, CSV de salida y etiquetas AB. [Guía paso a paso](docs/MIGRACION.md). No requiere backend ni servicios pagos.
+
+## Red Escolar V1 · simulación local
+
+Biblioteca puede compartir un catálogo mínimo elegido expresamente, cargar archivos de otras escuelas, buscar y comparar ediciones y registrar acuerdos, recepción y devolución. Todo es local: no hay sincronización, envíos ni datos personales remotos. Los ejemplares externos conservan su propietario y no reciben AB propio. [Guía](docs/RED-ESCOLAR.md) · [Contrato y límites](docs/RED-ESCOLAR-CONTRATO.md).

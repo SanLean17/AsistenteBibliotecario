@@ -78,3 +78,7 @@ Los campos renderizados se escapan; hay pruebas de HTML/script inerte, URL inseg
 Los grupos de `scripts/test-browser.mjs` separan smoke, flujos extensos, field, motor OCR y compatibilidad compacta. No necesitan un localhost ajeno: usan un harness de archivos o un servidor efímero propio. Los proveedores se controlan en tests; la suite OCR real se separa de la revisión de propuestas con resultados deterministas. No se deshabilitan pruebas ni se usa `continue-on-error`.
 
 Comandos y ejecución: [README](../README.md). Resultados y límites de esta entrega: [estado FIELD PILOT](FIELD-PILOT-STATUS.md). Operación: [Biblioteca](GUIA-BIBLIOTECA.md), [Docente](GUIA-DOCENTE.md), [Autoridad](GUIA-AUTORIDAD.md), [protocolo de cinco días](GUIA-PILOTO-ESCUELA.md), [lista imprimible](checklist-piloto.html) y [recuperación](SI-ALGO-SALE-MAL.md).
+
+## Ensayo local entre escuelas
+
+Usar [Red Escolar](RED-ESCOLAR.md) para probar intercambio manual de catálogos mínimos, búsqueda y seguimiento de cooperación. Exportar solo materiales seleccionados; no entregar backups privados. Confirmar disponibilidad y acuerdos por fuera de la aplicación. El material recibido conserva el AB de origen y se devuelve desde Cooperaciones, sin incorporarlo a circulación ni inventario propios. Registrar en el piloto cualquier problema observado.

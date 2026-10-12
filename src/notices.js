@@ -1,6 +1,6 @@
-import {normalizeLoanPolicy} from './loan-policy.js?v=20261011-migration1';
-import {isEnabled,LABELS} from './permissions.js?v=20261011-migration1';
-import {conditionAttentionItems} from './condition.js?v=20261011-migration1';
+import {normalizeLoanPolicy} from './loan-policy.js?v=20261011-network1';
+import {isEnabled,LABELS} from './permissions.js?v=20261011-network1';
+import {conditionAttentionItems} from './condition.js?v=20261011-network1';
 
 export const NOTICE_PRIORITIES={high:'Alta',medium:'Media',low:'Baja'};
 export const NOTICE_AREAS={loans:'Préstamos',reservations:'Reservas',renewals:'Extensiones',permissions:'Permisos',condition:'Estado físico',inventory:'Inventario'};
