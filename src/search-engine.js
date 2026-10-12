@@ -1,8 +1,8 @@
-import {MATERIAL_TYPES} from './recognition.js?v=20261012-teaching1';
-import {contentSearchText} from './material-types.js?v=20261012-teaching1';
-import {cleanISBN} from './isbn.js?v=20261012-teaching1';
+import {MATERIAL_TYPES} from './recognition.js?v=20261012-hemeroteca1';
+import {contentSearchText} from './material-types.js?v=20261012-hemeroteca1';
+import {cleanISBN} from './isbn.js?v=20261012-hemeroteca1';
 
-export const STOPWORDS=new Set(['de','del','la','el','los','las','un','una','que','con','sobre','tengan','tenga','algo','para','en','necesito','busco','quiero','material','materiales','recurso','recursos','tema','temas']);
+export const STOPWORDS=new Set(['de','del','la','el','los','las','un','una','que','con','sobre','tengan','tenga','algo','para','en','necesito','busco','quiero','material','materiales','recurso','recursos','tema','temas','numero']);
 
 const REPLACEMENTS=[
   [/\b(segunda|2da|2a|ii|2)\s+guerra\s+mundial\b|\bguerra\s+mundial\s+(segunda|2da|2a|ii|2)\b|\bwwii\b|\b2gm\b/g,' segunda guerra mundial '],
@@ -69,6 +69,8 @@ function fieldEntries(book){
     ['Autoría',7,[book.author,...(book.authors||[])]],
     ['Curso / audiencia',7,[book.audience,book.courseLevel]],
     ['Publicación',6,[book.publication,book.containerTitle]],
+    ['Temas de publicación',8,book.publicationSubjects||[]],
+    ['Número / edición',6,[book.issueNumber,book.volume,book.editionLabel]],
     ['Fecha',6,[book.publicationDate,book.year]],
     ['Descripción',4,[book.description,book.notes]],
     ['Área / entidad',4,[book.schoolArea,book.issuingBody]],

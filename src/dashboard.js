@@ -1,16 +1,16 @@
-import {canCatalog,catalogingSummary} from './cataloging.js?v=20261012-teaching1';
+import {canCatalog,catalogingSummary} from './cataloging.js?v=20261012-hemeroteca1';
 function catalogingBanner(s,actor){if(!canCatalog(s,actor))return '';const j=s.catalogingSessions?.find(x=>x.status==='open');return `<section class="cataloging-banner"><div><strong>${j?'Jornada en curso':'Jornada de catalogación'}</strong><p>${j?catalogingSummary(j).pending+' pendientes':'Capturá, revisá e incorporá en lote.'}</p></div><a class="button secondary" href="#jornada-catalogacion${j?'/'+j.id:''}">${j?'Continuar jornada':'Abrir jornada'}</a></section>`;}
-import {renderRecommendations} from './reader.js?v=20261012-teaching1';
-import {renderPilotSummary} from './pilot-ui.js?v=20261012-teaching1';
-import {todayOperations} from './daily-operations.js?v=20261012-teaching1';
-import {deriveNotices} from './notices.js?v=20261012-teaching1';
-import {renderNoticeSummary} from './notices-ui.js?v=20261012-teaching1';
+import {renderRecommendations} from './reader.js?v=20261012-hemeroteca1';
+import {renderPilotSummary} from './pilot-ui.js?v=20261012-hemeroteca1';
+import {todayOperations} from './daily-operations.js?v=20261012-hemeroteca1';
+import {deriveNotices} from './notices.js?v=20261012-hemeroteca1';
+import {renderNoticeSummary} from './notices-ui.js?v=20261012-hemeroteca1';
 // Presentation only. Read the institution-scoped state and existing permission checks.
-import {PROFILES,isEnabled} from './permissions.js?v=20261012-teaching1';
-import {activeLoan,activeReservation,config} from './local-domain.js?v=20261012-teaching1';
-import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261012-teaching1';
-import {suggestedQueries} from './search-engine.js?v=20261012-teaching1';
-import {libraryAnalytics} from './analytics.js?v=20261012-teaching1';
+import {PROFILES,isEnabled} from './permissions.js?v=20261012-hemeroteca1';
+import {activeLoan,activeReservation,config} from './local-domain.js?v=20261012-hemeroteca1';
+import {normalizeLoanPolicy,renewalRequestStatus,overdueLoansForPatron} from './loan-policy.js?v=20261012-hemeroteca1';
+import {suggestedQueries} from './search-engine.js?v=20261012-hemeroteca1';
+import {libraryAnalytics} from './analytics.js?v=20261012-hemeroteca1';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const action=(route,label,detail,icon)=>`<a class="dashboard-action" href="#${route}"><span class="action-symbol" aria-hidden="true">${icon}</span><span><strong>${label}</strong><small>${detail}</small></span><span aria-hidden="true">↗</span></a>`;
 const statistic=(label,n,route)=>`<a href="#${route}" class="dashboard-stat"><strong>${n}</strong><span>${label}</span></a>`;
@@ -28,6 +28,7 @@ export function renderDashboard(s,actor,c,can){
  if(!manager)html+=search;
  html+=`<div data-notice-summary>${renderNoticeSummary(deriveNotices(s,actor))}</div>`;
  html+=renderPilotSummary(s,actor);
+ html+=`<p><a href="#hemeroteca">${manager?'Hemeroteca':'Revistas y diarios'}</a></p>`;
  html+='<nav class="dashboard-actions" aria-label="Accesos principales">';
  if(manager){if(can('circulation.loan')||can('circulation.return')||can('reservations.manage')||can('holdings.edit'))html+=action('mostrador','Mostrador','Escanear → prestar, devolver o entregar reserva.','⇄');if(create)html+=action('agregar','Agregar al catálogo','Reconocer, revisar y completar.','＋');if(can('collection.needs.manage')||can('recommendations.manage')||can('resource.sharing.manage'))html+=action('coleccion','Planificar colección',(plannedNeeds?plannedNeeds+' necesidades planificadas. ':'')+(sharingActive?sharingActive+' cooperaciones en seguimiento.':'Necesidades, adquisiciones y recomendaciones.'),'◇');if(can('circulation.loan')||can('circulation.return'))html+=action('circulacion','Prestar / devolver','Consultar la circulación.','⇄');if(can('reservations.manage'))html+=action('reservas','Reservas pendientes',s.reservations.filter(activeReservation).length+' solicitudes en curso.','◷');if(can('circulation.renew.approve')&&renewalPending.length)html+=action('circulacion','Extensiones pendientes',renewalPending.length+' por autorizar.','↻');html+=action('ejemplares','Buscar ejemplar','Ubicación y disponibilidad.','⌕');if(can('inventory.manage'))html+=action('inventario','Inventario físico','Recorrer una zona y detectar diferencias.','▤');if(can('holdings.edit')||can('inventory.manage'))html+=action('atencion','Estado físico',analytics.attention.length?analytics.attention.length+' ejemplares para revisar.':'Sin ejemplares pendientes.','!');if(!create)html+=action('biblioteca','Consultar catálogo','Materiales de la institución.','▥');if(!create&&(can('users.manage')||can('people.invite')))html+=action('usuarios','Personas y accesos','El equipo de tu institución.','◎');}
  else{html+=action('mi-biblioteca','Mi biblioteca',own.length+' préstamos · '+res.length+' reservas.','♡')+action('guardados','Guardados','Volvé a tus materiales favoritos.','☆')+action('temas','Explorar por tema','Palabras y contenidos registrados.','⌕')+'<button class="dashboard-action" type="button" data-dashboard-scroll="inicio-novedades"><span class="action-symbol" aria-hidden="true">↗</span><span><strong>Novedades</strong><small>Últimas incorporaciones al catálogo.</small></span><span aria-hidden="true">↓</span></button>';if(create)html+=action('agregar','Agregar al catálogo',extra?.expiresAt?'Permiso temporal hasta '+new Date(extra.expiresAt).toLocaleString('es-AR'):'Permiso habilitado por tu institución.','＋');}

@@ -1,8 +1,9 @@
-import {teachingQuality} from './teaching.js?v=20261012-teaching1';
-import {isEnabled,PERMISSIONS} from './permissions.js?v=20261012-teaching1';
-import {validISBN,canonicalISBN} from './isbn.js?v=20261012-teaching1';
-import {validISSN,recognizeIdentifier} from './recognition.js?v=20261012-teaching1';
-import {catalogDuplicatePairs} from './duplicates.js?v=20261012-teaching1';
+import {serialQuality} from './serials.js?v=20261012-hemeroteca1';
+import {teachingQuality} from './teaching.js?v=20261012-hemeroteca1';
+import {isEnabled,PERMISSIONS} from './permissions.js?v=20261012-hemeroteca1';
+import {validISBN,canonicalISBN} from './isbn.js?v=20261012-hemeroteca1';
+import {validISSN,recognizeIdentifier} from './recognition.js?v=20261012-hemeroteca1';
+import {catalogDuplicatePairs} from './duplicates.js?v=20261012-hemeroteca1';
 
 export const SEVERITIES={error:'Error',warning:'Advertencia',suggestion:'Sugerencia'};
 export const validAB=value=>/^AB-\d{6,}$/.test(value||'')&&Number.isSafeInteger(Number(value.slice(3)))&&Number(value.slice(3))>0;
@@ -42,6 +43,7 @@ export function deriveDataQuality(state,{at=new Date(),includeDuplicates=true}={
   if(invalid)add('grant-invalid','error',g.id,'Permiso inconsistente',g.permission||'Sin permiso','permisos/'+encodeURIComponent(g.userId||''));
   else if(g.active!==false&&!g.revokedAt&&Date.parse(g.expiresAt)<=+new Date(at))add('grant-expired','warning',g.id,'Permiso vencido pendiente de cierre',g.permission,'permisos/'+encodeURIComponent(g.userId));
  }
+ for(const issue of serialQuality(s))add('serial-reference','warning',issue.id,'Hemeroteca para revisar',issue.detail,'hemeroteca');
  for(const issue of teachingQuality(s))add('teaching-reference','warning',issue.id,'Referencia pedagógica rota',issue.detail,'mis-proyectos');
  return issues.sort((a,b)=>Object.keys(SEVERITIES).indexOf(a.severity)-Object.keys(SEVERITIES).indexOf(b.severity)||a.id.localeCompare(b.id));
 }

@@ -1,6 +1,6 @@
-import {shareableHolding,validateSharedHolding} from './holding-identity.js?v=20261012-teaching1';
-import {materialAvailability,exemplarAvailability} from './availability.js?v=20261012-teaching1';
-import {canonicalISBN} from './isbn.js?v=20261012-teaching1';
+import {shareableHolding,validateSharedHolding} from './holding-identity.js?v=20261012-hemeroteca1';
+import {materialAvailability,exemplarAvailability} from './availability.js?v=20261012-hemeroteca1';
+import {canonicalISBN} from './isbn.js?v=20261012-hemeroteca1';
 
 export const FEDERATION_VERSION=1;
 export const FEDERATION_LIMITS={bytes:10*1024*1024,records:10000,snapshots:20,totalRecords:50000};
@@ -17,17 +17,18 @@ export function shareableCatalogRecord(book,{institutionId='',institutionName=''
  if(!book?.id||!book?.title)throw Error('Material inválido para compartir.');
  const identifiers={};for(const k of ['isbn','issn','doi'])if(book[k])identifiers[k]=text(book[k],500);
  const total=Number(book.copies??book.exemplars?.length)||0,available=availability?.availableCount??0;
- return {version:1,institution:{id:text(institutionId,160),name:text(institutionName||'Institución',240),libraryName:text(libraryName,240)},material:{localRecordId:text(book.id,160),workId:text(book.workId||book.id,160),editionId:text(book.editionId||book.id,160),materialType:text(book.materialType||'otro',80),title:text(book.title,300),author:text(book.author,1000),publication:text(book.publication,300),publicationDate:text(book.publicationDate,20),publisher:text(book.publisher,240),year:text(book.year,10),language:text(book.language,30),subjects:(book.subjects||[]).slice(0,100).map(v=>text(v,500)).filter(Boolean),identifiers,...(book.resourceUrl?{resourceUrl:book.resourceUrl}:{})},holdings:{...(includeHoldings?{items:(book.exemplars||[]).map(e=>shareableHolding(e,institutionId))}:{}),total,status:availability?.status||'unknown',label:text(availability?.label||'',120),available,unavailable:total-available,interlibraryAllowed:book.circulationPolicy!=='room-only'&&available>0,estimatedAt:availability?.estimatedAt instanceof Date?availability.estimatedAt.toISOString():null}};
+ return {version:1,institution:{id:text(institutionId,160),name:text(institutionName||'Institución',240),libraryName:text(libraryName,240)},material:{localRecordId:text(book.id,160),workId:text(book.workId||book.id,160),editionId:text(book.editionId||book.id,160),materialType:text(book.materialType||'otro',80),title:text(book.title,300),author:text(book.author,1000),publication:text(book.publication,300),publicationDate:text(book.publicationDate,20),publisher:text(book.publisher,240),year:text(book.year,10),language:text(book.language,30),...(book.serialIssueId?{serial:{publicationId:book.serialPublicationId,issueId:book.serialIssueId,title:book.publication,issueNumber:book.issueNumber||'',volume:book.volume||'',editionLabel:book.editionLabel||''}}:{}),subjects:(book.subjects||[]).slice(0,100).map(v=>text(v,500)).filter(Boolean),identifiers,...(book.resourceUrl?{resourceUrl:book.resourceUrl}:{})},holdings:{...(includeHoldings?{items:(book.exemplars||[]).map(e=>shareableHolding(e,institutionId))}:{}),total,status:availability?.status||'unknown',label:text(availability?.label||'',120),available,unavailable:total-available,interlibraryAllowed:book.circulationPolicy!=='room-only'&&available>0,estimatedAt:availability?.estimatedAt instanceof Date?availability.estimatedAt.toISOString():null}};
 }
 export function validateSharedCatalogRecord(raw){
  rejectPrivateFields(raw);keys(raw,['version','institution','material','holdings']);if(raw.version!==1)throw Error('Versión de registro no compatible.');
  keys(raw.institution,['id','name','libraryName']);federationId(raw.institution.id);federationString(raw.institution.name,'Institución',240,true);federationString(raw.institution.libraryName,'Biblioteca',240);
- const m=raw.material;keys(m,['localRecordId','workId','editionId','materialType','title','author','publication','publicationDate','publisher','year','language','subjects','identifiers','resourceUrl']);
+ const m=raw.material;keys(m,['localRecordId','workId','editionId','materialType','title','author','publication','publicationDate','publisher','year','language','subjects','identifiers','resourceUrl','serial']);
  for(const f of ['localRecordId','workId','editionId'])federationId(m[f]);
  for(const [f,max] of Object.entries({materialType:80,title:300,author:1000,publication:300,publicationDate:20,publisher:240,year:10,language:30}))if(m[f]!==undefined)federationString(m[f],f,max,['title','materialType'].includes(f));
  federationString(m.materialType,'Tipo de material',80,true);federationString(m.title,'Título',300,true);if(!Array.isArray(m.subjects)||m.subjects.length>100)throw Error('Temas inválidos.');m.subjects.forEach(v=>federationString(v,'Tema',500));
  keys(m.identifiers,['isbn','issn','doi']);for(const v of Object.values(m.identifiers))federationString(v,'Identificador bibliográfico',500);
  if(m.resourceUrl!==undefined)federationString(m.resourceUrl,'URL',2000);if(m.resourceUrl){federationString(m.resourceUrl,'URL',2000);let u;try{u=new URL(m.resourceUrl);}catch{throw Error('URL inválida.');}if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('URL no permitida.');}
+ if(m.serial!==undefined){keys(m.serial,['publicationId','issueId','title','issueNumber','volume','editionLabel']);federationId(m.serial.publicationId);federationId(m.serial.issueId);for(const k of ['title','issueNumber','volume','editionLabel'])federationString(m.serial[k],k,300);}
  const h=raw.holdings;keys(h,['items','total','status','label','estimatedAt','available','unavailable','interlibraryAllowed']);count(h.total);
  if(!['available','unavailable','online','no-copy','unknown'].includes(h.status))throw Error('Disponibilidad inválida.');federationString(h.label,'Disponibilidad',120);if(h.estimatedAt!==null)timestamp(h.estimatedAt);
  if(h.available!==undefined){count(h.available);count(h.unavailable);if(h.available+h.unavailable!==h.total)throw Error('Agregados inconsistentes.');}

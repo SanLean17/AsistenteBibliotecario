@@ -1,4 +1,4 @@
-import { LOCAL_SCOPE } from './domain.js?v=20261012-teaching1';
+import { LOCAL_SCOPE } from './domain.js?v=20261012-hemeroteca1';
 
 const FT='\x1e', RT='\x1d', SD='\x1f';
 const trim=value=>String(value??'').replace(/[\s\/:;,]+$/g,'').trim();
@@ -91,8 +91,10 @@ export function marcRecordToCatalog(record,{source='Aguapey · MARC ISO 2709'}={
   return {
     id:crypto.randomUUID(),workId:crypto.randomUUID(),editionId:crypto.randomUUID(),materialType:marcMaterialType(record),
     title,subtitle,author:authors.join('; '),authors,isbn:isbnRaw,issn:firstSub(record,'022','a'),category:'Otros',publisher,
+    frequency:({daily:'diario',weekly:'semanal',monthly:'mensual',diario:'diario',semanal:'semanal',mensual:'mensual'})[trim(firstSub(record,'310','a')).toLowerCase()]||'desconocido',serialNumbering:firstSub(record,'362','a'),containerTitle:firstSub(record,'773','t'),containerReference:firstSub(record,'773','w'),
+    ...(marcMaterialType(record)==='revista'&&/^\d{4}-\d{2}-\d{2}$/.test(trim(firstSub(record,'362','a')))?{publication:title,publicationDate:trim(firstSub(record,'362','a'))}:{}),
     publishedDate,year:yearFrom(publishedDate),pages:pagesFrom(extent),language:firstSub(record,'041','a'),
-    subjects,sourceSubjects:[...subjects],contents,contentEntries:contents.map((title,i)=>({id:'marc-content-'+i,title,kind:'item',source:'MARC 505'})),notes:[...allSub(record,['500'],'a'),...series.map(s=>'Serie: '+s)].join('\n'),description:firstSub(record,'520','a'),audience:firstSub(record,'521','a'),
+    subjects,sourceSubjects:[...subjects],contents,contentEntries:contents.map((title,i)=>({id:'marc-content-'+i,title,kind:'item',source:'MARC 505'})),notes:[...allSub(record,['500'],'a'),...allSub(record,['362'],'a').map(v=>'Numeración MARC 362: '+v),...allSub(record,['310'],'a').map(v=>'Periodicidad MARC 310: '+v),...allSub(record,['773'],'g').map(v=>'Contenedor MARC 773: '+v),...series.map(s=>'Serie: '+s)].join('\n'),description:firstSub(record,'520','a'),audience:firstSub(record,'521','a'),
     edition:firstSub(record,'250','a'),classification,identifiers:{marc001:fields(record,'001')[0]?.value||''},
     copies,location:exemplars[0]?.location||'',condition:exemplars[0]?.condition||'Bueno',exemplars,
     sources:[source],fieldSources:{title:source,authors:source,publisher:source,subjects:source,contents:contents.length?source:''},

@@ -1,16 +1,17 @@
-import {canonicalISBN} from './isbn.js?v=20261012-teaching1';
-import {validISSN,MATERIAL_TYPES} from './recognition.js?v=20261012-teaching1';
-import {validateBook} from './catalog.js?v=20261012-teaching1';
-import {parseISO2709,marcRecordToCatalog} from './marc.js?v=20261012-teaching1';
-import {detectCatalogMatches} from './duplicates.js?v=20261012-teaching1';
+import {isSerialDraft,prepareSerialDraft,serialDraftKey,serialDraftMatches,combineSerialRows} from './serial-migration.js?v=20261012-hemeroteca1';
+import {canonicalISBN} from './isbn.js?v=20261012-hemeroteca1';
+import {validISSN,MATERIAL_TYPES} from './recognition.js?v=20261012-hemeroteca1';
+import {validateBook} from './catalog.js?v=20261012-hemeroteca1';
+import {parseISO2709,marcRecordToCatalog} from './marc.js?v=20261012-hemeroteca1';
+import {detectCatalogMatches} from './duplicates.js?v=20261012-hemeroteca1';
 
 export const MIGRATION_LIMITS={bytes:20*1024*1024,rows:10000,columns:80,cell:20000,copies:30000};
-export const MIGRATION_FIELDS={title:'Título',subtitle:'Subtítulo',author:'Autor / responsable',isbn:'ISBN',issn:'ISSN',doi:'DOI',publisher:'Editorial',year:'Año',language:'Idioma',edition:'Edición',pages:'Páginas',category:'Categoría',subjects:'Temas / palabras clave',contents:'Contenidos internos',description:'Descripción',location:'Ubicación antigua',inventoryCode:'Inventario legado',copies:'Cantidad de ejemplares',condition:'Estado físico',circulationPolicy:'Política de circulación',notes:'Notas',materialType:'Tipo de material'};
+export const MIGRATION_FIELDS={publication:'Publicación madre',publicationDate:'Fecha del número',volume:'Volumen',issueNumber:'Número',editionLabel:'Edición / sección',article:'Artículo / titular',articleAuthor:'Autor del artículo',articlePage:'Página del artículo',title:'Título',subtitle:'Subtítulo',author:'Autor / responsable',isbn:'ISBN',issn:'ISSN',doi:'DOI',publisher:'Editorial',year:'Año',language:'Idioma',edition:'Edición',pages:'Páginas',category:'Categoría',subjects:'Temas / palabras clave',contents:'Contenidos internos',description:'Descripción',location:'Ubicación antigua',inventoryCode:'Inventario legado',copies:'Cantidad de ejemplares',condition:'Estado físico',circulationPolicy:'Política de circulación',notes:'Notas',materialType:'Tipo de material'};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const key=v=>clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const aliases={title:['titulo','title'],subtitle:['subtitulo','subtitle'],author:['autor','autores','autor1','author','authors','responsable'],isbn:['isbn'],issn:['issn'],doi:['doi'],publisher:['editorial','publisher'],year:['año','ano','year'],language:['idioma','language'],edition:['edicion','edition'],pages:['paginas','pages'],category:['categoria','category'],subjects:['temas','tema','keywords','subjects','palabras clave'],contents:['contenidos','contents','contenidos internos'],description:['descripcion','resumen','description'],location:['ubicacion','location'],inventoryCode:['inventario','codigo','inventorycode','codigo de inventario legado'],copies:['cantidad','ejemplares','copies'],condition:['estado','estado fisico','condition'],circulationPolicy:['politica de circulacion','circulationpolicy'],notes:['notas','notes'],materialType:['tipo','materialtype']};
+const aliases={publication:['publicacion','publicación','revista','diario'],publicationDate:['fecha','fecha publicacion'],volume:['volumen','volume'],issueNumber:['numero','número','issue'],editionLabel:['edicion del numero'],article:['articulo','artículo','titular'],articleAuthor:['autor articulo'],articlePage:['pagina','página'],title:['titulo','title'],subtitle:['subtitulo','subtitle'],author:['autor','autores','autor1','author','authors','responsable'],isbn:['isbn'],issn:['issn'],doi:['doi'],publisher:['editorial','publisher'],year:['año','ano','year'],language:['idioma','language'],edition:['edicion','edition'],pages:['paginas','pages'],category:['categoria','category'],subjects:['temas','tema','keywords','subjects','palabras clave'],contents:['contenidos','contents','contenidos internos'],description:['descripcion','resumen','description'],location:['ubicacion','location'],inventoryCode:['inventario','codigo','inventorycode','codigo de inventario legado'],copies:['cantidad','ejemplares','copies'],condition:['estado','estado fisico','condition'],circulationPolicy:['politica de circulacion','circulationpolicy'],notes:['notas','notes'],materialType:['tipo','materialtype']};
 export function suggestMapping(headers){const used=new Set();return headers.map(h=>{const field=Object.keys(aliases).find(f=>aliases[f].some(a=>key(a)===key(h)));if(!field||used.has(field))return '';used.add(field);return field;});}
-export function validateMapping(mapping){const chosen=mapping.filter(Boolean);if(chosen.some(f=>!Object.hasOwn(MIGRATION_FIELDS,f))||new Set(chosen).size!==chosen.length)throw Error('Cada destino debe usarse una sola vez.');if(!chosen.includes('title'))throw Error('Mapeá una columna a Título.');}
+export function validateMapping(mapping){const chosen=mapping.filter(Boolean);if(chosen.some(f=>!Object.hasOwn(MIGRATION_FIELDS,f))||new Set(chosen).size!==chosen.length)throw Error('Cada destino debe usarse una sola vez.');if(!chosen.includes('title')&&!chosen.includes('publication'))throw Error('Mapeá una columna a Título.');}
 export function decodeMigration(input,encoding='utf-8'){if(!['utf-8','windows-1252'].includes(encoding))throw Error('Codificación no admitida.');try{return new TextDecoder(encoding,{fatal:true}).decode(input);}catch{throw Error('No es UTF-8 válido. Elegí Windows-1252 solo si corresponde y revisá á é í ó ú ñ ü.');}}
 export function parseCSV(text,delimiter=','){
  if(![',',';','\t'].includes(delimiter))throw Error('Separador inválido.');
@@ -47,7 +48,7 @@ export function mapRow(row,mapping,separator='|'){
 const limits={title:180,subtitle:300,author:1000,publisher:120,year:4,language:30,edition:300,description:20000,location:120,notes:5000,doi:500,inventoryCode:100};
 export function inspectDraft(raw){
  const errors=[],warnings=[];if(!raw||typeof raw!=='object'||Array.isArray(raw))return {errors:['Registro inválido.'],warnings,draft:{title:'',copies:0}};
- const d=structuredClone(raw);for(const f of ['title','subtitle','author','publisher','location','notes'])if(d[f]!=null)d[f]=clean(d[f]);
+ const d=structuredClone(raw);try{prepareSerialDraft(d);}catch(e){errors.push(e.message);}for(const f of ['title','subtitle','author','publisher','location','notes'])if(d[f]!=null)d[f]=clean(d[f]);
  d.isbn=String(d.isbn||'').replace(/[\s-]/g,'').toUpperCase();d.doi=clean(d.doi).replace(/^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)/i,'');
  if(!d.title)errors.push('Título vacío.');if(d.isbn&&!canonicalISBN(d.isbn))errors.push('ISBN inválido.');if(d.issn&&!validISSN(d.issn))errors.push('ISSN inválido.');if(d.doi&&!/^10\.\d{4,9}\/\S+$/i.test(d.doi))errors.push('DOI inválido.');
  if(!Number.isInteger(d.copies)||d.copies<0||d.copies>9999)errors.push('Cantidad inválida (0–9999).');
@@ -77,6 +78,7 @@ const similarityKey=v=>key(v).replace(/[^a-z0-9]+/g,' ').trim();
 const tokens=b=>{const author=b.author||b.authors?.join('; ');return [author&&'author:'+similarityKey(author),b.publisher&&'publisher:'+similarityKey(b.publisher),b.year&&'year:'+b.year,b.doi&&'doi:'+key(b.doi).replace(/^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)/i,''),b.issn&&'issn:'+String(b.issn).replace(/[^0-9Xx]/g,'').toUpperCase()].filter(Boolean);};
 export async function planMigration(file,books,{mapping=file.mapping,separator='|',signal,onProgress=()=>{}}={}){
  if(file.format==='csv')validateMapping(mapping);
+ const serialRows=new Map();
  const rows=file.format==='csv'?file.rows:file.records,entries=[],buckets=new Map(),exact=new Map();let comparisons=0,totalCopies=0;
  const add=b=>{const isbn=canonicalISBN(b.isbn);if(isbn){if(!exact.has(isbn))exact.set(isbn,[]);exact.get(isbn).push(b);}for(const t of new Set(tokens(b))){if(!buckets.has(t))buckets.set(t,[]);buckets.get(t).push(b);}};books.forEach(add);
  for(let i=0;i<rows.length;i++){
@@ -84,6 +86,14 @@ export async function planMigration(file,books,{mapping=file.mapping,separator='
   const raw=file.format==='csv'?mapRow(rows[i],mapping,separator):rows[i],inspected=inspectDraft(raw),{draft,errors,warnings}=inspected;
   if(file.format==='csv'&&rows[i].length!==file.headers.length)errors.push('Cantidad de columnas distinta del encabezado.');
   totalCopies+=Number.isInteger(draft.copies)?draft.copies:0;if(totalCopies>MIGRATION_LIMITS.copies)throw Error('El lote supera 30.000 ejemplares. Dividilo en archivos más pequeños.');
+  if(isSerialDraft(draft)&&!errors.length){
+   const signature=serialDraftKey(draft),previous=serialRows.get(signature),matches=serialDraftMatches(books,draft);
+   const entry={index:i,row:i+(file.format==='csv'&&file.header?2:1),...inspected,kind:matches.length?'exact-edition':'new',targetId:matches[0]?.id||'',matchTitle:matches[0]?.title||'',matchAuthor:'',action:matches.length?'keep':'new'};
+   if(matches.length>1){entry.errors.push('Varios números coinciden; resolvé duplicados.');entry.kind='error';entry.action='keep';}
+   if(!draft.issn)entry.warnings.push('Sin ISSN: revisá la publicación; no se fusiona por título con el catálogo.');
+   if(previous){entry.groupedInto=previous.index;combineSerialRows(previous.draft,draft);entry.action='keep';entry.warnings.push('Artículos y ejemplares identificados agrupados en fila '+previous.row+'. Esta fila no crea otro número.');}
+   else serialRows.set(signature,entry);entries.push(entry);continue;
+  }
   const isbn=canonicalISBN(draft.isbn),strong=isbn?exact.get(isbn)||[]:[],candidates=new Set();let partial=false;
   if(!strong.length)outer:for(const t of new Set(tokens(draft)))for(const b of buckets.get(t)||[]){candidates.add(b);if(candidates.size>=200||comparisons+candidates.size>100000){partial=true;break outer;}}
   comparisons+=candidates.size;const matches=strong.length?strong.map(book=>({book,kind:'exact-edition'})):detectCatalogMatches([...candidates],draft);

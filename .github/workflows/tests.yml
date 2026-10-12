@@ -60,6 +60,10 @@ jobs:
         run: npm run test:pedagogical-browser
         env:
           BROWSER_CHANNEL: chromium
+      - name: Hemeroteca — magazines, newspapers, articles and containing issue reservations
+        run: npm run test:hemeroteca-browser
+        env:
+          BROWSER_CHANNEL: chromium
       - name: Local OCR engine and cancellation
         run: npm run test:browser-ocr
         env:

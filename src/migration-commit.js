@@ -1,7 +1,8 @@
-import {inspectDraft,MIGRATION_FIELDS} from './migration.js?v=20261012-teaching1';
-import {validateBook} from './catalog.js?v=20261012-teaching1';
-import {requirePermission} from './permissions.js?v=20261012-teaching1';
-import {canonicalISBN} from './isbn.js?v=20261012-teaching1';
+import {isSerialDraft,importSerialDraft} from './serial-migration.js?v=20261012-hemeroteca1';
+import {inspectDraft,MIGRATION_FIELDS} from './migration.js?v=20261012-hemeroteca1';
+import {validateBook} from './catalog.js?v=20261012-hemeroteca1';
+import {requirePermission} from './permissions.js?v=20261012-hemeroteca1';
+import {canonicalISBN} from './isbn.js?v=20261012-hemeroteca1';
 
 // Called only inside the existing institution-scoped IndexedDB transaction.
 export function applyMigration(s,actorId,plan,{config,normalizeHoldings,audit}){
@@ -19,13 +20,15 @@ export function applyMigration(s,actorId,plan,{config,normalizeHoldings,audit}){
   if(!['new','copies','fill','keep'].includes(entry.action))throw Error('Decisión de migración inválida.');
   summary.warnings+=entry.warnings.length;if(entry.errors.length){summary.errorsOmitted++;issues.push({row:entry.row,severity:'error',messages:entry.errors});continue;}
   if(entry.warnings.length)issues.push({row:entry.row,severity:'warning',messages:entry.warnings.map(w=>w.startsWith('Inventario legado repetido:')?'Inventario legado repetido.':w)});
+  if(entry.groupedInto!==undefined&&entry.action!=='keep')throw Error('La fila agrupada ya pertenece a otro número. Conservá la decisión de omitir esta fila.');
   if(entry.action==='keep'){summary.kept++;continue;}
   const checked=inspectDraft(entry.draft);if(checked.errors.length)throw Error('Fila '+entry.row+': '+checked.errors.join(' '));
   const d=checked.draft;let book;
-  if(entry.action==='new'){
+  if(isSerialDraft(d)){const before=s.books.length;book=importSerialDraft(s,actorId,d,{config,normalizeHoldings,audit,migrationId:plan.id});if(s.books.length>before)summary.newRecords++;else reused.add(book.id);
+  }else if(entry.action==='new'){
    if(entry.kind==='exact-edition')throw Error('No crees otra ficha para un ISBN ya existente.');
    // Allowlisted bibliographic data; no foreign IDs, links, photos or privileges.
-   const raw=Object.fromEntries([...Object.keys(MIGRATION_FIELDS),'authors','contentEntries','identifiers','classification','sourceSubjects','sources','fieldSources','publishedDate','audience','resourceUrl','publication','publicationDate','otherIdentifier','containerTitle','volume','issueNumber','editionLabel','pageRange','issuingBody','documentNumber','schoolArea','courseLevel','digitalFormat'].filter(f=>Object.hasOwn(d,f)).map(f=>[f,d[f]]));
+   const raw=Object.fromEntries([...Object.keys(MIGRATION_FIELDS),'authors','contentEntries','identifiers','classification','sourceSubjects','sources','fieldSources','sourceRecords','publishedDate','audience','resourceUrl','publication','publicationDate','otherIdentifier','containerTitle','volume','issueNumber','editionLabel','pageRange','issuingBody','documentNumber','schoolArea','courseLevel','digitalFormat'].filter(f=>Object.hasOwn(d,f)).map(f=>[f,d[f]]));
    book=validateBook({...raw,copies:0,exemplars:[]});book.id=crypto.randomUUID();book.workId=crypto.randomUUID();book.editionId=crypto.randomUUID();book.institutionId=cfg.institutionId;book.libraryId=cfg.libraryId;book.collectionId=cfg.collectionId;book.migrationId=plan.id;
    s.books.push(book);byId.set('migration-row:'+entry.index,book);byId.set(book.id,book);summary.newRecords++;
   }else{

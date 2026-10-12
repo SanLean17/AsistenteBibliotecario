@@ -16,3 +16,7 @@ Para una observación del piloto, describí qué intentaste hacer sin incluir da
 ## Proyectos y experiencias de aula
 
 Abrí **Mis proyectos** para crear planes privados o institucionales, organizar libros y contenidos internos, guardar listas y solicitar reservas seleccionadas. Las cantidades múltiples se solicitan a Biblioteca sin apartar ejemplares. Registrá la experiencia como borrador y enviala a revisión para compartirla institucionalmente. Podés archivar, duplicar y exportar HTML imprimible. Ver [Uso pedagógico](USO-PEDAGOGICO.md).
+
+## Revistas, diarios y artículos
+
+La entrada secundaria **Revistas y diarios** abre Hemeroteca. Buscá por titular, artículo, tema, fecha o número. La ficha muestra el contenedor: **Reservar el número que contiene este artículo** solicita ese material físico. Podés agregar un artículo a un proyecto y vincularlo a una experiencia docente; no crea otra ficha ni otra copia. Consulta en sala no admite reserva de préstamo.

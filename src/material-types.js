@@ -85,6 +85,9 @@ export function normalizeContentEntries(value){
     return {
       id:text(entry.id,100)||'content-'+index,
       kind:text(entry.kind,40)||'item',
+      ...(entry.issueId?{issueId:text(entry.issueId,100),materialId:text(entry.materialId,100)}:{}),
+      ...Object.fromEntries([['type',40],['section',120],['subtitle',500],['pageRange',40],['createdAt',40]].filter(([key])=>Object.hasOwn(entry,key)).map(([key,max])=>[key,text(entry[key],max)])),
+      ...(Object.hasOwn(entry,'subjects')?{subjects:(Array.isArray(entry.subjects)?entry.subjects:[]).slice(0,100).map(v=>text(v,100))}:{}),
       title,
       author:text(entry.author,180),
       page:text(entry.page,40),
@@ -95,7 +98,7 @@ export function normalizeContentEntries(value){
 
 export function contentSearchText(book){
   const entries=normalizeContentEntries(book.contentEntries?.length?book.contentEntries:book.contents);
-  return entries.flatMap(e=>[e.title,e.author,e.page,e.kind]).join(' ');
+  return entries.flatMap(e=>[e.title,e.subtitle,e.author,e.page,e.kind,e.section,...(e.subjects||[])]).join(' ');
 }
 
 export function createAssistanceDraft({materialId='',captureKind='cover',imageRef=''}={}){

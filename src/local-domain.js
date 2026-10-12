@@ -1,23 +1,24 @@
-import {federationCommand} from './federation-domain.js?v=20261012-teaching1';
-import {schoolPilotCommand} from './school-pilot.js?v=20261012-teaching1';
-import {assistanceCommand} from './assistance-domain.js?v=20261012-teaching1';
-import {catalogingCommand} from './cataloging.js?v=20261012-teaching1';
-import {pilotAction} from './pilot-actions.js?v=20261012-teaching1';
-import {shareableHolding} from './holding-identity.js?v=20261012-teaching1';
-import {accessCommand,expireAccess} from './access-domain.js?v=20261012-teaching1';
-import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261012-teaching1';
-import {normalizeLoanPolicy,policyForPatron,activeLoansForPatron,overdueLoansForPatron,dueDateFromPolicy,reservationExpiryFromPolicy,renewalRequestStatus,renewalDueDate} from './loan-policy.js?v=20261012-teaching1';
-import {normalizeLocation,displayLocation} from './domain.js?v=20261012-teaching1';
-import {normalizePhysicalCondition,normalizeCareLevel,conditionWorsened,nextWorseCondition} from './condition.js?v=20261012-teaching1';
-import {normalizeLibraryLocation,validateLocationHierarchy,locationLabelsFromNode,buildInventoryScope,expectedCopiesForScope,classifyInventoryScan,inventorySummary,reclassifyInventoryFindings} from './inventory.js?v=20261012-teaching1';
-import {PEDAGOGY_STORES,teachingCommand} from './teaching.js?v=20261012-teaching1';
-export const STORES=[...PEDAGOGY_STORES,'books','photos','loans','reservations','patrons','activity','grants','settings','institutions','libraries','collections','works','editions','people','memberships','invitations','saved','collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions','catalogingSessions','assistanceSessions','pilotFeedback','federationSnapshots','externalHoldings'];
+import {SERIAL_STORES,serialCommand,syncSerials} from './serials.js?v=20261012-hemeroteca1';
+import {federationCommand} from './federation-domain.js?v=20261012-hemeroteca1';
+import {schoolPilotCommand} from './school-pilot.js?v=20261012-hemeroteca1';
+import {assistanceCommand} from './assistance-domain.js?v=20261012-hemeroteca1';
+import {catalogingCommand} from './cataloging.js?v=20261012-hemeroteca1';
+import {pilotAction} from './pilot-actions.js?v=20261012-hemeroteca1';
+import {shareableHolding} from './holding-identity.js?v=20261012-hemeroteca1';
+import {accessCommand,expireAccess} from './access-domain.js?v=20261012-hemeroteca1';
+import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261012-hemeroteca1';
+import {normalizeLoanPolicy,policyForPatron,activeLoansForPatron,overdueLoansForPatron,dueDateFromPolicy,reservationExpiryFromPolicy,renewalRequestStatus,renewalDueDate} from './loan-policy.js?v=20261012-hemeroteca1';
+import {normalizeLocation,displayLocation} from './domain.js?v=20261012-hemeroteca1';
+import {normalizePhysicalCondition,normalizeCareLevel,conditionWorsened,nextWorseCondition} from './condition.js?v=20261012-hemeroteca1';
+import {normalizeLibraryLocation,validateLocationHierarchy,locationLabelsFromNode,buildInventoryScope,expectedCopiesForScope,classifyInventoryScan,inventorySummary,reclassifyInventoryFindings} from './inventory.js?v=20261012-hemeroteca1';
+import {PEDAGOGY_STORES,teachingCommand} from './teaching.js?v=20261012-hemeroteca1';
+export const STORES=[...SERIAL_STORES,...PEDAGOGY_STORES,'books','photos','loans','reservations','patrons','activity','grants','settings','institutions','libraries','collections','works','editions','people','memberships','invitations','saved','collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions','catalogingSessions','assistanceSessions','pilotFeedback','federationSnapshots','externalHoldings'];
 export const activeLoan=l=>['loaned','overdue'].includes(l.status)&&!l.returnedAt;
 export const activeReservation=r=>['requested','approved','ready'].includes(r.status);
 export const dateEnd=value=>/^\d{4}-\d{2}-\d{2}$/.test(value)?new Date(value+'T23:59:59.999').toISOString():new Date(value).toISOString();
 export function audit(s,type,actorId,details={}){s.activity.push({id:crypto.randomUUID(),type,actorId,institutionId:s.institutionId||config(s).institutionId,createdAt:new Date().toISOString(),...details});}
 export function config(s){let value=s.settings.find(x=>x.id==='local');if(!value){value={id:'local',institutionId:'local-institution',libraryId:'local-library',collectionId:'local-collection',institutionName:'Mi escuela',libraryName:'Biblioteca',sequence:1};s.settings.push(value);}value.federationInstitutionId||=value.institutionId==='local-institution'?crypto.randomUUID():value.institutionId;return value;}
-export function normalizeHoldings(s){const c=config(s),seen=new Set(),ids=new Set();if(!Number.isSafeInteger(c.sequence)||c.sequence<1)throw new Error('Contador de inventario inválido.');let next=c.sequence;for(const b of s.books)for(const e of b.exemplars||[])if(/^AB-\d+$/.test(e.internalCode||''))next=Math.max(next,Number(e.internalCode.slice(3))+1);
+export function normalizeHoldings(s){syncSerials(s);const c=config(s),seen=new Set(),ids=new Set();if(!Number.isSafeInteger(c.sequence)||c.sequence<1)throw new Error('Contador de inventario inválido.');let next=c.sequence;for(const b of s.books)for(const e of b.exemplars||[])if(/^AB-\d+$/.test(e.internalCode||''))next=Math.max(next,Number(e.internalCode.slice(3))+1);
  for(const b of s.books){b.institutionId||=c.institutionId;b.libraryId||=c.libraryId;b.collectionId||=c.collectionId;b.workId||=crypto.randomUUID();b.editionId||=b.id;for(const e of b.exemplars||[]){if(ids.has(e.id))throw new Error('Identificador de ejemplar duplicado.');ids.add(e.id);let code=e.internalCode;if(!code)code='AB-'+String(next++).padStart(6,'0');const scopedCode=JSON.stringify([b.institutionId,code]);if(seen.has(scopedCode))throw new Error('Código interno duplicado dentro de la institución.');if(!Number.isSafeInteger(next)||next>Number.MAX_SAFE_INTEGER-1)throw new Error('Se agotó el rango de códigos internos.');e.internalCode=code;seen.add(scopedCode);if(!e.inventoryCode&&!e.migrationId)e.inventoryCode=code;e.physicalLocation=normalizeLocation(e.physicalLocation||{});e.condition=normalizePhysicalCondition(e.condition||'Bueno');e.careLevel=normalizeCareLevel(e.careLevel,e.condition);e.status=e.status==='untracked'||!e.status?'available':e.status;e.institutionId=b.institutionId;e.libraryId=b.libraryId;e.collectionId=b.collectionId;e.editionId=b.editionId;}b.copies=(b.exemplars||[]).length;}c.sequence=next;
  s.institutions=[{...s.institutions[0],id:c.institutionId,name:c.institutionName}];s.libraries=[{id:c.libraryId,institutionId:c.institutionId,name:c.libraryName}];
  const collections=new Map([[c.collectionId,{id:c.collectionId,libraryId:c.libraryId,name:'General'}]]),works=new Map(),editions=[];
@@ -29,6 +30,7 @@ export function findCopy(s,id){for(const book of s.books){const copy=book.exempl
 export function expireReservations(s,actorId){const at=Date.now();for(const r of s.reservations)if(activeReservation(r)&&r.expiresAt&&Date.parse(r.expiresAt)<=at){r.status='expired';r.updatedAt=new Date().toISOString();audit(s,'reservation.expired',actorId,{reservationId:r.id});}}
 export function ensureRemovable(s,ids){const removing=new Set(ids);if((s.inventorySessions||[]).some(i=>['draft','open'].includes(i.status)&&((i.expectedExemplarIds||[]).some(id=>removing.has(id))||(i.findings||[]).some(f=>removing.has(f.exemplarId)))))throw new Error('Cerrá el inventario pendiente antes de eliminar o dar de baja estos ejemplares.');if(s.loans.some(l=>ids.includes(l.exemplarId)&&activeLoan(l)))throw new Error('Registrá la devolución antes de eliminar un ejemplar con préstamo activo.');if(s.reservations.some(r=>ids.includes(r.exemplarId)&&activeReservation(r)))throw new Error('Cancelá la reserva asignada antes de eliminar el ejemplar.');}
 export function command(s,actorId,type,data={}){
+ if(type.startsWith('serial.'))return serialCommand(s,actorId,type.slice(7),data,{command,audit,normalizeHoldings});
  if(type.startsWith('teaching.'))return teachingCommand(s,actorId,type.slice(9),data,{command,audit});
  if(type.startsWith('federation.'))return federationCommand(s,actorId,type.slice(11),data,{config,audit});
  if(type==='resource.share.update'&&s.resourceSharingRequests.find(r=>r.id===data.id)?.networkVersion)throw new Error('Continuá este acuerdo desde Red Escolar para conservar su identidad y recepción.');

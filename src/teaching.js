@@ -1,6 +1,6 @@
-import {isEnabled} from './permissions.js?v=20261012-teaching1';
-import {searchCatalog} from './search-engine.js?v=20261012-teaching1';
-import {materialAvailability} from './availability.js?v=20261012-teaching1';
+import {isEnabled} from './permissions.js?v=20261012-hemeroteca1';
+import {searchCatalog} from './search-engine.js?v=20261012-hemeroteca1';
+import {materialAvailability} from './availability.js?v=20261012-hemeroteca1';
 export const PEDAGOGY_STORES=['teachingProjects','projectMaterials','savedLists','teachingExperiences','batchReservationRequests','classroomSelections','teachingSignals'];
 export const teachingManager=a=>isEnabled(a)&&['biblioteca','autoridad'].includes(a.accessProfile);
 export const teachingActor=(s,id)=>{const a=s.patrons.find(a=>a.id===id);return a?.institutionId===s.institutionId&&isEnabled(a)&&['docente','biblioteca','autoridad'].includes(a.accessProfile)?a:null;};

@@ -39,9 +39,10 @@ test('un título parecido solo genera advertencia y nunca coincidencia exacta si
 });
 
 test('ISSN solo identifica una edición exacta cuando coincide también número o fecha',()=>{
-  const existing={id:'r1',title:'Revista escolar',materialType:'revista',issn:'1234-5679',issueNumber:'12',publicationDate:'2026-05-01'};
-  const exact=detectCatalogMatches([existing],{title:'Revista escolar',materialType:'revista',issn:'12345679',issueNumber:'12'});
+  const existing={id:'r1',title:'Revista escolar',materialType:'revista',issn:'1234-5679',issueNumber:'12',year:'2026',publicationDate:'2026-05-01'};
+  const exact=detectCatalogMatches([existing],{title:'Revista escolar',materialType:'revista',issn:'12345679',issueNumber:'12',year:'2026'});
   assert.equal(exact[0].kind,'exact-edition');
+  assert.notEqual(detectCatalogMatches([existing],{title:'Revista escolar',issn:'12345679',issueNumber:'12'})[0]?.kind,'exact-edition');
   const other=detectCatalogMatches([existing],{title:'Revista escolar',materialType:'revista',issn:'12345679',issueNumber:'13'});
   assert.notEqual(other[0]?.kind,'exact-edition');
 });

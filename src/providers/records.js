@@ -1,4 +1,4 @@
-import {canonicalISBN,isbnVariants} from '../isbn.js?v=20261012-teaching1';
+import {canonicalISBN,isbnVariants} from '../isbn.js?v=20261012-hemeroteca1';
 export function safeCover(value) {
   try {
     const url = new URL(value);

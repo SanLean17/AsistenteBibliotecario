@@ -44,3 +44,7 @@ Si algo falla, **no borres los datos del navegador**. Exportá si todavía es po
 ## Acompañar proyectos docentes
 
 En **Mis proyectos**, consultá planes institucionales, aprobá experiencias enviadas, destacá listas y resolvé pedidos de varias copias. Prepará selecciones de aula sin cambiar ubicaciones ni reemplazar préstamos. Convertí señales docentes en necesidades solo cuando corresponda. Los proyectos privados ajenos no se muestran. Ver [Uso pedagógico](USO-PEDAGOGICO.md).
+
+## Hemeroteca
+
+Desde Inicio o el menú Hemeroteca, creá una publicación y luego sus números. Fotografiar el sumario o la primera plana produce propuestas que requieren revisión y confirmación. Los ejemplares AB usan el inventario, las etiquetas y la circulación normales. Revisá revistas y diarios anteriores antes de vincularlos. Consultá [HEMEROTECA.md](HEMEROTECA.md) para CSV/MARC, duplicados y respaldos.

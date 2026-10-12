@@ -1,4 +1,4 @@
-import {canonicalISBN} from './isbn.js?v=20261012-teaching1';
+import {canonicalISBN} from './isbn.js?v=20261012-hemeroteca1';
 
 const norm=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
 const normDOI=value=>String(value??'').trim().toLowerCase().replace(/^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)/i,'');
@@ -18,13 +18,13 @@ function sameAuthor(a,b){
 }
 function exactReason(a,b){
   const ai=canonicalISBN(a.isbn),bi=canonicalISBN(b.isbn);
-  if(ai&&bi&&ai===bi)return 'Mismo ISBN / edición';
+  if(ai&&bi&&ai===bi&&!a.serialIssueId&&!b.serialIssueId)return 'Mismo ISBN / edición';
   const ad=normDOI(a.doi),bd=normDOI(b.doi);
   if(ad&&bd&&ad===bd)return 'Mismo DOI';
   const au=normURL(a.resourceUrl),bu=normURL(b.resourceUrl);
   if(au&&bu&&au===bu&&['digital','articulo','documento'].includes(a.materialType||''))return 'Mismo enlace del recurso';
   const as=issn(a.issn),bs=issn(b.issn),sameIssue=norm(a.issueNumber)===norm(b.issueNumber),sameDate=String(a.publicationDate||'')===String(b.publicationDate||'');
-  if(as&&bs&&as===bs&&(sameIssue||sameDate)&&(a.issueNumber||a.publicationDate)&&(b.issueNumber||b.publicationDate))return 'Mismo ISSN y edición/número';
+  if(as&&bs&&as===bs&&!['publicationDate','year','volume','issueNumber','editionLabel'].some(f=>a[f]&&b[f]&&norm(a[f])!==norm(b[f]))&&((sameDate&&a.publicationDate)||(sameIssue&&a.issueNumber&&((a.year&&a.year===b.year)||(a.volume&&a.volume===b.volume)))))return 'Mismo ISSN y edición/número';
   return '';
 }
 

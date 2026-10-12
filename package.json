@@ -1,6 +1,6 @@
 {
   "name": "asistente-bibliotecario",
-  "version": "0.5.0-teaching.1",
+  "version": "0.6.0-hemeroteca.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -23,6 +23,8 @@
     "test:browser-field": "node scripts/test-browser.mjs field",
     "test:scale": "node --test tests/field-scale.test.js",
     "test:pedagogical": "node --test tests/teaching.test.js",
-    "test:pedagogical-browser": "node tests/teaching-browser.cjs"
+    "test:pedagogical-browser": "node tests/teaching-browser.cjs",
+    "test:hemeroteca": "node --test tests/serials.test.js",
+    "test:hemeroteca-browser": "node tests/hemeroteca-browser.cjs"
   }
 }

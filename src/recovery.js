@@ -1,4 +1,5 @@
-import {PERMISSIONS} from './permissions.js?v=20261012-teaching1';
+import {serialQuality} from './serials.js?v=20261012-hemeroteca1';
+import {PERMISSIONS} from './permissions.js?v=20261012-hemeroteca1';
 export function backupPreview(a){return {institution:a.institutions?.[0]?.name||a.settings?.find(c=>c.id==='local')?.institutionName||'Catálogo antiguo',exportedAt:a.exportedAt||null,materials:a.books.length,copies:a.books.reduce((n,b)=>n+(b.exemplars||[]).length,0),people:a.patrons?.length||0,activeLoans:(a.loans||[]).filter(l=>!l.returnedAt&&['loaned','overdue'].includes(l.status)).length,reservations:a.reservations?.length||0,catalogingSessions:a.catalogingSessions?.length||0,inventories:a.inventorySessions?.length||0,pilotFeedback:a.pilotFeedback?.length||0,assistance:a.assistanceSessions?.length||0,locations:a.libraryLocations?.length||0,federationSnapshots:a.federationSnapshots?.length||0,externalHoldings:a.externalHoldings?.length||0,cooperation:a.resourceSharingRequests?.length||0};}
 export function restoreIntegrity(s){
  const warnings=[],errors=[],books=s.books||[],copies=books.flatMap(b=>b.exemplars||[]),c=s.settings?.find(x=>x.id==='local'),iid=c?.institutionId;
@@ -36,6 +37,7 @@ export function restoreIntegrity(s){
  for(const r of s.reservations||[])if(['requested','approved','ready'].includes(r.status)){if(!people.has(r.patron?.id))errors.push('Reserva sin persona.');if(['approved','ready'].includes(r.status)){if(byCopy.get(r.exemplarId)?.book.id!==r.bookId||activeCopies.has(r.exemplarId)||assigned.has(r.exemplarId))errors.push('Reserva asignada sin ejemplar disponible.');assigned.add(r.exemplarId);}}
  for(const g of s.grants||[])if(!people.has(g.userId)||!PERMISSIONS.includes(g.permission)||[g.startsAt,g.expiresAt].some(v=>v&&!Number.isFinite(Date.parse(v)))||(g.startsAt&&g.expiresAt&&Date.parse(g.startsAt)>=Date.parse(g.expiresAt))||(g.revokedAt&&g.active!==false))errors.push('Permiso inconsistente.');
  for(const r of s.resourceSharingRequests||[])if(r.exemplarId&&byCopy.get(r.exemplarId)?.book.id!==r.bookId)errors.push('Cooperación sin ejemplar válido.');
+ errors.push(...serialQuality(s).map(q=>q.detail));
  return {errors:[...new Set(errors)],warnings:[...new Set(warnings)]};
 }
 
