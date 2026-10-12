@@ -1,6 +1,6 @@
-import {hasPermission} from './permissions.js?v=20261011-network1';
-import {activeLoan,activeReservation,config} from './local-domain.js?v=20261011-network1';
-import {renewalRequestStatus} from './loan-policy.js?v=20261011-network1';
+import {hasPermission} from './permissions.js?v=20261011-network2';
+import {activeLoan,activeReservation,config} from './local-domain.js?v=20261011-network2';
+import {renewalRequestStatus} from './loan-policy.js?v=20261011-network2';
 
 export const operationalProfile=actor=>Boolean(actor?.mainAdmin||['biblioteca','autoridad'].includes(actor?.accessProfile));
 export const reservationLabels={requested:'Solicitada',approved:'Aprobada',ready:'Lista para retirar',expired:'Vencida',cancelled:'Cancelada',collected:'Retirada'};

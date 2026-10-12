@@ -1,4 +1,4 @@
-import { LOCAL_SCOPE } from './domain.js?v=20261011-network1';
+import { LOCAL_SCOPE } from './domain.js?v=20261011-network2';
 
 const FT='\x1e', RT='\x1d', SD='\x1f';
 const trim=value=>String(value??'').replace(/[\s\/:;,]+$/g,'').trim();

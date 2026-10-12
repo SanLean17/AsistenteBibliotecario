@@ -1,4 +1,4 @@
-import {normalizeLocation,displayLocation} from './domain.js?v=20261011-network1';
+import {normalizeLocation,displayLocation} from './domain.js?v=20261011-network2';
 
 export const LOCATION_TYPES=Object.freeze(['sector','shelving','shelf']);
 export const INVENTORY_STATUSES=Object.freeze(['draft','open','closed']);

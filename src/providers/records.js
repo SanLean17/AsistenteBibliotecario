@@ -1,4 +1,4 @@
-import {canonicalISBN,isbnVariants} from '../isbn.js?v=20261011-network1';
+import {canonicalISBN,isbnVariants} from '../isbn.js?v=20261011-network2';
 export function safeCover(value) {
   try {
     const url = new URL(value);
