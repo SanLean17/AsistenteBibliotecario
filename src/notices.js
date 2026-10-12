@@ -1,7 +1,7 @@
-import {teachingActor} from './teaching.js?v=20261012-hemeroteca1';
-import {normalizeLoanPolicy} from './loan-policy.js?v=20261012-hemeroteca1';
-import {isEnabled,LABELS} from './permissions.js?v=20261012-hemeroteca1';
-import {conditionAttentionItems} from './condition.js?v=20261012-hemeroteca1';
+import {teachingActor} from './teaching.js?v=20261012-hemeroteca2';
+import {normalizeLoanPolicy} from './loan-policy.js?v=20261012-hemeroteca2';
+import {isEnabled,LABELS} from './permissions.js?v=20261012-hemeroteca2';
+import {conditionAttentionItems} from './condition.js?v=20261012-hemeroteca2';
 
 export const NOTICE_PRIORITIES={high:'Alta',medium:'Media',low:'Baja'};
 export const NOTICE_AREAS={teaching:'Uso pedagógico',loans:'Préstamos',reservations:'Reservas',renewals:'Extensiones',permissions:'Permisos',condition:'Estado físico',inventory:'Inventario'};

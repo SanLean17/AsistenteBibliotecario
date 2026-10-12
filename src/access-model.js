@@ -1,4 +1,4 @@
-import {legacyProfile,profileRole,ROLES} from './permissions.js?v=20261012-hemeroteca1';
+import {legacyProfile,profileRole,ROLES} from './permissions.js?v=20261012-hemeroteca2';
 export const EXTRA_STORES=['people','memberships','invitations','saved'];
 export function migrateAccess(s){
  if(s.settings.some(x=>x.id==='access-model-v5'))return;

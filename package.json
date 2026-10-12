@@ -1,6 +1,6 @@
 {
   "name": "asistente-bibliotecario",
-  "version": "0.6.0-hemeroteca.1",
+  "version": "0.6.0-hemeroteca.2",
   "private": true,
   "type": "module",
   "scripts": {

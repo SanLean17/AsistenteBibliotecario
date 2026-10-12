@@ -1,11 +1,11 @@
-import {timed} from './recovery.js?v=20261012-hemeroteca1';
-import {readState,execute,getActorId} from './storage.js?v=20261012-hemeroteca1';
-import {hasPermission,isEnabled,PROFILES} from './permissions.js?v=20261012-hemeroteca1';
-import {deskHoldingSnapshot,searchPeople,personOperations} from './daily-operations.js?v=20261012-hemeroteca1';
-import {normalizeLoanPolicy,dueDateFromPolicy} from './loan-policy.js?v=20261012-hemeroteca1';
-import {careLabel,PHYSICAL_CONDITIONS,CARE_LEVELS,nextWorseCondition} from './condition.js?v=20261012-hemeroteca1';
-import {scanISBN} from './scanner.js?v=20261012-hemeroteca1';
-import {internalDetector,internalFromPhoto} from './labels.js?v=20261012-hemeroteca1';
+import {timed} from './recovery.js?v=20261012-hemeroteca2';
+import {readState,execute,getActorId} from './storage.js?v=20261012-hemeroteca2';
+import {hasPermission,isEnabled,PROFILES} from './permissions.js?v=20261012-hemeroteca2';
+import {deskHoldingSnapshot,searchPeople,personOperations} from './daily-operations.js?v=20261012-hemeroteca2';
+import {normalizeLoanPolicy,dueDateFromPolicy} from './loan-policy.js?v=20261012-hemeroteca2';
+import {careLabel,PHYSICAL_CONDITIONS,CARE_LEVELS,nextWorseCondition} from './condition.js?v=20261012-hemeroteca2';
+import {scanISBN} from './scanner.js?v=20261012-hemeroteca2';
+import {internalDetector,internalFromPhoto} from './labels.js?v=20261012-hemeroteca2';
 
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

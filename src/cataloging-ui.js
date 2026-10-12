@@ -1,10 +1,10 @@
-import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261012-hemeroteca1';
-import {canCatalog,QUEUE_LABELS,SESSION_LABELS,classifyCapture,catalogingSummary,planCataloging} from './cataloging.js?v=20261012-hemeroteca1';
-import {previewMarc} from './cataloging-import.js?v=20261012-hemeroteca1';
-import {lookupISBN} from './metadata.js?v=20261012-hemeroteca1';
-import {scanISBN,scanMaterialFromFile,createMaterialDetector} from './scanner.js?v=20261012-hemeroteca1';
-import {drawLabel} from './labels.js?v=20261012-hemeroteca1';
-import {locationPath} from './inventory.js?v=20261012-hemeroteca1';
+import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261012-hemeroteca2';
+import {canCatalog,QUEUE_LABELS,SESSION_LABELS,classifyCapture,catalogingSummary,planCataloging} from './cataloging.js?v=20261012-hemeroteca2';
+import {previewMarc} from './cataloging-import.js?v=20261012-hemeroteca2';
+import {lookupISBN} from './metadata.js?v=20261012-hemeroteca2';
+import {scanISBN,scanMaterialFromFile,createMaterialDetector} from './scanner.js?v=20261012-hemeroteca2';
+import {drawLabel} from './labels.js?v=20261012-hemeroteca2';
+import {locationPath} from './inventory.js?v=20261012-hemeroteca2';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=s=>document.querySelector(s);

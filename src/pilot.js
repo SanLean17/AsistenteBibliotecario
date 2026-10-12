@@ -1,9 +1,9 @@
-import {serialQuality} from './serials.js?v=20261012-hemeroteca1';
-import {teachingQuality} from './teaching.js?v=20261012-hemeroteca1';
-import {isEnabled,PERMISSIONS} from './permissions.js?v=20261012-hemeroteca1';
-import {validISBN,canonicalISBN} from './isbn.js?v=20261012-hemeroteca1';
-import {validISSN,recognizeIdentifier} from './recognition.js?v=20261012-hemeroteca1';
-import {catalogDuplicatePairs} from './duplicates.js?v=20261012-hemeroteca1';
+import {serialQuality} from './serials.js?v=20261012-hemeroteca2';
+import {teachingQuality} from './teaching.js?v=20261012-hemeroteca2';
+import {isEnabled,PERMISSIONS} from './permissions.js?v=20261012-hemeroteca2';
+import {validISBN,canonicalISBN} from './isbn.js?v=20261012-hemeroteca2';
+import {validISSN,recognizeIdentifier} from './recognition.js?v=20261012-hemeroteca2';
+import {catalogDuplicatePairs} from './duplicates.js?v=20261012-hemeroteca2';
 
 export const SEVERITIES={error:'Error',warning:'Advertencia',suggestion:'Sugerencia'};
 export const validAB=value=>/^AB-\d{6,}$/.test(value||'')&&Number.isSafeInteger(Number(value.slice(3)))&&Number(value.slice(3))>0;

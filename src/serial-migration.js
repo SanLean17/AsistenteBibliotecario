@@ -1,4 +1,4 @@
-import {normalizeISSN,issueRecord,sameIssue,serialCommand} from './serials.js?v=20261012-hemeroteca1';
+import {normalizeISSN,issueRecord,sameIssue,serialCommand} from './serials.js?v=20261012-hemeroteca2';
 export const isSerialDraft=d=>Boolean(d.publication&&(d.publicationDate||d.issueNumber));
 export function serialDraftKey(d){if(!isSerialDraft(d))return '';const i=issueRecord(d),issn=normalizeISSN(d.issn);return JSON.stringify([issn||d.publication.trim().toLowerCase(),i.publicationDate,i.year,i.volume,i.issueNumber,i.editionLabel]);}
 export function serialDraftMatches(books,d){if(!d.issn)return [];const issn=normalizeISSN(d.issn);return books.filter(b=>b.serialIssueId&&b.issn===issn&&sameIssue({...b,serialPublicationId:issn},{...issueRecord(d),serialPublicationId:issn}));}
