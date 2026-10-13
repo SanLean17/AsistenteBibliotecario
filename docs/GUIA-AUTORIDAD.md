@@ -18,3 +18,9 @@ Los perfiles funcionan localmente y se seleccionan sin contraseña; no son un in
 ## Informe institucional agregado
 
 En Inicio → **Circulación y analítica**, elegí las fechas y descargá el **Informe breve para dirección**. Resume colección, crecimiento registrado, circulación, reservas, necesidades y estado físico. No incluye nombres ni rankings de docentes/lectores. La falta de datos se informa expresamente; una señal no genera compras, bajas ni sanciones. Para comparar ciclos hay que indicar las fechas de ambos y contar con al menos 5 préstamos en cada uno. [Alcance y privacidad](ANALITICA-BIBLIOTECA.md).
+
+## Ciclos, responsables y continuidad
+
+Organización registra ciclos lectivos, cursos, cargos y asignaciones históricas. Puede haber varios responsables de Biblioteca durante una transición. Antes del reemplazo revisá respaldo guardado, permisos, jornadas, inventarios y solicitudes de cooperación. Un cambio de cargo conserva el historial y no transfiere automáticamente la administración principal. La jerarquía vigente impide autoasignarse perfiles superiores.
+
+Antes de cerrar un ciclo revisá el checklist; préstamos y reservas permanecen pendientes y no se cierran automáticamente. El siguiente ciclo puede copiar solo la estructura de cursos. El resumen por ciclo usa datos agregados y no evalúa docentes ni estudiantes. Detalles en [Administración institucional V1](ADMINISTRACION-INSTITUCIONAL.md).

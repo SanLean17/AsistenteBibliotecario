@@ -1,19 +1,21 @@
-import {searchCatalog} from './search-engine.js?v=20261012-analytics1';
-import {SERIAL_STORES,serialCommand,syncSerials} from './serials.js?v=20261012-analytics1';
-import {federationCommand} from './federation-domain.js?v=20261012-analytics1';
-import {schoolPilotCommand} from './school-pilot.js?v=20261012-analytics1';
-import {assistanceCommand} from './assistance-domain.js?v=20261012-analytics1';
-import {catalogingCommand} from './cataloging.js?v=20261012-analytics1';
-import {pilotAction} from './pilot-actions.js?v=20261012-analytics1';
-import {shareableHolding} from './holding-identity.js?v=20261012-analytics1';
-import {accessCommand,expireAccess} from './access-domain.js?v=20261012-analytics1';
-import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261012-analytics1';
-import {normalizeLoanPolicy,policyForPatron,activeLoansForPatron,overdueLoansForPatron,dueDateFromPolicy,reservationExpiryFromPolicy,renewalRequestStatus,renewalDueDate} from './loan-policy.js?v=20261012-analytics1';
-import {normalizeLocation,displayLocation} from './domain.js?v=20261012-analytics1';
-import {normalizePhysicalCondition,normalizeCareLevel,conditionWorsened,nextWorseCondition} from './condition.js?v=20261012-analytics1';
-import {normalizeLibraryLocation,validateLocationHierarchy,locationLabelsFromNode,buildInventoryScope,expectedCopiesForScope,classifyInventoryScan,inventorySummary,reclassifyInventoryFindings} from './inventory.js?v=20261012-analytics1';
-import {PEDAGOGY_STORES,teachingCommand} from './teaching.js?v=20261012-analytics1';
-export const STORES=[...SERIAL_STORES,...PEDAGOGY_STORES,'books','photos','loans','reservations','patrons','activity','grants','settings','institutions','libraries','collections','works','editions','people','memberships','invitations','saved','collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions','catalogingSessions','assistanceSessions','pilotFeedback','federationSnapshots','externalHoldings'];
+import {commitOrganizationImport} from './organization-migration.js?v=20261012-institution1';
+import {ORGANIZATION_STORES,organizationCommand} from './organization.js?v=20261012-institution1';
+import {searchCatalog} from './search-engine.js?v=20261012-institution1';
+import {SERIAL_STORES,serialCommand,syncSerials} from './serials.js?v=20261012-institution1';
+import {federationCommand} from './federation-domain.js?v=20261012-institution1';
+import {schoolPilotCommand} from './school-pilot.js?v=20261012-institution1';
+import {assistanceCommand} from './assistance-domain.js?v=20261012-institution1';
+import {catalogingCommand} from './cataloging.js?v=20261012-institution1';
+import {pilotAction} from './pilot-actions.js?v=20261012-institution1';
+import {shareableHolding} from './holding-identity.js?v=20261012-institution1';
+import {accessCommand,expireAccess} from './access-domain.js?v=20261012-institution1';
+import {requirePermission,isEnabled,userRecord,grantRecord,hasPermission} from './permissions.js?v=20261012-institution1';
+import {normalizeLoanPolicy,policyForPatron,activeLoansForPatron,overdueLoansForPatron,dueDateFromPolicy,reservationExpiryFromPolicy,renewalRequestStatus,renewalDueDate} from './loan-policy.js?v=20261012-institution1';
+import {normalizeLocation,displayLocation} from './domain.js?v=20261012-institution1';
+import {normalizePhysicalCondition,normalizeCareLevel,conditionWorsened,nextWorseCondition} from './condition.js?v=20261012-institution1';
+import {normalizeLibraryLocation,validateLocationHierarchy,locationLabelsFromNode,buildInventoryScope,expectedCopiesForScope,classifyInventoryScan,inventorySummary,reclassifyInventoryFindings} from './inventory.js?v=20261012-institution1';
+import {PEDAGOGY_STORES,teachingCommand} from './teaching.js?v=20261012-institution1';
+export const STORES=[...ORGANIZATION_STORES,...SERIAL_STORES,...PEDAGOGY_STORES,'books','photos','loans','reservations','patrons','activity','grants','settings','institutions','libraries','collections','works','editions','people','memberships','invitations','saved','collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions','catalogingSessions','assistanceSessions','pilotFeedback','federationSnapshots','externalHoldings'];
 export const activeLoan=l=>['loaned','overdue'].includes(l.status)&&!l.returnedAt;
 export const activeReservation=r=>['requested','approved','ready'].includes(r.status);
 export const dateEnd=value=>/^\d{4}-\d{2}-\d{2}$/.test(value)?new Date(value+'T23:59:59.999').toISOString():new Date(value).toISOString();
@@ -31,6 +33,8 @@ export function findCopy(s,id){for(const book of s.books){const copy=book.exempl
 export function expireReservations(s,actorId){const at=Date.now();for(const r of s.reservations)if(activeReservation(r)&&r.expiresAt&&Date.parse(r.expiresAt)<=at){r.status='expired';r.updatedAt=new Date().toISOString();audit(s,'reservation.expired',actorId,{reservationId:r.id});}}
 export function ensureRemovable(s,ids){const removing=new Set(ids);if((s.inventorySessions||[]).some(i=>['draft','open'].includes(i.status)&&((i.expectedExemplarIds||[]).some(id=>removing.has(id))||(i.findings||[]).some(f=>removing.has(f.exemplarId)))))throw new Error('Cerrá el inventario pendiente antes de eliminar o dar de baja estos ejemplares.');if(s.loans.some(l=>ids.includes(l.exemplarId)&&activeLoan(l)))throw new Error('Registrá la devolución antes de eliminar un ejemplar con préstamo activo.');if(s.reservations.some(r=>ids.includes(r.exemplarId)&&activeReservation(r)))throw new Error('Cancelá la reserva asignada antes de eliminar el ejemplar.');}
 export function command(s,actorId,type,data={}){
+ if(type==='organization.import')return commitOrganizationImport(s,actorId,data,{command,audit});
+ if(type.startsWith('organization.'))return organizationCommand(s,actorId,type.slice(13),data,{command,audit});
  if(type.startsWith('serial.'))return serialCommand(s,actorId,type.slice(7),data,{command,audit,normalizeHoldings});
  if(type.startsWith('teaching.'))return teachingCommand(s,actorId,type.slice(9),data,{command,audit});
  if(type.startsWith('federation.'))return federationCommand(s,actorId,type.slice(11),data,{config,audit});

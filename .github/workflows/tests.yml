@@ -68,6 +68,10 @@ jobs:
         run: npm run test:analytics-browser
         env:
           BROWSER_CHANNEL: chromium
+      - name: Institutional administration, annual cycle, substitution, migration and mobile
+        run: npm run test:institutional-browser
+        env:
+          BROWSER_CHANNEL: chromium
       - name: Local OCR engine and cancellation
         run: npm run test:browser-ocr
         env:

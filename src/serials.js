@@ -1,7 +1,7 @@
-import {suggestKeywords} from './assistance.js?v=20261012-analytics1';
-import {validISSN} from './recognition.js?v=20261012-analytics1';
-import {validateBook} from './catalog.js?v=20261012-analytics1';
-import {requirePermission} from './permissions.js?v=20261012-analytics1';
+import {suggestKeywords} from './assistance.js?v=20261012-institution1';
+import {validISSN} from './recognition.js?v=20261012-institution1';
+import {validateBook} from './catalog.js?v=20261012-institution1';
+import {requirePermission} from './permissions.js?v=20261012-institution1';
 
 export const SERIAL_STORES=['serialPublications','serialIssues'];
 export const SERIAL_TYPES=['revista','diario','boletín','publicación institucional','otro seriado'];

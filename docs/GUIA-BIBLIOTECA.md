@@ -52,3 +52,9 @@ Desde Inicio o el menú Hemeroteca, creá una publicación y luego sus números.
 ## Circulación e información para decidir
 
 Desde Inicio, abrí **Circulación y analítica**. Elegí un período para consultar préstamos, reservas, demanda no cubierta, materiales usados, conservación, proyectos e inventarios. Cada sugerencia muestra la evidencia y requiere revisión humana. Desde la ficha se accede al historial agregado del material y de cada ejemplar, sin nombres. Se pueden descargar informes JSON, HTML imprimible y CSV agregados. Consultá [Analítica de biblioteca](ANALITICA-BIBLIOTECA.md) para conocer denominadores, fórmula de demanda, privacidad y límites.
+
+## Organización institucional por ciclo
+
+En Organización podés preparar/activar un ciclo, registrar cursos, asignar docentes y suplentes, vincular permisos temporales y revisar el cierre. Cerrar el ciclo conserva préstamos y reservas. La baja de una persona conserva su identidad y pendientes, cierra asignaciones y revoca permisos; si tiene circulación abierta, revisá y confirmá expresamente los pendientes. El nuevo ciclo copia solo cursos cuando lo elegís. Los proyectos privados quedan para revisión de su docente.
+
+La reasignación de lectores es manual, con confirmación, sin promoción académica. Importación institucional CSV incluye vista previa, revisión de duplicados y confirmación especial de perfiles sensibles. Consultá [Administración institucional V1](ADMINISTRACION-INSTITUCIONAL.md) para el recorrido anual, formatos, backup y límites.

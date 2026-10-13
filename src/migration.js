@@ -1,9 +1,9 @@
-import {isSerialDraft,prepareSerialDraft,serialDraftKey,serialDraftMatches,combineSerialRows} from './serial-migration.js?v=20261012-analytics1';
-import {canonicalISBN} from './isbn.js?v=20261012-analytics1';
-import {validISSN,MATERIAL_TYPES} from './recognition.js?v=20261012-analytics1';
-import {validateBook} from './catalog.js?v=20261012-analytics1';
-import {parseISO2709,marcRecordToCatalog} from './marc.js?v=20261012-analytics1';
-import {detectCatalogMatches} from './duplicates.js?v=20261012-analytics1';
+import {isSerialDraft,prepareSerialDraft,serialDraftKey,serialDraftMatches,combineSerialRows} from './serial-migration.js?v=20261012-institution1';
+import {canonicalISBN} from './isbn.js?v=20261012-institution1';
+import {validISSN,MATERIAL_TYPES} from './recognition.js?v=20261012-institution1';
+import {validateBook} from './catalog.js?v=20261012-institution1';
+import {parseISO2709,marcRecordToCatalog} from './marc.js?v=20261012-institution1';
+import {detectCatalogMatches} from './duplicates.js?v=20261012-institution1';
 
 export const MIGRATION_LIMITS={bytes:20*1024*1024,rows:10000,columns:80,cell:20000,copies:30000};
 export const MIGRATION_FIELDS={publication:'Publicación madre',publicationDate:'Fecha del número',volume:'Volumen',issueNumber:'Número',editionLabel:'Edición / sección',article:'Artículo / titular',articleAuthor:'Autor del artículo',articlePage:'Página del artículo',title:'Título',subtitle:'Subtítulo',author:'Autor / responsable',isbn:'ISBN',issn:'ISSN',doi:'DOI',publisher:'Editorial',year:'Año',language:'Idioma',edition:'Edición',pages:'Páginas',category:'Categoría',subjects:'Temas / palabras clave',contents:'Contenidos internos',description:'Descripción',location:'Ubicación antigua',inventoryCode:'Inventario legado',copies:'Cantidad de ejemplares',condition:'Estado físico',circulationPolicy:'Política de circulación',notes:'Notas',materialType:'Tipo de material'};

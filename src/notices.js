@@ -1,10 +1,10 @@
-import {teachingActor} from './teaching.js?v=20261012-analytics1';
-import {normalizeLoanPolicy} from './loan-policy.js?v=20261012-analytics1';
-import {isEnabled,LABELS} from './permissions.js?v=20261012-analytics1';
-import {conditionAttentionItems} from './condition.js?v=20261012-analytics1';
+import {teachingActor} from './teaching.js?v=20261012-institution1';
+import {normalizeLoanPolicy} from './loan-policy.js?v=20261012-institution1';
+import {isEnabled,LABELS} from './permissions.js?v=20261012-institution1';
+import {conditionAttentionItems} from './condition.js?v=20261012-institution1';
 
 export const NOTICE_PRIORITIES={high:'Alta',medium:'Media',low:'Baja'};
-export const NOTICE_AREAS={teaching:'Uso pedagógico',loans:'Préstamos',reservations:'Reservas',renewals:'Extensiones',permissions:'Permisos',condition:'Estado físico',inventory:'Inventario'};
+export const NOTICE_AREAS={organization:'Organización',teaching:'Uso pedagógico',loans:'Préstamos',reservations:'Reservas',renewals:'Extensiones',permissions:'Permisos',condition:'Estado físico',inventory:'Inventario'};
 const managers=['biblioteca','autoridad'];
 const DAY=86400000;
 const timestamp=value=>Date.parse(value||'');
@@ -83,6 +83,13 @@ export function deriveNotices(state,actor,{at=new Date()}={}){
         draft?`${seen.size} ejemplares capturados. Falta asignar la zona.`:`${session.scope.label||'Zona configurada'} · ${missing} ejemplares esperados sin registrar. Revisá las diferencias antes de cerrar.`,
         {route:'inventario',entityId:session.id,label:'Continuar inventario',permissions:['inventory.manage']});
     }
+  }
+  if(managers.includes(actor.accessProfile)){
+   const target={route:'organizacion',label:'Revisar organización',permissions:['library.configure']};
+   for(const a of records('substituteAssignments'))if(a.status!=='ended'&&a.endDate&&timestamp(a.endDate+'T23:59:59')>=now&&timestamp(a.endDate+'T23:59:59')<=now+7*DAY)add('organization',a.id,'substitute.expiring','low','Suplencia por terminar',person(a.substituteTeacherId)+' · '+a.endDate,{...target,route:'organizacion/suplencias'},'',a.endDate);
+   for(const y of records('academicYears'))if(y.status==='active'&&y.endDate&&timestamp(y.endDate+'T23:59:59')>=now&&timestamp(y.endDate+'T23:59:59')<=now+14*DAY)add('organization',y.id,'year.closing','low','Ciclo próximo a cerrar',y.label+' · '+y.endDate,{...target,route:'organizacion/cierre/'+y.id},'',y.endDate);
+   if(records('settings').find(c=>c.id==='local')?.organizationSignals?.unassignedGroups)for(const g of records('schoolGroups'))if(g.status==='active'&&records('academicYears').some(y=>y.id===g.academicYearId&&y.status==='active')&&!records('teacherAssignments').some(a=>a.groupId===g.id&&a.status==='active'&&timestamp(a.startDate)<=now&&(!a.endDate||timestamp(a.endDate+'T23:59:59')>=now)))add('organization',g.id,'group.unassigned','low','Curso sin docente asignado',g.displayName,{...target,route:'organizacion/asignaciones'});
+   for(const p of records('patrons'))if(['inactive','archived'].includes(p.status)){const n=records('loans').filter(l=>l.patron?.id===p.id&&!l.returnedAt&&['loaned','overdue'].includes(l.status)).length;if(n)add('organization',p.id,'person.pending','high','Persona inactiva con préstamos pendientes',person(p.id)+' · '+n+' préstamos',{route:'circulacion',label:'Revisar préstamos',permissions:['circulation.return']});}
   }
   const rank={high:0,medium:1,low:2};
   for(const e of records('teachingExperiences'))if(teachingActor(state,actor.id)&&e.status==='submitted')add('teaching',e.id,'teaching.approval','medium','Experiencia pendiente de aprobación',e.activityDescription,{route:'mis-proyectos',entityId:e.id,label:'Revisar experiencia',permissions:['catalog.view']});
