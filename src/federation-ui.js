@@ -1,8 +1,8 @@
-import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261012-institution1';
-import {hasPermission} from './permissions.js?v=20261012-institution1';
-import {parseFederationFile,createFederationSnapshot,searchFederation,compareFederation,snapshotAge} from './federation.js?v=20261012-institution1';
-import {materialAvailability} from './availability.js?v=20261012-institution1';
-import {COOPERATION_TYPES,COOPERATION_STATUS} from './federation-domain.js?v=20261012-institution1';
+import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261015-entry1';
+import {hasPermission} from './permissions.js?v=20261015-entry1';
+import {parseFederationFile,createFederationSnapshot,searchFederation,compareFederation,snapshotAge} from './federation.js?v=20261015-entry1';
+import {materialAvailability} from './availability.js?v=20261015-entry1';
+import {COOPERATION_TYPES,COOPERATION_STATUS} from './federation-domain.js?v=20261015-entry1';
 
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const date=v=>new Date(v).toLocaleDateString('es-AR');

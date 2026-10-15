@@ -1,6 +1,6 @@
 {
   "name": "asistente-bibliotecario",
-  "version": "0.8.0-institution.1",
+  "version": "0.9.0-entry.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -29,6 +29,8 @@
     "test:hemeroteca": "node --test tests/serials.test.js",
     "test:hemeroteca-browser": "node tests/hemeroteca-browser.cjs",
     "test:institutional": "node --test tests/organization.test.js",
-    "test:institutional-browser": "node tests/organization-browser.cjs && node tests/organization-responsive-browser.cjs && node tests/organization-migration-browser.cjs"
+    "test:institutional-browser": "node tests/organization-browser.cjs && node tests/organization-responsive-browser.cjs && node tests/organization-migration-browser.cjs",
+    "test:entry": "node --test tests/entry.test.js",
+    "test:entry-browser": "node tests/entry-browser.cjs"
   }
 }

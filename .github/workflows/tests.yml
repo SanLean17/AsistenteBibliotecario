@@ -72,6 +72,10 @@ jobs:
         run: npm run test:institutional-browser
         env:
           BROWSER_CHANNEL: chromium
+      - name: First entry, onboarding, restore, local session and responsive
+        run: node tests/entry-browser.cjs
+        env:
+          BROWSER_CHANNEL: chromium
       - name: Local OCR engine and cancellation
         run: npm run test:browser-ocr
         env:

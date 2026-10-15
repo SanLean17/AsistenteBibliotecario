@@ -2,7 +2,7 @@ const {setup,assert,noOverflow}=require('./ui-helpers.cjs');
 const fixture='Titulo;Autor;ISBN;Inventario;Ubicacion;Temas;Contenidos;ignorada\nEl Hobbit;Tolkien;9505470630;LEG-001;Sala Ñ;Fantasía|Viajes;Capítulo uno|Capítulo dos;privado\nEl Hobbit;Tolkien;9789505470631;LEG-002;Sala Ñ;Fantasía;Capítulo uno;x\nSin ISBN;Núñez, Ana;;LEG-003;Sala A;Lectura;;x\nInválido;Autor;123;LEG-004;Sala A;;;x';
 (async()=>{const {page,go,finish}=await setup();
  await go('migracion');await page.locator('#migration-file').waitFor();
- const read=()=>page.evaluate(async()=>await(await import('./src/storage.js?v=20261012-institution1')).readState());
+ const read=()=>page.evaluate(async()=>await(await import('./src/storage.js?v=20261015-entry1')).readState());
  const upload=async()=>{await page.locator('#migration-file').setInputFiles({name:'escuela.csv',mimeType:'text/csv',buffer:Buffer.from(fixture)});await page.locator('[data-migration=analyze]').click();await page.locator('[data-migration-column]').first().waitFor();};
  await upload();assert.equal((await read()).books.length,0);assert.equal(await page.locator('[data-migration-column="7"]').inputValue(),'');await page.getByText('Presets locales',{exact:true}).click();await page.locator('#migration-preset-name').fill('Escuela Ñ');await page.locator('[data-migration=save-preset]').click();await page.getByText('Preset guardado sin contenido del archivo.').waitFor();
  await page.locator('[data-migration=classify]').click();await page.locator('#migration-rows').waitFor();assert.equal((await read()).books.length,0);
@@ -14,11 +14,11 @@ const fixture='Titulo;Autor;ISBN;Inventario;Ubicacion;Temas;Contenidos;ignorada\
  // Real IDB rollback after first candidate was prepared; idempotency, stale state,
  // backup roundtrip and context checks all use the production adapter.
  const checks=await page.evaluate(async()=>{
-  const st=await import('./src/storage.js?v=20261012-institution1'),m=await import('./src/migration.js?v=20261012-institution1'),{JsonBackupProvider}=await import('./src/imports.js?v=20261012-institution1');
+  const st=await import('./src/storage.js?v=20261015-entry1'),m=await import('./src/migration.js?v=20261015-entry1'),{JsonBackupProvider}=await import('./src/imports.js?v=20261015-entry1');
   const analyze=text=>m.analyzeFile(new TextEncoder().encode(text),{name:'atomic.csv'}),before=await st.readState(),p=await m.planMigration(analyze('Titulo,Inventario\nPrimero nuevo,ROLL-1\nOtro nuevo,LEG-001'),before.books);
   const ready={...p,institutionId:st.getInstitutionId(),actorId:st.getActorId(),confirmed:true};let rejected=false;try{await st.commitMigration(ready);}catch{rejected=true;}const after=await st.readState();if(!rejected||JSON.stringify(before)!==JSON.stringify(after))throw Error('Rollback failed');
   const valid=await m.planMigration(analyze('Titulo,Inventario\nOtro nuevo,ROLL-2'),before.books);await st.mutate(s=>s.books[0].notes='Cambio concurrente');let stale=false;try{await st.commitMigration({...ready,...valid});}catch(e){stale=/cambió/.test(e.message);}if(!stale)throw Error('Stale preview accepted');
-  const archive=await st.exportArchive();JsonBackupProvider.parse(JSON.stringify(archive));await st.restoreArchive(archive);const restored=await st.readState();if(restored.settings.find(x=>x.id==='local').migrationHistory.length!==1)throw Error('History lost in backup');
+  const archive=await st.exportArchive();JsonBackupProvider.parse(JSON.stringify(archive));await st.restoreArchive(archive,'RESTAURAR');const restored=await st.readState();if(restored.settings.find(x=>x.id==='local').migrationHistory.length!==1)throw Error('History lost in backup');
   const evil=await m.planMigration(analyze('Titulo,Inventario\n<img src=x onerror=alert(1)>,XSS-1'),restored.books);const result=await st.commitMigration({...evil,institutionId:st.getInstitutionId(),actorId:st.getActorId(),confirmed:true});const repeat=await st.commitMigration({...evil,institutionId:st.getInstitutionId(),actorId:st.getActorId(),confirmed:true});if(result.id!==repeat.id)throw Error('Not idempotent');
   return true;
  });assert.ok(checks);

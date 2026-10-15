@@ -1,9 +1,9 @@
-import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261012-institution1';
-import {teachingPopular,teachingActor,teachingManager,teachingView,teachingSuggestions,teachingAggregates,reservationPreparation} from './teaching.js?v=20261012-institution1';
-import {searchCatalog} from './search-engine.js?v=20261012-institution1';
-import {searchFederation} from './federation.js?v=20261012-institution1';
-import {materialAvailability} from './availability.js?v=20261012-institution1';
-import {renderSaved,renderRecommendations} from './reader.js?v=20261012-institution1';
+import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261015-entry1';
+import {teachingPopular,teachingActor,teachingManager,teachingView,teachingSuggestions,teachingAggregates,reservationPreparation} from './teaching.js?v=20261015-entry1';
+import {searchCatalog} from './search-engine.js?v=20261015-entry1';
+import {searchFederation} from './federation.js?v=20261015-entry1';
+import {materialAvailability} from './availability.js?v=20261015-entry1';
+import {renderSaved,renderRecommendations} from './reader.js?v=20261015-entry1';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const href=(path,label)=>`<a class="button secondary" href="#mis-proyectos${path}">${esc(label)}</a>`;
 const field=(label,name,value='',type='text',extra='')=>`<label>${label}<input name="${name}" value="${esc(value)}" type="${type}" ${extra}></label>`;

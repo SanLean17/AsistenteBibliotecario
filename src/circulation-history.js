@@ -1,5 +1,5 @@
-import {analyticsScope} from './institutional-analytics.js?v=20261012-institution1';
-import {hasPermission,isEnabled} from './permissions.js?v=20261012-institution1';
+import {analyticsScope} from './institutional-analytics.js?v=20261015-entry1';
+import {hasPermission,isEnabled} from './permissions.js?v=20261015-entry1';
 const time=v=>Date.parse(v)||0;
 const last=rows=>rows.filter(Boolean).sort((a,b)=>time(b)-time(a))[0]||null;
 const names={'holding.created':'Alta del ejemplar','holding.updated':'Actualización del ejemplar','holding.location.updated':'Cambio de ubicación','holding.condition.updated':'Cambio de estado físico','holding.condition.reviewed':'Revisión de cuidado','holding.condition.worsened':'Empeoramiento registrado','loan.renewal.requested':'Renovación solicitada','loan.renewal.approved':'Renovación aprobada','loan.renewal.rejected':'Renovación rechazada'};

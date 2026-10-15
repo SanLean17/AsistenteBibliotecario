@@ -3,15 +3,17 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const base=process.env.TEST_BASE_URL||'http://127.0.0.1:4173/';
 async function setup(options={}){
+ const {firstRun=false,...contextOptions}=options;
  fs.mkdirSync('qa',{recursive:true});
  const engine=process.env.TEST_ENGINE==='webkit'?webkit:process.env.TEST_ENGINE==='firefox'?firefox:chromium;
  const browser=await engine.launch({timeout:20000,headless:true,...(engine===chromium?{channel:process.env.BROWSER_CHANNEL||'msedge'}:{})});
  const device={...devices[process.env.TEST_ENGINE==='webkit'?'iPhone 13':'Pixel 7']};if(engine===firefox){delete device.isMobile;delete device.defaultBrowserType;delete device.userAgent;}
- const context=await browser.newContext({...device,viewport:{width:390,height:844},acceptDownloads:true,serviceWorkers:"block",...options});
+ const context=await browser.newContext({...device,viewport:{width:390,height:844},acceptDownloads:true,serviceWorkers:"block",...contextOptions});
  if(!process.env.TEST_BASE_URL)await require('./repository-harness.cjs').serveRepository(context,base);
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('https://fonts.googleapis.com/**',r=>r.abort());
  await page.route('https://covers.openlibrary.org/**',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300"><rect width="200" height="300" fill="#ED5AB3"/><text x="20" y="140">EL HOBBIT</text></svg>'}));
+ if(!firstRun){await page.goto(base+'icon.svg');await page.evaluate(async()=>{const storage=await import('./src/storage.js?v=20261015-entry1');await storage.openDatabase();const {migrateAccess}=await import('./src/access-model.js?v=20261015-entry1');await storage.rawMutate(s=>migrateAccess(s));storage.setInstitutionId('local-institution');storage.setActorId('local-admin');});}
  const go=async hash=>{await page.goto('about:blank');await page.goto(base+'app.html#'+hash);const target={inicio:'[data-access-route="inicio"]',biblioteca:'#search',agregar:'#scan-start',ejemplares:'.holdings-list',configuracion:'[data-action="clear-catalog"]',ficha:'.record-page',editar:'#book-form'}[hash.split('/')[0]];const heading={usuarios:'Personas',permisos:'Gestionar acceso',circulacion:'Circulación',reservas:'Reservas',organizacion:'Institución',actividad:'Auditoría',ejemplar:'Ejemplar físico',etiquetas:'Etiquetas',inventario:'Inventario físico'}[hash.split('/')[0]];if(heading)await page.getByRole('heading',{name:heading,exact:true,level:1}).waitFor();else await page.locator(target||'main h1').first().waitFor();};
  const finish=async()=>{try{assert.deepEqual(errors,[]);}finally{await browser.close();}};
  return {browser,context,page,errors,go,finish};

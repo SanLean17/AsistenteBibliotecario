@@ -1,5 +1,5 @@
-import {serialQuality} from './serials.js?v=20261012-institution1';
-import {PERMISSIONS} from './permissions.js?v=20261012-institution1';
+import {serialQuality} from './serials.js?v=20261015-entry1';
+import {PERMISSIONS} from './permissions.js?v=20261015-entry1';
 export function backupPreview(a){return {institution:a.institutions?.[0]?.name||a.settings?.find(c=>c.id==='local')?.institutionName||'Catálogo antiguo',exportedAt:a.exportedAt||null,materials:a.books.length,copies:a.books.reduce((n,b)=>n+(b.exemplars||[]).length,0),people:a.patrons?.length||0,activeLoans:(a.loans||[]).filter(l=>!l.returnedAt&&['loaned','overdue'].includes(l.status)).length,reservations:a.reservations?.length||0,catalogingSessions:a.catalogingSessions?.length||0,inventories:a.inventorySessions?.length||0,pilotFeedback:a.pilotFeedback?.length||0,assistance:a.assistanceSessions?.length||0,locations:a.libraryLocations?.length||0,federationSnapshots:a.federationSnapshots?.length||0,externalHoldings:a.externalHoldings?.length||0,cooperation:a.resourceSharingRequests?.length||0};}
 export function restoreIntegrity(s){
  const warnings=[],errors=[],books=s.books||[],copies=books.flatMap(b=>b.exemplars||[]),c=s.settings?.find(x=>x.id==='local'),iid=c?.institutionId;

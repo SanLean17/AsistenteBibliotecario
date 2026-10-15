@@ -189,3 +189,11 @@
 /* Hemeroteca uses the shared light/dark palette. */
 #serial-center{min-width:0;overflow-wrap:anywhere} .serial-panel{margin-block:1rem}.serial-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:1rem;margin-block:1rem}.serial-fields label{display:flex;flex-direction:column;gap:.4rem;min-width:0}.serial-fields input,.serial-fields select,.serial-fields textarea{width:100%;min-width:0;box-sizing:border-box}#serial-center fieldset{min-width:0;margin-block:1rem;border:1px solid var(--line);border-radius:12px;padding:1rem}.serial-article{padding-block:1rem;border-bottom:1px solid var(--line)}.serial-cover{max-width:150px;max-height:220px;object-fit:contain}#serial-center .button-row{flex-wrap:wrap}#serial-center a,#serial-center button{white-space:normal;overflow-wrap:anywhere}
 #serial-center .panel{padding:clamp(16px,3vw,28px)}#serial-center .button.secondary{color:var(--text);background:var(--surface);border-color:var(--line)}#serial-center .button.primary{background:var(--text);color:var(--bg)}#serial-center input,#serial-center select,#serial-center textarea{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:10px}#serial-center fieldset legend{font-weight:600}#serial-center :focus-visible{outline:3px solid var(--primary);outline-offset:3px}
+.entry-mode #workspace-menu,.entry-mode #app-menu-toggle,.entry-mode .workspace-context {display:none!important}
+.entry-mode .workspace {margin-left:0;width:100%;min-width:0}
+.entry-panel {max-width:780px;margin:0 auto;overflow-wrap:anywhere}
+.entry-panel input,.entry-panel select {width:100%;min-width:0;box-sizing:border-box}
+.entry-steps {display:flex;flex-wrap:wrap;gap:12px;padding:0;list-style:none}
+.entry-steps [aria-current] {font-weight:700;text-decoration:underline}
+.entry-panel section {margin-top:24px}
+#entry-context {overflow-wrap:anywhere}

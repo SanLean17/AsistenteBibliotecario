@@ -1,4 +1,4 @@
-import {legacyProfile,profileRole,ROLES} from './permissions.js?v=20261012-institution1';
+import {legacyProfile,profileRole,ROLES} from './permissions.js?v=20261015-entry1';
 export const EXTRA_STORES=['people','memberships','invitations','saved'];
 export function migrateAccess(s){
  if(s.settings.some(x=>x.id==='access-model-v5'))return;
@@ -17,7 +17,7 @@ export function projectState(all,iid,actorId){
  s.institutionId=iid;s.people=structuredClone(all.people);
  const institution=s.institutions[0];
  const peopleById=new Map(all.people.map(p=>[p.id,p]));
- s.patrons=s.memberships.map(m=>({...peopleById.get(m.personId),...m,id:m.personId,role:profileRole(m.accessProfile),active:m.status==='active',mainAdmin:institution?.mainAdminId===m.personId}));
+ s.patrons=s.memberships.map(m=>({...peopleById.get(m.personId),...m,id:m.personId,role:profileRole(m.accessProfile),active:m.status==='active',mainAdmin:institution?.accessModel!=='local-profiles-v1'&&institution?.mainAdminId===m.personId}));
  s.availableInstitutions=all.institutions.filter(i=>all.memberships.some(m=>m.personId===actorId&&m.institutionId===i.id));
  s.settings=s.settings.map(c=>({...c,id:c.id==='config:'+iid?'local':c.id}));
  return s;

@@ -1,10 +1,10 @@
-import {organizationQuality} from './organization.js?v=20261012-institution1';
-import {serialQuality} from './serials.js?v=20261012-institution1';
-import {teachingQuality} from './teaching.js?v=20261012-institution1';
-import {isEnabled,PERMISSIONS} from './permissions.js?v=20261012-institution1';
-import {validISBN,canonicalISBN} from './isbn.js?v=20261012-institution1';
-import {validISSN,recognizeIdentifier} from './recognition.js?v=20261012-institution1';
-import {catalogDuplicatePairs} from './duplicates.js?v=20261012-institution1';
+import {organizationQuality} from './organization.js?v=20261015-entry1';
+import {serialQuality} from './serials.js?v=20261015-entry1';
+import {teachingQuality} from './teaching.js?v=20261015-entry1';
+import {isEnabled,PERMISSIONS} from './permissions.js?v=20261015-entry1';
+import {validISBN,canonicalISBN} from './isbn.js?v=20261015-entry1';
+import {validISSN,recognizeIdentifier} from './recognition.js?v=20261015-entry1';
+import {catalogDuplicatePairs} from './duplicates.js?v=20261015-entry1';
 
 export const SEVERITIES={error:'Error',warning:'Advertencia',suggestion:'Sugerencia'};
 export const validAB=value=>/^AB-\d{6,}$/.test(value||'')&&Number.isSafeInteger(Number(value.slice(3)))&&Number(value.slice(3))>0;
@@ -55,7 +55,7 @@ export function deriveReadiness(state,{at=new Date()}={}){
  add('institution','Configuración básica','Institución creada',s.institutions?.some(i=>i.id===s.institutionId&&i.status!=='disabled'&&i.name?.trim()&&(i.id!=='local-institution'||i.name!=='Mi escuela')),'organizacion');
  add('library','Configuración básica','Nombre de biblioteca guardado',c.libraryName?.trim()&&c.libraryNameConfirmedAt,'organizacion',true,'Guardá el nombre en Institución para confirmarlo.');
  add('locations','Configuración básica','Ubicación física configurada',s.libraryLocations?.some(l=>l.active!==false&&l.name?.trim()),'inventario');
- add('responsible','Operación','Responsable de Biblioteca activo',s.patrons?.some(p=>p.accessProfile==='biblioteca'&&isEnabled(p,new Date(at))),'usuarios');
+ add('responsible','Operación','Responsable de Biblioteca activo',s.patrons?.some(p=>(s.institutions?.[0]?.primaryInstitutionResponsibleId?p.id===s.institutions[0].primaryInstitutionResponsibleId&&['biblioteca','autoridad'].includes(p.accessProfile):p.accessProfile==='biblioteca')&&isEnabled(p,new Date(at))),'usuarios');
  add('catalog','Catálogo','Al menos un material incorporado',s.books?.length,'biblioteca');
  add('codes','Catálogo','Códigos AB válidos y únicos',!issues.some(i=>['code','code-duplicate'].includes(i.type)),'calidad',true,copies.length?'Se comprueban todos los ejemplares.':'Sin ejemplares físicos: no aplica.');
  add('errors','Catálogo','Sin errores de integridad detectados',!issues.some(i=>i.severity==='error'),'calidad');

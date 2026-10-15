@@ -1,6 +1,6 @@
-import {shareableHolding,validateSharedHolding} from './holding-identity.js?v=20261012-institution1';
-import {materialAvailability,exemplarAvailability} from './availability.js?v=20261012-institution1';
-import {canonicalISBN} from './isbn.js?v=20261012-institution1';
+import {shareableHolding,validateSharedHolding} from './holding-identity.js?v=20261015-entry1';
+import {materialAvailability,exemplarAvailability} from './availability.js?v=20261015-entry1';
+import {canonicalISBN} from './isbn.js?v=20261015-entry1';
 
 export const FEDERATION_VERSION=1;
 export const FEDERATION_LIMITS={bytes:10*1024*1024,records:10000,snapshots:20,totalRecords:50000};

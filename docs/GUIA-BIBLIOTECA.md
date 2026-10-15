@@ -58,3 +58,7 @@ Desde Inicio, abrí **Circulación y analítica**. Elegí un período para consu
 En Organización podés preparar/activar un ciclo, registrar cursos, asignar docentes y suplentes, vincular permisos temporales y revisar el cierre. Cerrar el ciclo conserva préstamos y reservas. La baja de una persona conserva su identidad y pendientes, cierra asignaciones y revoca permisos; si tiene circulación abierta, revisá y confirmá expresamente los pendientes. El nuevo ciclo copia solo cursos cuando lo elegís. Los proyectos privados quedan para revisión de su docente.
 
 La reasignación de lectores es manual, con confirmación, sin promoción académica. Importación institucional CSV incluye vista previa, revisión de duplicados y confirmación especial de perfiles sensibles. Consultá [Administración institucional V1](ADMINISTRACION-INSTITUCIONAL.md) para el recorrido anual, formatos, backup y límites.
+
+## Ingreso institucional y acceso local V1
+
+El primer ingreso configura institución, biblioteca, responsable Biblioteca/Autoridad, política y respaldo. El progreso se conserva sin crear una escuela ficticia. El contexto local no es autenticación online; se puede cerrar sin borrar datos. El responsable principal es una referencia independiente de los permisos. Guías y recuperación: [Ingreso y acceso](INGRESO-Y-ACCESO.md). Contratos futuros sin backend: [Auth futura](AUTH-FUTURA.md).

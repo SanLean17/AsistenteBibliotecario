@@ -24,3 +24,7 @@ En Inicio → **Circulación y analítica**, elegí las fechas y descargá el **
 Organización registra ciclos lectivos, cursos, cargos y asignaciones históricas. Puede haber varios responsables de Biblioteca durante una transición. Antes del reemplazo revisá respaldo guardado, permisos, jornadas, inventarios y solicitudes de cooperación. Un cambio de cargo conserva el historial y no transfiere automáticamente la administración principal. La jerarquía vigente impide autoasignarse perfiles superiores.
 
 Antes de cerrar un ciclo revisá el checklist; préstamos y reservas permanecen pendientes y no se cierran automáticamente. El siguiente ciclo puede copiar solo la estructura de cursos. El resumen por ciclo usa datos agregados y no evalúa docentes ni estudiantes. Detalles en [Administración institucional V1](ADMINISTRACION-INSTITUCIONAL.md).
+
+## Ingreso institucional y acceso local V1
+
+El primer ingreso configura institución, biblioteca, responsable Biblioteca/Autoridad, política y respaldo. El progreso se conserva sin crear una escuela ficticia. El contexto local no es autenticación online; se puede cerrar sin borrar datos. El responsable principal es una referencia independiente de los permisos. Guías y recuperación: [Ingreso y acceso](INGRESO-Y-ACCESO.md). Contratos futuros sin backend: [Auth futura](AUTH-FUTURA.md).
