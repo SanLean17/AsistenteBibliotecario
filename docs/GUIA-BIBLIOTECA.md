@@ -1,6 +1,6 @@
 # Guía de Biblioteca
 
-FIELD PILOT V1 · versión 0.2.0-field.1 · 10 de octubre de 2026.
+Guía vigente · 0.10.0-help.1 · 15 de octubre de 2026.
 
 ## 1. Empezar
 Abrí la aplicación con conexión en la computadora que va a usar Biblioteca. Esperá el aviso «Preparada para abrir sin conexión». Volvé a abrirla una vez sin internet para comprobarlo. Usá siempre el mismo navegador y su perfil habitual; evitá el modo privado. Los datos de otra computadora o celular no aparecen automáticamente acá.

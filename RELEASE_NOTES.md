@@ -1,3 +1,12 @@
+# Centro de ayuda V1 — 0.10.0-help.1
+
+15 de octubre de 2026.
+
+- Ayuda según perfil, búsqueda local por títulos y términos alternativos, glosario y problemas frecuentes.
+- Guías contextuales en pantallas complejas y recorridos opcionales breves que no ejecutan operaciones.
+- Guías del repositorio integradas, disponibles sin conexión cuando la app está preparada e imprimibles desde el navegador.
+- Acceso al diagnóstico existente, listas de revisión manual y capacitación por rol. Sin registro de búsquedas, servicios externos ni evaluación de personas.
+
 # FIELD PILOT V1 — 0.2.0-field.1
 
 11 de octubre de 2026. Continuación de RC1 para una prueba escolar controlada.

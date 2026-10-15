@@ -64,3 +64,7 @@ Las escuelas con catálogo previo pueden usar **Importar / exportar → Centro d
 ## Red Escolar V1 · simulación local
 
 Biblioteca puede compartir un catálogo mínimo elegido expresamente, cargar archivos de otras escuelas, buscar y comparar ediciones y registrar acuerdos, recepción y devolución. Todo es local: no hay sincronización, envíos ni datos personales remotos. Los ejemplares externos conservan su propietario y no reciben AB propio. [Guía](docs/RED-ESCOLAR.md) · [Contrato y límites](docs/RED-ESCOLAR-CONTRATO.md).
+
+## Centro de ayuda
+
+Abrí **Centro de ayuda** en el menú o [#ayuda](https://sanlean.com.ar/AsistenteBibliotecario/app.html#ayuda). Incluye búsqueda local, guías por perfil, glosario, recorridos opcionales y guías imprimibles. No registra tus búsquedas ni envía consultas a servicios externos. Ver [Centro de ayuda V1](docs/CENTRO-DE-AYUDA.md).

@@ -1,8 +1,8 @@
-import {isSerialDraft,importSerialDraft} from './serial-migration.js?v=20261015-entry1';
-import {inspectDraft,MIGRATION_FIELDS} from './migration.js?v=20261015-entry1';
-import {validateBook} from './catalog.js?v=20261015-entry1';
-import {requirePermission} from './permissions.js?v=20261015-entry1';
-import {canonicalISBN} from './isbn.js?v=20261015-entry1';
+import {isSerialDraft,importSerialDraft} from './serial-migration.js?v=20261015-help1';
+import {inspectDraft,MIGRATION_FIELDS} from './migration.js?v=20261015-help1';
+import {validateBook} from './catalog.js?v=20261015-help1';
+import {requirePermission} from './permissions.js?v=20261015-help1';
+import {canonicalISBN} from './isbn.js?v=20261015-help1';
 
 // Called only inside the existing institution-scoped IndexedDB transaction.
 export function applyMigration(s,actorId,plan,{config,normalizeHoldings,audit}){

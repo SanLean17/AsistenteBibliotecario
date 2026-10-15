@@ -1,8 +1,8 @@
-import {isEnabled,requirePermission,hasPermission} from './permissions.js?v=20261015-entry1';
-import {projectState,mergeScope} from './access-model.js?v=20261015-entry1';
-import {normalizeHoldings,config} from './local-domain.js?v=20261015-entry1';
-import {logAccess} from './access-domain.js?v=20261015-entry1';
-import {normalizeLoanPolicy} from './loan-policy.js?v=20261015-entry1';
+import {isEnabled,requirePermission,hasPermission} from './permissions.js?v=20261015-help1';
+import {projectState,mergeScope} from './access-model.js?v=20261015-help1';
+import {normalizeHoldings,config} from './local-domain.js?v=20261015-help1';
+import {logAccess} from './access-domain.js?v=20261015-help1';
+import {normalizeLoanPolicy} from './loan-policy.js?v=20261015-help1';
 
 export const INITIAL_PERMISSIONS=['institution.edit','profiles.manage','sensitive.export','catalog.clear','institution.transfer','institution.disable'];
 export const INTRO_FLAGS={biblioteca:'seenLibraryIntro',docente:'seenTeacherIntro',autoridad:'seenAuthorityIntro'};

@@ -1,10 +1,10 @@
-import {organizationQuality} from './organization.js?v=20261015-entry1';
-import {serialQuality} from './serials.js?v=20261015-entry1';
-import {teachingQuality} from './teaching.js?v=20261015-entry1';
-import {isEnabled,PERMISSIONS} from './permissions.js?v=20261015-entry1';
-import {validISBN,canonicalISBN} from './isbn.js?v=20261015-entry1';
-import {validISSN,recognizeIdentifier} from './recognition.js?v=20261015-entry1';
-import {catalogDuplicatePairs} from './duplicates.js?v=20261015-entry1';
+import {organizationQuality} from './organization.js?v=20261015-help1';
+import {serialQuality} from './serials.js?v=20261015-help1';
+import {teachingQuality} from './teaching.js?v=20261015-help1';
+import {isEnabled,PERMISSIONS} from './permissions.js?v=20261015-help1';
+import {validISBN,canonicalISBN} from './isbn.js?v=20261015-help1';
+import {validISSN,recognizeIdentifier} from './recognition.js?v=20261015-help1';
+import {catalogDuplicatePairs} from './duplicates.js?v=20261015-help1';
 
 export const SEVERITIES={error:'Error',warning:'Advertencia',suggestion:'Sugerencia'};
 export const validAB=value=>/^AB-\d{6,}$/.test(value||'')&&Number.isSafeInteger(Number(value.slice(3)))&&Number(value.slice(3))>0;

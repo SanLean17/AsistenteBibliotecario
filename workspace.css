@@ -197,3 +197,23 @@
 .entry-steps [aria-current] {font-weight:700;text-decoration:underline}
 .entry-panel section {margin-top:24px}
 #entry-context {overflow-wrap:anywhere}
+/* Integrated help stays in document flow, including small screens. */
+.help-center{max-width:920px;margin-inline:auto;overflow-wrap:anywhere}
+.help-center h1{margin-top:24px}.help-center h2{margin-top:28px}
+.help-center p,.help-center li,.help-inline p{line-height:1.7;max-width:76ch}
+.help-center a,.help-inline a{text-decoration:underline;text-underline-offset:3px}
+.help-center input[type=search]{width:100%;min-width:0;margin:8px 0 12px}
+.help-center label{display:block}.help-center form{margin-block:24px}
+.help-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px}
+.help-card,.help-category,.help-inline{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;margin-block:14px;color:var(--text);min-width:0;overflow-wrap:anywhere}
+.help-card h3{margin:0 0 10px}.help-card p{margin:0}.help-category summary,.help-inline summary{cursor:pointer;font-weight:600;min-height:30px}
+.help-inline{position:static;max-width:920px}.help-inline h2{font-size:1.15rem;margin-top:12px}
+.help-levels{padding-left:24px}.help-levels li{padding-block:6px}
+.help-shortcuts{margin-block:24px;line-height:2}.help-center dt{font-weight:700;margin-top:20px}.help-center dd{margin:4px 0 18px}
+.help-checklist{border-block:1px solid var(--line);padding-block:18px;margin-block:24px}.help-checklist label{padding:10px 0}.help-checklist input{width:auto}
+.help-support{border-top:1px solid var(--line);margin-top:32px;padding-top:16px}.help-doc-item{padding-left:16px}
+.help-center :focus-visible,.help-inline :focus-visible{outline:3px solid var(--primary);outline-offset:4px}
+@media(max-width:400px){.help-card,.help-category,.help-inline{padding:12px}.help-center .button-row,.help-inline .button-row{display:flex;flex-wrap:wrap}.help-center .button,.help-inline .button{max-width:100%;white-space:normal}}
+@media print{body:has(#help-center){background:white!important;color:black!important}body:has(#help-center) .sidebar,body:has(#help-center) .topbar,body:has(#help-center) footer,body:has(#help-center) #school-pilot-banner,body:has(#help-center) #toast,.help-no-print,.help-support,#help-tour-panel{display:none!important}body:has(#help-center) .workspace,body:has(#help-center) #main{margin:0!important;padding:0!important;width:100%!important;max-width:none!important}.help-center{max-width:none;color:black!important;background:white!important;font-size:11pt}.help-center h1,.help-center h2,.help-center h3{break-after:avoid;color:black!important}.help-center p,.help-center li{orphans:3;widows:3}.help-center a{color:black!important}.help-checklist{break-inside:avoid}.help-center button{display:none!important}}
+
+@media print{.help-center *{outline:none!important}.help-center p,.help-center li{max-width:none}}

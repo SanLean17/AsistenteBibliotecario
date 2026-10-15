@@ -1,15 +1,15 @@
-import {validateOrganizationBackup} from './organization.js?v=20261015-entry1';
-import {validateSerialBackup} from './serials.js?v=20261015-entry1';
-import {validateTeachingBackup} from './teaching.js?v=20261015-entry1';
-import {validateFederationBackup} from './federation-domain.js?v=20261015-entry1';
-import {restoreIntegrity} from './recovery.js?v=20261015-entry1';
-import {validatePilotBackup} from './school-pilot.js?v=20261015-entry1';
-import {validateAssistanceBackup} from './assistance-domain.js?v=20261015-entry1';
-import {validateCatalogingBackup} from './cataloging.js?v=20261015-entry1';
-import {parseArchive} from './catalog.js?v=20261015-entry1';
-import {importAguapeyISO} from './marc.js?v=20261015-entry1';
-import {STORES,activeLoan,activeReservation} from './local-domain.js?v=20261015-entry1';
-import {PERMISSIONS,ROLES,PROFILES,isEnabled,validWindow} from './permissions.js?v=20261015-entry1';
+import {validateOrganizationBackup} from './organization.js?v=20261015-help1';
+import {validateSerialBackup} from './serials.js?v=20261015-help1';
+import {validateTeachingBackup} from './teaching.js?v=20261015-help1';
+import {validateFederationBackup} from './federation-domain.js?v=20261015-help1';
+import {restoreIntegrity} from './recovery.js?v=20261015-help1';
+import {validatePilotBackup} from './school-pilot.js?v=20261015-help1';
+import {validateAssistanceBackup} from './assistance-domain.js?v=20261015-help1';
+import {validateCatalogingBackup} from './cataloging.js?v=20261015-help1';
+import {parseArchive} from './catalog.js?v=20261015-help1';
+import {importAguapeyISO} from './marc.js?v=20261015-help1';
+import {STORES,activeLoan,activeReservation} from './local-domain.js?v=20261015-help1';
+import {PERMISSIONS,ROLES,PROFILES,isEnabled,validWindow} from './permissions.js?v=20261015-help1';
 export class ImportProvider{parse(){throw new Error('Implementar parse en el proveedor.');}}
 export const AguapeyMarcProvider={id:'aguapey-marc',parse(input){const result=importAguapeyISO(input);if(result.records>10000)throw new Error('El archivo supera 10000 registros.');if(result.skipped)throw new Error('Hay registros sin título. Revisá el archivo para evitar una importación incompleta.');return result;}};
 export const JsonBackupProvider={id:'json-backup',parse(text){let data;try{data=JSON.parse(text,(key,value)=>{if(['__proto__','constructor','prototype'].includes(key))throw Error();return value;});}catch{throw new Error('El archivo no tiene una estructura JSON segura y válida. Elegí otro respaldo.');}if(!data||typeof data!=='object'||Array.isArray(data))throw new Error('El archivo no es un respaldo.');if(data.version>=4&&Array.isArray(data.books))for(const b of data.books){if(!Array.isArray(b.exemplars)||b.copies!==b.exemplars.length)throw new Error('Cantidad de ejemplares inconsistente en respaldo.');if(b.exemplars.some(e=>!e?.id))throw new Error('Ejemplar sin identidad en respaldo.');}const legacy=parseArchive(text);if(data.version<4)return legacy;validatePilotBackup(data);data.assistanceSessions??=[];validateAssistanceBackup(data.assistanceSessions);data.catalogingSessions??=[];validateCatalogingBackup(data.catalogingSessions);if(data.version===4)for(const name of ['people','memberships','invitations','saved','collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions'])data[name]??=[];if(data.version===5)for(const name of ['collectionNeeds','recommendations','resourceSharingRequests','libraryLocations','inventorySessions'])data[name]??=[];data.federationSnapshots??=[];data.externalHoldings??=[];validateFederationBackup(data);validateTeachingBackup(data);validateSerialBackup(data);validateOrganizationBackup(data);for(const store of STORES){if(!Array.isArray(data[store])||data[store].length>100000)throw new Error('Respaldo incompleto: '+store);if(data[store].some(v=>!v||typeof v.id!=='string'||!v.id)||new Set(data[store].map(v=>v.id)).size!==data[store].length)throw new Error('Identificadores inválidos en '+store);}

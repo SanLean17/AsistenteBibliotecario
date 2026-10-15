@@ -1,11 +1,11 @@
 {
   "name": "asistente-bibliotecario",
-  "version": "0.9.0-entry.1",
+  "version": "0.10.0-help.1",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "node scripts/serve.mjs",
-    "check": "node scripts/check-integrity.mjs && node scripts/build-offline.mjs --check",
+    "check": "node scripts/build-help.mjs --check && node scripts/check-integrity.mjs && node scripts/build-offline.mjs --check",
     "test": "node --test tests/*.test.js",
     "test:notices-browser": "node tests/notices-browser.cjs",
     "verify": "npm run check && npm test",
@@ -31,6 +31,8 @@
     "test:institutional": "node --test tests/organization.test.js",
     "test:institutional-browser": "node tests/organization-browser.cjs && node tests/organization-responsive-browser.cjs && node tests/organization-migration-browser.cjs",
     "test:entry": "node --test tests/entry.test.js",
-    "test:entry-browser": "node tests/entry-browser.cjs"
+    "test:entry-browser": "node tests/entry-browser.cjs",
+    "test:help-browser": "node tests/help-browser.cjs",
+    "build:help": "node scripts/build-help.mjs"
   }
 }

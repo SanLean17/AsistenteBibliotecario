@@ -1,4 +1,4 @@
-import {isEnabled,hasPermission,PROFILES} from './permissions.js?v=20261015-entry1';
+import {isEnabled,hasPermission,PROFILES} from './permissions.js?v=20261015-help1';
 export const ORGANIZATION_STORES=['academicYears','schoolGroups','teacherAssignments','substituteAssignments','personRoleHistory','personGroupHistory'];
 const rows=(s,k)=>(s[k]||[]).filter(r=>!r.institutionId||r.institutionId===(s.institutionId||s.settings?.find(c=>c.id==='local')?.institutionId));
 const clean=(v,n=160)=>String(v??'').trim().slice(0,n);
