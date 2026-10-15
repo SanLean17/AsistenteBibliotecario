@@ -1,7 +1,7 @@
-import {organizationManager,organizationSummary,closeReview,organizationQuality,handoverReview,organizationAggregates,assignmentEnabled,personPending} from './organization.js?v=20261015-help1';
-import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261015-help1';
-import {PROFILES,LABELS,isEnabled} from './permissions.js?v=20261015-help1';
-import {prepareOrganizationImport,organizationExport} from './organization-migration.js?v=20261015-help1';
+import {organizationManager,organizationSummary,closeReview,organizationQuality,handoverReview,organizationAggregates,assignmentEnabled,personPending} from './organization.js?v=20261015-field2';
+import {readState,execute,getActorId,getInstitutionId} from './storage.js?v=20261015-field2';
+import {PROFILES,LABELS,isEnabled} from './permissions.js?v=20261015-field2';
+import {prepareOrganizationImport,organizationExport} from './organization-migration.js?v=20261015-field2';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const field=(label,name,value='',type='text',extra='')=>`<label>${label}<input name="${name}" type="${type}" value="${esc(value)}" ${extra}></label>`;
 const select=(label,name,values,value='')=>`<label>${label}<select name="${name}">${values.map(([v,l])=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(l)}</option>`).join('')}</select></label>`;

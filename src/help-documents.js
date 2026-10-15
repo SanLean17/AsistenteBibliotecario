@@ -14,7 +14,7 @@ export const helpDocuments=[
       },
       {
         "type": "paragraph",
-        "text": "Guía vigente · 0.10.0-help.1 · 15 de octubre de 2026."
+        "text": "Guía vigente · 0.11.0-field.2 · 15 de octubre de 2026."
       },
       {
         "type": "heading",
@@ -1361,6 +1361,34 @@ export const helpDocuments=[
   }
 ];
 export const helpReleases=[
+  {
+    "type": "heading",
+    "text": "Field Pilot V2 — 0.11.0-field.2"
+  },
+  {
+    "type": "paragraph",
+    "text": "15 de octubre de 2026. Auditoría integral y regresión avanzada."
+  },
+  {
+    "type": "item",
+    "text": "Escuela ficticia de 223 personas, 2.000 materiales, 4.000 ejemplares y 30 días de circulación; cierre anual, tres instituciones y cooperación manual."
+  },
+  {
+    "type": "item",
+    "text": "Correcciones de búsqueda de artículos, referencias en Calidad, diagnóstico local, rutas desconocidas y continuidad de materiales migrados al restaurar."
+  },
+  {
+    "type": "item",
+    "text": "Restauración grande de los 42 almacenes, corrupción rechazada sin escritura, escala lógica hasta 20k y navegador hasta 10k. Los límites de restauración siguen documentados."
+  },
+  {
+    "type": "item",
+    "text": "CI separado por áreas, control de errores de consola, recursos de cámara/OCR y evidencias por commit. Sin nuevos servicios ni telemetría."
+  },
+  {
+    "type": "item",
+    "text": "Matrices de producto/regresión, limitaciones y checklist presencial para un piloto supervisado."
+  },
   {
     "type": "heading",
     "text": "Centro de ayuda V1 — 0.10.0-help.1"

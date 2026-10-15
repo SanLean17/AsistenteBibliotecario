@@ -1,0 +1,33 @@
+{
+  "note": "Pinned distributed files; provenance and license review in docs/AUDITORIA-V2.md. OCR has its own manifest.",
+  "files": [
+    {
+      "file": "vendor/JsBarcode-LICENSE",
+      "sha256": "e34674e4ef4ed987f7a21a3040a1bdce83f08cc07eedfacbba1ffe53b0633734"
+    },
+    {
+      "file": "vendor/JsBarcode.code128-3.12.1.min.js",
+      "sha256": "e86acb482448d4b2daaba220b8c6c7bbb0d953cd1ebb258aaaf4538f0bb192b8"
+    },
+    {
+      "file": "vendor/qrcode-generator-1.4.4.js",
+      "sha256": "18ae399f81182bc9de916e9c77b195df20cc58d6f2d55a62b085a299f1bf1780"
+    },
+    {
+      "file": "vendor/qrcode-generator-LICENSE",
+      "sha256": "3a850fa5f08101db6f40676c2786e10bd2cd5fff7b12ffdf1e0c434d4e49d90c"
+    },
+    {
+      "file": "vendor/zxing-browser-0.2.1.min.js",
+      "sha256": "066bc34edfcdd4a33f0964aeec967752a0dea1ccaf36e58e319ac9fcb5070f6a"
+    },
+    {
+      "file": "vendor/ZXING-LIBRARY-LICENSE.txt",
+      "sha256": "5e27c6b0eaf634778e409da12176e97d5098b0300629e1e259c8a5dfbc11608e"
+    },
+    {
+      "file": "vendor/ZXING-LICENSE.txt",
+      "sha256": "acc919c82f1a69708155af09097614207acdcacc82848126ac8a1a146072c6a3"
+    }
+  ]
+}

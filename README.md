@@ -1,8 +1,8 @@
 # Asistente Bibliotecario
 
-**FIELD PILOT V1 · 0.2.0-field.1**. Aplicación local para bibliotecas escolares argentinas. Preparada para una prueba controlada; no es una plataforma con cuentas ni sincronización.
+**FIELD PILOT V2 · 0.11.0-field.2**. Aplicación local para bibliotecas escolares argentinas. Preparada para una prueba controlada; no es una plataforma con cuentas ni sincronización.
 
-[Abrir aplicación](https://sanlean.com.ar/AsistenteBibliotecario/app.html#inicio) · [Sitio informativo](https://sanlean.com.ar/AsistenteBibliotecario/) · [Estado y evidencia](docs/FIELD-PILOT-STATUS.md) · [Notas de versión](RELEASE_NOTES.md).
+[Abrir aplicación](https://sanlean.com.ar/AsistenteBibliotecario/app.html#inicio) · [Sitio informativo](https://sanlean.com.ar/AsistenteBibliotecario/) · [Estado y evidencia](docs/AUDITORIA-V2.md) · [Notas de versión](RELEASE_NOTES.md).
 
 ## Qué incluye
 
@@ -68,3 +68,9 @@ Biblioteca puede compartir un catálogo mínimo elegido expresamente, cargar arc
 ## Centro de ayuda
 
 Abrí **Centro de ayuda** en el menú o [#ayuda](https://sanlean.com.ar/AsistenteBibliotecario/app.html#ayuda). Incluye búsqueda local, guías por perfil, glosario, recorridos opcionales y guías imprimibles. No registra tus búsquedas ni envía consultas a servicios externos. Ver [Centro de ayuda V1](docs/CENTRO-DE-AYUDA.md).
+
+## Auditoría integral V2
+
+[Resultado y límites](docs/AUDITORIA-V2.md) · [Producto](docs/PRODUCT-MATRIX.md) · [Regresión](docs/REGRESSION-MATRIX.md) · [Problemas conocidos](docs/KNOWN-ISSUES.md) · [Checklist de campo](docs/FIELD-PILOT-V2-CHECKLIST.md).
+
+`npm run test:audit` ejecuta una escuela ficticia de 223 personas, 2.000 materiales y 30 días controlados. `npm run test:shard -- core` (o circulation, cataloging, institutional, interoperability, field) ejecuta bloques de navegador. Datos exclusivos de QA, sin carga en producción.

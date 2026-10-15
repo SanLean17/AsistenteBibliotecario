@@ -1,9 +1,9 @@
-import {helpArticles,glossary,contextualHelp,learningPaths,checklists,HELP_VERSION} from './help-content.js?v=20261015-help1';
-import {helpDocuments,helpReleases} from './help-documents.js?v=20261015-help1';
-import {visibleArticles,searchHelp,tourTransition} from './help.js?v=20261015-help1';
-import {readState,getActorId,getInstitutionId} from './storage.js?v=20261015-help1';
-import {accessForRoute,can} from './local-ui.js?v=20261015-help1';
-import {legacyProfile,PROFILES} from './permissions.js?v=20261015-help1';
+import {helpArticles,glossary,contextualHelp,learningPaths,checklists,HELP_VERSION} from './help-content.js?v=20261015-field2';
+import {helpDocuments,helpReleases} from './help-documents.js?v=20261015-field2';
+import {visibleArticles,searchHelp,tourTransition} from './help.js?v=20261015-field2';
+import {readState,getActorId,getInstitutionId} from './storage.js?v=20261015-field2';
+import {accessForRoute,can} from './local-ui.js?v=20261015-field2';
+import {legacyProfile,PROFILES} from './permissions.js?v=20261015-field2';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const link=(id,text)=>`<a href="#ayuda/${esc(id)}">${esc(text)}</a>`;
 const identity=()=>JSON.stringify([getInstitutionId(),getActorId()]);

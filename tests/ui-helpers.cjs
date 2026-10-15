@@ -10,10 +10,17 @@ async function setup(options={}){
  const device={...devices[process.env.TEST_ENGINE==='webkit'?'iPhone 13':'Pixel 7']};if(engine===firefox){delete device.isMobile;delete device.defaultBrowserType;delete device.userAgent;}
  const context=await browser.newContext({...device,viewport:{width:390,height:844},acceptDownloads:true,serviceWorkers:"block",...contextOptions});
  if(!process.env.TEST_BASE_URL)await require('./repository-harness.cjs').serveRepository(context,base);
- const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const errors=[];
+ const observe=page=>{page.on('pageerror',e=>errors.push(e.message));page.on('console',message=>{if(message.type()!=='error')return;const text=message.text();
+  // Browser-generated transport messages are expected in explicit offline/provider failure tests.
+  // Application console.error and all uncaught exceptions/rejections remain fatal.
+  if(/^Failed to load resource:/.test(text)&&(/net::ERR_(FAILED|INTERNET_DISCONNECTED)/.test(text)||/googleapis|openlibrary/.test(message.location().url)))return;
+  errors.push('console.error: '+text);
+ });};
+ context.on('page',observe);const page=await context.newPage();
  await page.route('https://fonts.googleapis.com/**',r=>r.abort());
  await page.route('https://covers.openlibrary.org/**',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300"><rect width="200" height="300" fill="#ED5AB3"/><text x="20" y="140">EL HOBBIT</text></svg>'}));
- if(!firstRun){await page.goto(base+'icon.svg');await page.evaluate(async()=>{const storage=await import('./src/storage.js?v=20261015-help1');await storage.openDatabase();const {migrateAccess}=await import('./src/access-model.js?v=20261015-help1');await storage.rawMutate(s=>migrateAccess(s));storage.setInstitutionId('local-institution');storage.setActorId('local-admin');});}
+ if(!firstRun){await page.goto(base+'icon.svg');await page.evaluate(async()=>{const storage=await import('./src/storage.js?v=20261015-field2');await storage.openDatabase();const {migrateAccess}=await import('./src/access-model.js?v=20261015-field2');await storage.rawMutate(s=>migrateAccess(s));storage.setInstitutionId('local-institution');storage.setActorId('local-admin');});}
  const go=async hash=>{await page.goto('about:blank');await page.goto(base+'app.html#'+hash);const target={inicio:'[data-access-route="inicio"]',biblioteca:'#search',agregar:'#scan-start',ejemplares:'.holdings-list',configuracion:'[data-action="clear-catalog"]',ficha:'.record-page',editar:'#book-form'}[hash.split('/')[0]];const heading={usuarios:'Personas',permisos:'Gestionar acceso',circulacion:'Circulación',reservas:'Reservas',organizacion:'Institución',actividad:'Auditoría',ejemplar:'Ejemplar físico',etiquetas:'Etiquetas',inventario:'Inventario físico'}[hash.split('/')[0]];if(heading)await page.getByRole('heading',{name:heading,exact:true,level:1}).waitFor();else await page.locator(target||'main h1').first().waitFor();};
  const finish=async()=>{try{assert.deepEqual(errors,[]);}finally{await browser.close();}};
  return {browser,context,page,errors,go,finish};
@@ -26,3 +33,7 @@ async function lookup(page){if(!await page.locator('#isbn-form').isVisible()){aw
 async function save(page){await page.getByRole('button',{name:'Guardar en el catálogo',exact:true}).click();await page.locator('.record-page').waitFor();assert.equal(new URL(page.url()).search,'');}
 async function noOverflow(page,label){await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));const fits=await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth);if(!fits){console.log(await page.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth,body:document.body.scrollWidth,viewport:visualViewport.width,nodes:[...document.querySelectorAll('body *')].map(e=>({tag:e.tagName,cls:e.className,r:e.getBoundingClientRect().right,w:e.scrollWidth,c:e.clientWidth})).filter(e=>e.r>innerWidth||e.w>e.c+5)})));await page.screenshot({path:'qa/webkit-overflow.png',fullPage:true});}assert.ok(fits,label+' overflow');}
 module.exports={setup,fixture,lookup,save,noOverflow,assert,fs,base};
+
+// Wait for actual fonts, finite transitions and two paints; infinite decorative loops never block QA.
+async function settleVisuals(page){await page.evaluate(async()=>{await document.fonts.ready;await Promise.all(document.getAnimations().filter(a=>Number.isFinite(a.effect?.getComputedTiming().endTime)).map(a=>a.finished.catch(()=>{})));await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));});}
+module.exports.settleVisuals=settleVisuals;

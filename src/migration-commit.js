@@ -1,8 +1,8 @@
-import {isSerialDraft,importSerialDraft} from './serial-migration.js?v=20261015-help1';
-import {inspectDraft,MIGRATION_FIELDS} from './migration.js?v=20261015-help1';
-import {validateBook} from './catalog.js?v=20261015-help1';
-import {requirePermission} from './permissions.js?v=20261015-help1';
-import {canonicalISBN} from './isbn.js?v=20261015-help1';
+import {isSerialDraft,importSerialDraft} from './serial-migration.js?v=20261015-field2';
+import {inspectDraft,MIGRATION_FIELDS} from './migration.js?v=20261015-field2';
+import {validateBook} from './catalog.js?v=20261015-field2';
+import {requirePermission} from './permissions.js?v=20261015-field2';
+import {canonicalISBN} from './isbn.js?v=20261015-field2';
 
 // Called only inside the existing institution-scoped IndexedDB transaction.
 export function applyMigration(s,actorId,plan,{config,normalizeHoldings,audit}){
@@ -29,7 +29,7 @@ export function applyMigration(s,actorId,plan,{config,normalizeHoldings,audit}){
    if(entry.kind==='exact-edition')throw Error('No crees otra ficha para un ISBN ya existente.');
    // Allowlisted bibliographic data; no foreign IDs, links, photos or privileges.
    const raw=Object.fromEntries([...Object.keys(MIGRATION_FIELDS),'authors','contentEntries','identifiers','classification','sourceSubjects','sources','fieldSources','sourceRecords','publishedDate','audience','resourceUrl','publication','publicationDate','otherIdentifier','containerTitle','volume','issueNumber','editionLabel','pageRange','issuingBody','documentNumber','schoolArea','courseLevel','digitalFormat'].filter(f=>Object.hasOwn(d,f)).map(f=>[f,d[f]]));
-   book=validateBook({...raw,copies:0,exemplars:[]});book.id=crypto.randomUUID();book.workId=crypto.randomUUID();book.editionId=crypto.randomUUID();book.institutionId=cfg.institutionId;book.libraryId=cfg.libraryId;book.collectionId=cfg.collectionId;book.migrationId=plan.id;
+   book=validateBook({...raw,copies:0,exemplars:[]});book.workId=crypto.randomUUID();book.editionId=crypto.randomUUID();book.institutionId=cfg.institutionId;book.libraryId=cfg.libraryId;book.collectionId=cfg.collectionId;book.migrationId=plan.id;
    s.books.push(book);byId.set('migration-row:'+entry.index,book);byId.set(book.id,book);summary.newRecords++;
   }else{
    book=byId.get(entry.targetId);if(!book||!canonicalISBN(d.isbn)||canonicalISBN(d.isbn)!==canonicalISBN(book.isbn))throw Error('La edición de destino no está disponible. Revisá las filas omitidas o el ISBN.');

@@ -1,6 +1,6 @@
-import {MATERIAL_TYPES} from './recognition.js?v=20261015-help1';
-import {contentSearchText} from './material-types.js?v=20261015-help1';
-import {cleanISBN} from './isbn.js?v=20261015-help1';
+import {MATERIAL_TYPES} from './recognition.js?v=20261015-field2';
+import {contentSearchText} from './material-types.js?v=20261015-field2';
+import {cleanISBN} from './isbn.js?v=20261015-field2';
 
 export const STOPWORDS=new Set(['de','del','la','el','los','las','un','una','que','con','sobre','tengan','tenga','algo','para','en','necesito','busco','quiero','material','materiales','recurso','recursos','tema','temas','numero']);
 
@@ -90,7 +90,8 @@ export function searchCatalog(books,query,{category='',materialType='',availabil
   for(const book of books){
     if(category&&book.category!==category)continue;
     const effectiveType=book.materialType||(book.isbn?'libro':'otro');
-    if(inferredType&&effectiveType!==inferredType)continue;
+    const containsArticle=!materialType&&inferredType==='articulo'&&(book.contentEntries||[]).some(c=>['article','articulo'].includes(c.kind||c.type));
+    if(inferredType&&effectiveType!==inferredType&&!containsArticle)continue;
     if(inferredAvailability==='available'&&!isAvailable(book))continue;
 
     if(isbn&&/^[\dXx\s-]+$/.test(raw)){

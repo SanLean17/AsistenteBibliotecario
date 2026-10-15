@@ -1,9 +1,9 @@
-import {projectState} from './access-model.js?v=20261015-help1';
-import {readAll,readState,getActorId,createInstitution,saveOnboardingDraft,executeEntry,chooseLocalPerson,closeLocalSession,restoreAtEntry,exportArchive,markExportInitiated,getInstitutionId,exportRecoveryArchive} from './storage.js?v=20261015-help1';
-import {INTRO_FLAGS,responsibleStatus,setupState} from './entry.js?v=20261015-help1';
-import {PROFILES,LABELS,hasPermission,isEnabled} from './permissions.js?v=20261015-help1';
-import {JsonBackupProvider} from './imports.js?v=20261015-help1';
-import {deriveReadiness} from './pilot.js?v=20261015-help1';
+import {projectState} from './access-model.js?v=20261015-field2';
+import {readAll,readState,getActorId,createInstitution,saveOnboardingDraft,executeEntry,chooseLocalPerson,closeLocalSession,restoreAtEntry,exportArchive,markExportInitiated,getInstitutionId,exportRecoveryArchive} from './storage.js?v=20261015-field2';
+import {INTRO_FLAGS,responsibleStatus,setupState} from './entry.js?v=20261015-field2';
+import {PROFILES,LABELS,hasPermission,isEnabled} from './permissions.js?v=20261015-field2';
+import {JsonBackupProvider} from './imports.js?v=20261015-field2';
+import {deriveReadiness} from './pilot.js?v=20261015-field2';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const notice='<p class="notice">Los datos se guardan en este dispositivo. Todavía no hay sincronización entre equipos. Modo local / simulación de acceso: no es un inicio de sesión con contraseña.</p>';
 const field=(label,name,value='',required=true,type='text')=>`<label>${label}<input name="${name}" type="${type}" maxlength="160" value="${esc(value)}" ${required?'required':''}></label>`;

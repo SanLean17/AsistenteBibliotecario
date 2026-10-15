@@ -1,10 +1,11 @@
-import {organizationQuality} from './organization.js?v=20261015-help1';
-import {serialQuality} from './serials.js?v=20261015-help1';
-import {teachingQuality} from './teaching.js?v=20261015-help1';
-import {isEnabled,PERMISSIONS} from './permissions.js?v=20261015-help1';
-import {validISBN,canonicalISBN} from './isbn.js?v=20261015-help1';
-import {validISSN,recognizeIdentifier} from './recognition.js?v=20261015-help1';
-import {catalogDuplicatePairs} from './duplicates.js?v=20261015-help1';
+import {organizationQuality} from './organization.js?v=20261015-field2';
+import {dataReferenceErrors} from './recovery.js?v=20261015-field2';
+import {serialQuality} from './serials.js?v=20261015-field2';
+import {teachingQuality} from './teaching.js?v=20261015-field2';
+import {isEnabled,PERMISSIONS} from './permissions.js?v=20261015-field2';
+import {validISBN,canonicalISBN} from './isbn.js?v=20261015-field2';
+import {validISSN,recognizeIdentifier} from './recognition.js?v=20261015-field2';
+import {catalogDuplicatePairs} from './duplicates.js?v=20261015-field2';
 
 export const SEVERITIES={error:'Error',warning:'Advertencia',suggestion:'Sugerencia'};
 export const validAB=value=>/^AB-\d{6,}$/.test(value||'')&&Number.isSafeInteger(Number(value.slice(3)))&&Number(value.slice(3))>0;
@@ -16,6 +17,7 @@ export function pilotScope(state){
 export function deriveDataQuality(state,{at=new Date(),includeDuplicates=true}={}){
  const s=pilotScope(state),issues=[],books=s.books||[],locations=s.libraryLocations||[],codes=new Map(),legacyCodes=new Map();
  const add=(type,severity,entity,title,detail,route,extra={})=>issues.push({id:type+':'+entity,type,severity,title,detail,route,...extra});
+ for(const [index,detail] of dataReferenceErrors(s).entries())add('integrity-reference','error',index,'Integridad de datos para revisar',detail,'diagnostico');
  for(const b of books){
   const route='ficha/'+encodeURIComponent(b.id),detail=b.title||'Material sin título';
   if(!String(b.title||'').trim())add('missing-title','error',b.id,'Título vacío',detail,route);

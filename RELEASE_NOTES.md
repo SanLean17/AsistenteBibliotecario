@@ -1,3 +1,13 @@
+# Field Pilot V2 — 0.11.0-field.2
+
+15 de octubre de 2026. Auditoría integral y regresión avanzada.
+
+- Escuela ficticia de 223 personas, 2.000 materiales, 4.000 ejemplares y 30 días de circulación; cierre anual, tres instituciones y cooperación manual.
+- Correcciones de búsqueda de artículos, referencias en Calidad, diagnóstico local, rutas desconocidas y continuidad de materiales migrados al restaurar.
+- Restauración grande de los 42 almacenes, corrupción rechazada sin escritura, escala lógica hasta 20k y navegador hasta 10k. Los límites de restauración siguen documentados.
+- CI separado por áreas, control de errores de consola, recursos de cámara/OCR y evidencias por commit. Sin nuevos servicios ni telemetría.
+- Matrices de producto/regresión, limitaciones y checklist presencial para un piloto supervisado.
+
 # Centro de ayuda V1 — 0.10.0-help.1
 
 15 de octubre de 2026.

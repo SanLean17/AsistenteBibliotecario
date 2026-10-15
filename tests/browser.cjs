@@ -7,14 +7,14 @@ const {setup,save,noOverflow,assert,fs}=require('./ui-helpers.cjs');
  await page.locator('.optional-section summary').click();await page.locator('[name=contents]').fill('La tortuga gigante\nLas medias de los flamencos');await save(page);const detailHash=new URL(page.url()).hash.slice(1);
  await page.reload();await page.locator('.record-page').waitFor();await page.getByRole('link',{name:'Editar registro',exact:true}).click();await page.locator('[name=copies]').fill('3');await save(page);
  await go('biblioteca');await page.locator('#search').pressSequentially('tortuga');assert.equal(await page.locator('#search').inputValue(),'tortuga');assert.equal(await page.locator('.book-card').count(),1);assert.ok(await page.locator('#search').evaluate(e=>e===document.activeElement));
- await page.locator('#search').fill('no existe');assert.equal(await page.locator('.book-card').count(),0);await page.locator('#search').fill('');
+ await page.locator('#search').fill('no existe');await page.waitForFunction(()=>document.querySelectorAll('.book-card').length===0);assert.equal(await page.locator('.book-card').count(),0);await page.locator('#search').fill('');await page.waitForFunction(()=>document.querySelectorAll('.book-card').length===1);
  const download=page.waitForEvent('download');await page.getByRole('button',{name:'Exportar',exact:false}).click();await(await download).saveAs('qa/backup.json');assert.equal(JSON.parse(fs.readFileSync('qa/backup.json')).books[0].copies,3);
  for(const theme of ['light','dark']){
   await page.evaluate(t=>document.documentElement.dataset.theme=t,theme);
   for(const width of [320,360,390,430,768,1440]){
    await page.setViewportSize({width,height:900});
    for(const route of ['inicio','biblioteca','agregar','ejemplares',detailHash,detailHash.replace('ficha/','editar/'),'configuracion']){
-    await page.evaluate(h=>location.hash=h,route);await page.waitForTimeout(100);await noOverflow(page,`${theme} ${width} ${route}`);
+    await go(route);await require('./ui-helpers.cjs').settleVisuals(page);await noOverflow(page,`${theme} ${width} ${route}`);
     assert.ok(await page.locator('input:not([type=hidden]),select,textarea').evaluateAll(els=>els.filter(e=>e.getBoundingClientRect().width).every(e=>parseFloat(getComputedStyle(e).fontSize)>=16)));
     await page.screenshot({path:`qa/${theme}-${width}-${route.split('/')[0]}.png`,fullPage:true});
    }

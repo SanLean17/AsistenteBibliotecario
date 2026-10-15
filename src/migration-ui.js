@@ -1,7 +1,7 @@
-import {analyzeFile,planMigration,MIGRATION_FIELDS,exportMigrationCSV} from './migration.js?v=20261015-help1';
-import {readState,getActorId,getInstitutionId,commitMigration,saveMigrationPreset,execute} from './storage.js?v=20261015-help1';
-import {hasPermission} from './permissions.js?v=20261015-help1';
-import {drawLabel} from './labels.js?v=20261015-help1';
+import {analyzeFile,planMigration,MIGRATION_FIELDS,exportMigrationCSV} from './migration.js?v=20261015-field2';
+import {readState,getActorId,getInstitutionId,commitMigration,saveMigrationPreset,execute} from './storage.js?v=20261015-field2';
+import {hasPermission} from './permissions.js?v=20261015-field2';
+import {drawLabel} from './labels.js?v=20261015-field2';
 
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const names={new:'Registros nuevos','exact-edition':'Ediciones ya existentes','same-work':'Posible misma obra / otra edición',similar:'Similares / revisar',review:'Revisión manual',error:'Registros con errores'};

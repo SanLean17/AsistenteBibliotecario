@@ -1,6 +1,6 @@
 {
   "name": "asistente-bibliotecario",
-  "version": "0.10.0-help.1",
+  "version": "0.11.0-field.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -33,6 +33,8 @@
     "test:entry": "node --test tests/entry.test.js",
     "test:entry-browser": "node tests/entry-browser.cjs",
     "test:help-browser": "node tests/help-browser.cjs",
-    "build:help": "node scripts/build-help.mjs"
+    "build:help": "node scripts/build-help.mjs",
+    "test:audit": "node --test tests/audit-v2.simulation.js",
+    "test:shard": "node scripts/test-shard.mjs"
   }
 }

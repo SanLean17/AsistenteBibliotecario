@@ -1,7 +1,7 @@
-import {hasPermission,isEnabled} from './permissions.js?v=20261015-help1';
-import {inventorySummary} from './inventory.js?v=20261015-help1';
-import {normalizeLoanPolicy} from './loan-policy.js?v=20261015-help1';
-import {csvEncode} from './migration.js?v=20261015-help1';
+import {hasPermission,isEnabled} from './permissions.js?v=20261015-field2';
+import {inventorySummary} from './inventory.js?v=20261015-field2';
+import {normalizeLoanPolicy} from './loan-policy.js?v=20261015-field2';
+import {csvEncode} from './migration.js?v=20261015-field2';
 
 const DAY=86400000;
 export const normalizeTerm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();

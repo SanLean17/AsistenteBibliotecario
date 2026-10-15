@@ -1,4 +1,4 @@
-import {helpArticles,glossary,contextualHelp,HELP_VERSION} from './help-content.js?v=20261015-help1';
+import {helpArticles,glossary,contextualHelp,HELP_VERSION} from './help-content.js?v=20261015-field2';
 export const normalizeHelp=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 export const visibleArticles=role=>helpArticles.filter(a=>a.roleVisibility.includes(role));
 export function searchHelp(query,role){

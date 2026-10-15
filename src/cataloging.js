@@ -1,8 +1,8 @@
-import {canonicalISBN} from './isbn.js?v=20261015-help1';
-import {detectCatalogMatches} from './duplicates.js?v=20261015-help1';
-import {validateBook} from './catalog.js?v=20261015-help1';
-import {hasPermission,requirePermission} from './permissions.js?v=20261015-help1';
-import {locationLabelsFromNode} from './inventory.js?v=20261015-help1';
+import {canonicalISBN} from './isbn.js?v=20261015-field2';
+import {detectCatalogMatches} from './duplicates.js?v=20261015-field2';
+import {validateBook} from './catalog.js?v=20261015-field2';
+import {hasPermission,requirePermission} from './permissions.js?v=20261015-field2';
+import {locationLabelsFromNode} from './inventory.js?v=20261015-field2';
 
 export const QUEUE_LABELS={pending:'Buscando metadatos','ready-new':'Listo para incorporar','existing-edition':'Edición existente','same-work':'Posible otra edición',similar:'Registro parecido','metadata-missing':'Sin metadatos',invalid:'Código inválido / ilegible','needs-review':'Requiere revisión',incorporated:'Incorporado'};
 export const SESSION_LABELS={open:'Jornada en curso',completed:'Jornada finalizada',cancelled:'Jornada cancelada'};

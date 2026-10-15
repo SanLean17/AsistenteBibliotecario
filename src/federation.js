@@ -1,1 +1,1 @@
-export * from './federation-contract.js?v=20261015-help1';
+export * from './federation-contract.js?v=20261015-field2';

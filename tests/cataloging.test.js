@@ -29,3 +29,11 @@ test('exceptions after an earlier row was processed still roll back every row an
 test('correcting an ISBN updates the grouping key for subsequent scans',()=>{const s=seed();run(s,'start');const i=capture(s);run(s,'review',{sessionId:session(s).id,itemId:i.id,fields:{isbn:isbn2,title:'Matilda'},quantity:1,resolution:'new'});capture(s,isbn2);assert.equal(i.quantity,2);capture(s,isbn);assert.equal(session(s).items.length,2);assert.equal(i.quantity,2);});
 
 test('RC1 MARC001 takes precedence over a same-title work suggestion on repeat imports',()=>{const b=validateBook({title:'Atlas regional',author:'Equipo',materialType:'libro',copies:1,identifiers:{marc001:'school-1'}});const result=classifyCapture([b],{source:'marc',draft:{title:b.title,author:b.author,materialType:'libro',identifiers:{marc001:'school-1'}}});assert.equal(result.status,'existing-edition');assert.equal(result.targetId,b.id);});
+
+test('V2 100 ISBN captures preserve pending metadata, equivalents and atomic batch retry',()=>{
+ const s=seed(),j=run(s,'start');
+ for(let n=0;n<98;n++){const base='978123'+String(n).padStart(6,'0'),sum=[...base].reduce((a,c,i)=>a+Number(c)*(i%2?3:1),0),code=base+((10-sum%10)%10),item=capture(s,code);if(n%10===0)metadata(s,item,'',{});else metadata(s,item,'Título QA '+n,{author:'Autor QA '+n});}
+ const equivalent=capture(s,isbn);capture(s,canonicalISBN(isbn));metadata(s,equivalent);
+ assert.equal(j.captures.length,100);assert.equal(j.items.length,99);assert.equal(equivalent.quantity,2);assert.equal(s.books.length,0);
+ const ready=j.items.filter(i=>i.status==='ready-new').map(i=>i.id);assert(ready.length>80);const d=batch(s,ready);run(s,'incorporate',d);const count=s.books.length;run(s,'incorporate',d);assert.equal(s.books.length,count);assert.equal(s.books.flatMap(b=>b.exemplars).length,count+1);assert(j.items.some(i=>i.status!=='incorporated'));validateCatalogingBackup(JSON.parse(JSON.stringify(s.catalogingSessions)));
+});

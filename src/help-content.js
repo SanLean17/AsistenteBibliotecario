@@ -1,5 +1,5 @@
 // Controlled, versioned content. Never contains institution or reader data.
-export const HELP_VERSION='0.10.0-help.1';
+export const HELP_VERSION='0.11.0-field.2';
 const all=['biblioteca','docente','autoridad','lector','personal'];
 const managers=['biblioteca','autoridad'];
 const library=['biblioteca'];

@@ -1,5 +1,5 @@
-import {requirePermission} from './permissions.js?v=20261015-help1';
-import {pilotManager} from './pilot.js?v=20261015-help1';
+import {requirePermission} from './permissions.js?v=20261015-field2';
+import {pilotManager} from './pilot.js?v=20261015-field2';
 
 // Called inside the existing institution-scoped IndexedDB transaction.
 export function pilotAction(s,actorId,type,data,{audit,normalizeHoldings}){

@@ -1,4 +1,4 @@
-export const FIELD_VERSION='0.10.0-help.1';
+export const FIELD_VERSION='0.11.0-field.2';
 const OFFLINE='Sin conexión. Podés seguir trabajando con los datos locales y completar esta ficha manualmente.';
 export function initOffline(){
  const host=document.createElement('aside');host.className='field-status';host.setAttribute('aria-label','Conexión y versión');

@@ -1,4 +1,4 @@
-import {legacyProfile,profileRole,ROLES} from './permissions.js?v=20261015-help1';
+import {legacyProfile,profileRole,ROLES} from './permissions.js?v=20261015-field2';
 export const EXTRA_STORES=['people','memberships','invitations','saved'];
 export function migrateAccess(s){
  if(s.settings.some(x=>x.id==='access-model-v5'))return;

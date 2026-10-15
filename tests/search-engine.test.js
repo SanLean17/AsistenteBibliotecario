@@ -74,3 +74,5 @@ test('los temas sugeridos salen del catálogo y no de datos inventados',()=>{
   assert.ok(suggestions.includes('Monstruos')||suggestions.includes('Historia')||suggestions.includes('Memoria'));
   assert.equal(suggestions.length,3);
 });
+
+test('V2 inferred article search includes its issue but explicit type remains strict',()=>{const issue={id:'issue',title:'Revista mensual',materialType:'revista',contentEntries:[{id:'article',title:'Artículo de océanos',kind:'article'}]},plain={id:'plain',title:'Océanos',materialType:'libro',contentEntries:[]};assert.deepEqual(searchCatalog([issue,plain],'artículo océanos').map(r=>r.book.id),['issue']);assert.deepEqual(searchCatalog([issue,plain],'océanos',{materialType:'articulo'}),[]);});
