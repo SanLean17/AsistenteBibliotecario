@@ -3,7 +3,7 @@
   "files": [
     {
       "file": "vendor/JsBarcode-LICENSE",
-      "sha256": "e34674e4ef4ed987f7a21a3040a1bdce83f08cc07eedfacbba1ffe53b0633734"
+      "sha256": "636e31528d9409e080917cc4b0c6bc8d6f6f46c07c75c52808709cd81747365c"
     },
     {
       "file": "vendor/JsBarcode.code128-3.12.1.min.js",
@@ -23,11 +23,12 @@
     },
     {
       "file": "vendor/ZXING-LIBRARY-LICENSE.txt",
-      "sha256": "5e27c6b0eaf634778e409da12176e97d5098b0300629e1e259c8a5dfbc11608e"
+      "sha256": "4b1ca52c69e6da6c97da6f72fe3e41e9dd67f9c758320cadf18c35b47f6de540"
     },
     {
       "file": "vendor/ZXING-LICENSE.txt",
-      "sha256": "acc919c82f1a69708155af09097614207acdcacc82848126ac8a1a146072c6a3"
+      "sha256": "4c26c3077daa7ce4d56ad91f279fafc395bf33c3a0f1ba9ab8cf511bad148ea5"
     }
-  ]
+  ],
+  "normalization": "UTF-8 text, CRLF converted to LF"
 }
